@@ -9,6 +9,7 @@ public class OthelloSystem : MonoBehaviour
     const int FIELD_SIZE_Y = 6;
     private int SelectedFieldCubePosX;
     private int SelectedFieldCubePosY;
+    private SpriteState _PlayerTurn = SpriteState.KANTO;
     public enum SpriteState
     {
         NONE,
@@ -61,25 +62,33 @@ private void UpdateSelectedFieldPosition()
     {
         SelectedFieldCubePosY++;
         SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z + 1);
-        Debug.Log("UpArrow");
+        // Debug.Log("UpArrow");
     }
     else if (Input.GetKeyDown(KeyCode.DownArrow) && SelectedFieldCubePosY > -2)
     {
         SelectedFieldCubePosY--;
         SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z - 1);
-        Debug.Log("DownArrow");
+        // Debug.Log("DownArrow");
     }
     else if (Input.GetKeyDown(KeyCode.LeftArrow) && SelectedFieldCubePosX > -2)
     {
         SelectedFieldCubePosX--;
         SelectedFieldCube.transform.position = new Vector3(position.x - 1, position.y, position.z);
-        Debug.Log("LeftArrow");
+        // Debug.Log("LeftArrow");
     }
     else if (Input.GetKeyDown(KeyCode.RightArrow) && SelectedFieldCubePosX < FIELD_SIZE_X - 3)
     {
         SelectedFieldCubePosX++;
         SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
-        Debug.Log("RightArrow");
+        // Debug.Log("RightArrow");
+    }
+
+    if(Input.GetKeyDown(KeyCode.Return))
+    {
+        _FieldState[SelectedFieldCubePosX+2, SelectedFieldCubePosY+2] = _PlayerTurn;
+        _KantoStoneObj[SelectedFieldCubePosX+2, SelectedFieldCubePosY+2].SetState(_PlayerTurn);
+        // Debug.Log("SelectedFieldCubePosX: " + SelectedFieldCubePosX + " SelectedFieldCubePosY: " + SelectedFieldCubePosY);
+        // Debug.Log(_PlayerTurn); 
     }
 }
 }
