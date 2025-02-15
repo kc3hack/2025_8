@@ -86,9 +86,18 @@ private void UpdateSelectedFieldPosition()
     if(Input.GetKeyDown(KeyCode.Return))
     {
         _FieldState[SelectedFieldCubePosX+2, SelectedFieldCubePosY+2] = _PlayerTurn;
-        _KantoStoneObj[SelectedFieldCubePosX+2, SelectedFieldCubePosY+2].SetState(_PlayerTurn);
+        _PlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+        Thread.Sleep(100);
         // Debug.Log("SelectedFieldCubePosX: " + SelectedFieldCubePosX + " SelectedFieldCubePosY: " + SelectedFieldCubePosY);
-        // Debug.Log(_PlayerTurn); 
+        Debug.Log(_PlayerTurn); 
+        if(_PlayerTurn==SpriteState.KANTO)
+        {
+            _KantoStoneObj[SelectedFieldCubePosX+2, SelectedFieldCubePosY+2].SetState(SpriteState.KANTO);
+        }
+        else
+        {
+            _KansaiStoneObj[SelectedFieldCubePosX+2, SelectedFieldCubePosY+2].SetState(SpriteState.KANSAI);
+        }
     }
 }
 }
