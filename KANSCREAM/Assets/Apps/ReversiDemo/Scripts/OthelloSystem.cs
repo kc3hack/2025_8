@@ -3,6 +3,7 @@ public class  OthelloSystem : MonoBehaviour
 {
     public GameObject KantoStone;//オセロ駒オブジェクト
     public GameObject KansaiStone;//オセロ駒オブジェクト
+    public GameObject SelectableFieldSupporter;//指定可能マスサポートオブジェクト
     const int FIELD_SIZE_X = 6;
     const int FIELD_SIZE_Y = 6;
 
