@@ -1,12 +1,14 @@
 using UnityEngine;
-public class  OthelloSystem : MonoBehaviour
+using System.Threading;
+public class OthelloSystem : MonoBehaviour
 {
     public GameObject KantoStone;//オセロ駒オブジェクト
     public GameObject KansaiStone;//オセロ駒オブジェクト
-    public GameObject SelectableFieldSupporter;//指定可能マスサポートオブジェクト
+    public GameObject SelectedFieldCube;//選択中のフィールドを示すオブジェクト
     const int FIELD_SIZE_X = 6;
     const int FIELD_SIZE_Y = 6;
-
+    private int SelectedFieldCubePosX;
+    private int SelectedFieldCubePosY;
     public enum SpriteState
     {
         NONE,
@@ -20,15 +22,18 @@ public class  OthelloSystem : MonoBehaviour
 
     void Start()
     {
-        for(int y = 0; y < FIELD_SIZE_Y; y++)
+        SelectedFieldCubePosX = (int)SelectedFieldCube.transform.position.x;
+        SelectedFieldCubePosY = (int)SelectedFieldCube.transform.position.z;
+
+        for (int y = 0; y < FIELD_SIZE_Y; y++)
         {
-            for(int x = 0; x < FIELD_SIZE_X; x++)
+            for (int x = 0; x < FIELD_SIZE_X; x++)
             {
                 var kanto = Instantiate(KantoStone
-                                        , new Vector3(-2.5f+x, 0.02f, -2.5f+y)
+                                        , new Vector3(-2.5f + x, 0.02f, -2.5f + y)
                                         , Quaternion.Euler(0, 0, 0));
                 var kansai = Instantiate(KansaiStone
-                                        , new Vector3(-2.5f+x, 0.02f, -2.5f+y)
+                                        , new Vector3(-2.5f + x, 0.02f, -2.5f + y)
                                         , Quaternion.Euler(0, 0, 0));
                 _FieldState[x, y] = SpriteState.NONE;
                 _KantoStoneObj[x, y] = kanto.GetComponent<KantoStoneObj>();
@@ -44,7 +49,37 @@ public class  OthelloSystem : MonoBehaviour
     }
 
     void Update()
-    {
+{
+    UpdateSelectedFieldPosition();
+}
 
+private void UpdateSelectedFieldPosition()
+{
+    var position = SelectedFieldCube.transform.position;
+
+    if (Input.GetKeyDown(KeyCode.UpArrow) && SelectedFieldCubePosY < FIELD_SIZE_Y - 3)
+    {
+        SelectedFieldCubePosY++;
+        SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z + 1);
+        Debug.Log("UpArrow");
     }
+    else if (Input.GetKeyDown(KeyCode.DownArrow) && SelectedFieldCubePosY > -2)
+    {
+        SelectedFieldCubePosY--;
+        SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z - 1);
+        Debug.Log("DownArrow");
+    }
+    else if (Input.GetKeyDown(KeyCode.LeftArrow) && SelectedFieldCubePosX > -2)
+    {
+        SelectedFieldCubePosX--;
+        SelectedFieldCube.transform.position = new Vector3(position.x - 1, position.y, position.z);
+        Debug.Log("LeftArrow");
+    }
+    else if (Input.GetKeyDown(KeyCode.RightArrow) && SelectedFieldCubePosX < FIELD_SIZE_X - 3)
+    {
+        SelectedFieldCubePosX++;
+        SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
+        Debug.Log("RightArrow");
+    }
+}
 }
