@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 8415509014879469609}
   - component: {fileID: 6955543236658076164}
   - component: {fileID: -1616614977126505443}
+  - component: {fileID: 4030344596997396203}
   m_Layer: 0
-  m_Name: BlackSprite
+  m_Name: SampleKANTO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f5643afe8a06e43938bda92c9b876f7b, type: 2}
+  - {fileID: 2100000, guid: 6e73fc12488c24e6788804a835ff76eb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -107,6 +108,18 @@ BoxCollider:
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-1616614977126505443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 368568999815610655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56223aa41d4244490bb9452b69d1f314, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4030344596997396203
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

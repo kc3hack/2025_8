@@ -337,7 +337,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 843e7bafe181340d9a77de9734b140bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OthelloSprite: {fileID: 368568999815610655, guid: bb3dc40475d36460c88d4ff4b9f8e257, type: 3}
+  KantoStone: {fileID: 368568999815610655, guid: bb3dc40475d36460c88d4ff4b9f8e257, type: 3}
+  KansaiStone: {fileID: 6675825979179288336, guid: 0280a12bc51ca4801be90671c6598b19, type: 3}
 --- !u!4 &1388310796
 Transform:
   m_ObjectHideFlags: 0
