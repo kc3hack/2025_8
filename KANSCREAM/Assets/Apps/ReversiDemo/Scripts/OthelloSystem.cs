@@ -26,12 +26,13 @@ public class  OthelloSystem : MonoBehaviour
                                         , Quaternion.Euler(0, 0, 0));
                 _FieldState[x, y] = SpriteState.NONE;
                 _FieldSpriteScript[x, y] = sprite.GetComponent<SpriteScript>();
+                _FieldSpriteScript[x, y].SetState(SpriteState.NONE);
             }
         }
-        _FieldSpriteScript[0, 0].SetState(SpriteState.KANSAI);
-        _FieldSpriteScript[3, 4].SetState(SpriteState.KANTO);
-        _FieldSpriteScript[4, 3].SetState(SpriteState.KANTO);
-        _FieldSpriteScript[4, 4].SetState(SpriteState.KANSAI);
+        _FieldSpriteScript[2, 2].SetState(SpriteState.KANSAI);
+        _FieldSpriteScript[2, 3].SetState(SpriteState.KANTO);
+        _FieldSpriteScript[3, 2].SetState(SpriteState.KANTO);
+        _FieldSpriteScript[3, 3].SetState(SpriteState.KANSAI);
     }
 
     void Update()
