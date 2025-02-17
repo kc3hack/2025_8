@@ -105,7 +105,7 @@ public class OthelloSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return))
         {
             //全方向に対してコマを置けるかどうかの判定
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 8; i++)
             {
                 if (TurnCheck(i))
                 {
