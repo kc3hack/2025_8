@@ -116,6 +116,23 @@ public class OthelloSystem : MonoBehaviour
 
             if (turnCheck)
             {
+                foreach (var info in _InfoList)
+                {
+                    var posX = info.Item1;
+                    var posY = info.Item2;
+                    _FieldState[posX, posY] = _PlayerTurn;
+                    if (_PlayerTurn == SpriteState.KANTO)
+                    {
+                        _KantoStoneObj[posX, posY].SetState(SpriteState.KANTO);
+                        _KansaiStoneObj[posX, posY].SetState(SpriteState.NONE);
+                    }
+                    else if (_PlayerTurn == SpriteState.KANSAI)
+                    {
+                        _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
+                        _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
+                    }
+                }
+
                 _FieldState[SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2] = _PlayerTurn;
                 // Debug.Log("SelectedFieldCubePosX: " + SelectedFieldCubePosX + " SelectedFieldCubePosY: " + SelectedFieldCubePosY);
                 // Debug.Log(_PlayerTurn);
@@ -123,12 +140,13 @@ public class OthelloSystem : MonoBehaviour
                 {
                     _KantoStoneObj[SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2].SetState(SpriteState.KANTO);
                 }
-                else
+                else if (_PlayerTurn == SpriteState.KANSAI)
                 {
                     _KansaiStoneObj[SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2].SetState(SpriteState.KANSAI);
                 }
                 _PlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
                 Thread.Sleep(100);
+                _InfoList = new List<(int, int)>();
             }
         }
     }
@@ -172,7 +190,7 @@ public class OthelloSystem : MonoBehaviour
             }
 
             //2つ以上隣のコマが自分のコマの場合は置ける
-            if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn || _FieldState[posX, posY] == SpriteState.NONE))
+            if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn))
             {
                 turnCheck = true;
                 foreach (var info in opponentInfoList)
