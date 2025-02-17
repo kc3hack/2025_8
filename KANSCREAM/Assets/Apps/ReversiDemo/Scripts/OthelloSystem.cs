@@ -31,6 +31,28 @@ public class OthelloSystem : MonoBehaviour
         SelectedFieldCubePosX = (int)SelectedFieldCube.transform.position.x;
         SelectedFieldCubePosY = (int)SelectedFieldCube.transform.position.z;
 
+        Awake();
+
+        //初期配置  関東:黒  関西:白
+        _KantoStoneObj[2, 2].SetState(SpriteState.KANTO);
+        _KansaiStoneObj[3, 2].SetState(SpriteState.KANSAI);
+        _KantoStoneObj[3, 3].SetState(SpriteState.KANTO);
+        _KansaiStoneObj[2, 3].SetState(SpriteState.KANSAI);
+
+        _FieldState[2, 2] = SpriteState.KANTO;
+        _FieldState[3, 2] = SpriteState.KANSAI;
+        _FieldState[3, 3] = SpriteState.KANTO;
+        _FieldState[2, 3] = SpriteState.KANSAI;
+    }
+
+    void Update()
+    {
+        UpdateSelectedFieldPosition();
+    }
+
+    //盤の初期設定
+    private void Awake()
+    {
         //盤の初期化
         for (int y = 0; y < FIELD_SIZE_Y; y++)
         {
@@ -49,27 +71,6 @@ public class OthelloSystem : MonoBehaviour
                 _KansaiStoneObj[x, y].SetState(SpriteState.NONE);
             }
         }
-
-        //初期配置  関東:黒  関西:白
-        _KantoStoneObj[2, 2].SetState(SpriteState.KANTO);
-        _KansaiStoneObj[3, 2].SetState(SpriteState.KANSAI);
-        _KantoStoneObj[3, 3].SetState(SpriteState.KANTO);
-        _KansaiStoneObj[2, 3].SetState(SpriteState.KANSAI);
-
-        _FieldState[2, 2] = SpriteState.KANTO;
-        _FieldState[3, 2] = SpriteState.KANSAI;
-        _FieldState[3, 3] = SpriteState.KANTO;
-        _FieldState[2, 3] = SpriteState.KANSAI;
-
-        // Debug.Log("[2,2]関東 " + _FieldState[2, 2]);
-        // Debug.Log("[3,2]関西 " + _FieldState[3, 2]);
-        // Debug.Log("[3,3]関東 " + _FieldState[3, 3]);
-        // Debug.Log("[2,3]関西 " + _FieldState[2, 3]);
-    }
-
-    void Update()
-    {
-        UpdateSelectedFieldPosition();
     }
 
     private void UpdateSelectedFieldPosition()
@@ -77,29 +78,25 @@ public class OthelloSystem : MonoBehaviour
         var position = SelectedFieldCube.transform.position;
 
         //選択中のフィールドを移動
-        if (Input.GetKeyDown(KeyCode.UpArrow) && SelectedFieldCubePosY < FIELD_SIZE_Y - 3)
+        if (Input.GetKeyDown(KeyCode.W) && SelectedFieldCubePosY < FIELD_SIZE_Y - 3)
         {
             SelectedFieldCubePosY++;
             SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z + 1);
-            // Debug.Log("UpArrow");
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) && SelectedFieldCubePosY > -2)
+        else if (Input.GetKeyDown(KeyCode.S) && SelectedFieldCubePosY > -2)
         {
             SelectedFieldCubePosY--;
             SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z - 1);
-            // Debug.Log("DownArrow");
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow) && SelectedFieldCubePosX > -2)
+        else if (Input.GetKeyDown(KeyCode.A) && SelectedFieldCubePosX > -2)
         {
             SelectedFieldCubePosX--;
             SelectedFieldCube.transform.position = new Vector3(position.x - 1, position.y, position.z);
-            // Debug.Log("LeftArrow");
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) && SelectedFieldCubePosX < FIELD_SIZE_X - 3)
+        else if (Input.GetKeyDown(KeyCode.D) && SelectedFieldCubePosX < FIELD_SIZE_X - 3)
         {
             SelectedFieldCubePosX++;
             SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
-            // Debug.Log("RightArrow");
         }
 
         turnCheck = false;
@@ -107,12 +104,16 @@ public class OthelloSystem : MonoBehaviour
         //スペースキーで駒を置く
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            if (TurnCheck())
+            //全方向に対してコマを置けるかどうかの判定
+            for (int i = 0; i < 7; i++)
             {
-                turnCheck = true;
+                if (TurnCheck(i))
+                {
+                    turnCheck = true;
+                }
             }
 
-            // Debug.Log("turnCheck: " + turnCheck);
+            // Debug.Log("115:turnCheck: " + turnCheck);
 
             if (turnCheck)
             {
@@ -134,8 +135,7 @@ public class OthelloSystem : MonoBehaviour
                 }
 
                 _FieldState[SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2] = _PlayerTurn;
-                // Debug.Log("SelectedFieldCubePosX: " + SelectedFieldCubePosX + " SelectedFieldCubePosY: " + SelectedFieldCubePosY);
-                // Debug.Log(_PlayerTurn);
+
                 if (_PlayerTurn == SpriteState.KANTO)
                 {
                     _KantoStoneObj[SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2].SetState(SpriteState.KANTO);
@@ -151,7 +151,11 @@ public class OthelloSystem : MonoBehaviour
         }
     }
 
-    private bool TurnCheck()
+    /// <summary>
+    /// コマを置けるかどうかの判定
+    /// </summary>
+    /// <returns></returns>
+    private bool TurnCheck(int direction)
     {
         var posX = SelectedFieldCubePosX + 2;//選択中のフィールドの移動範囲調整
         var posY = SelectedFieldCubePosY + 2;//選択中のフィールドの移動範囲調整
@@ -159,40 +163,77 @@ public class OthelloSystem : MonoBehaviour
         var opponentPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
 
         var opponentInfoList = new List<(int, int)>();
+        var localTurnCheck = false;
         int i = 0;
 
         while (0 <= posX && posX <= FIELD_SIZE_X && 0 <= posY && posY <= FIELD_SIZE_Y)
         {
-            if (posX == 0)
+            i++;
+            switch (direction)
             {
-                break;
+                case 0://左
+                    if (posX == 0) { return localTurnCheck; }
+                    posX--;
+                    // Debug.Log(i+"番目の左のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 1://右
+                    if (posX == FIELD_SIZE_X - 1) { return localTurnCheck; }
+                    posX++;
+                    // Debug.Log(i+"番目の右のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 2://下
+                    if (posY == 0) { return localTurnCheck; }
+                    posY--;
+                    // Debug.Log(i+"番目の下のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 3://上
+                    if (posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posY++;
+                    // Debug.Log(i+"番目の上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 4://右上
+                    if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posX++;
+                    posY++;
+                    // Debug.Log(i+"番目の右上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 5://左下
+                    if (posX == 0 || posY == 0) { return localTurnCheck; }
+                    posX--;
+                    posY--;
+                    // Debug.Log(i+"番目の左下のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 6://左上
+                    if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posX--;
+                    posY++;
+                    // Debug.Log(i+"番目の左上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 7://右下
+                    if (posX == FIELD_SIZE_X - 1 || posY == 0) { return localTurnCheck; }
+                    posX++;
+                    posY--;
+                    // Debug.Log(i+"番目の右下のコマ: " + _FieldState[posX, posY]);
+                    break;
             }
-            posX--;
-
-            // Debug.Log("PlayerTurn: "+_PlayerTurn);
-            // Debug.Log("opponentPlayerTurn: " + opponentPlayerTurn);
-            Debug.Log(++i + "つ隣のコマ: " + _FieldState[posX, posY]);//<-これちゃんと取れてる
-            // _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
-            // _KantoStoneObj[posX, posY].SetState(SpriteState.KANTO);
 
             //左隣に相手のコマがあるときその情報をリストに追加
             if (_FieldState[posX, posY] == opponentPlayerTurn)
             {
                 opponentInfoList.Add((posX, posY));
-                // Debug.Log("opponentInfoList: " + opponentInfoList);
             }
 
             //1回目のループで左のコマが自分のコマまたは空の場合は終了
             if (opponentInfoList.Count == 0 && (_FieldState[posX, posY] == _PlayerTurn || _FieldState[posX, posY] == SpriteState.NONE))
             {
-                turnCheck = false;
+                localTurnCheck = false;
                 break;
             }
 
             //2つ以上隣のコマが自分のコマの場合は置ける
             if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn))
             {
-                turnCheck = true;
+                localTurnCheck = true;
                 foreach (var info in opponentInfoList)
                 {
                     _InfoList.Add(info);
@@ -200,7 +241,7 @@ public class OthelloSystem : MonoBehaviour
                 break;
             }
         }
-        return turnCheck;
-        // return true;
+        // Debug.Log("242:turnCheck: " + localTurnCheck);
+        return localTurnCheck;
     }
 }
