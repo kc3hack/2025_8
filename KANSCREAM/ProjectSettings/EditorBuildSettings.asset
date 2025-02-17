@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Apps/PUN2Demo/Scenes/PUN2Demo.unity
     guid: 73bde27843c2d44d090b10b2595ad882
+  - enabled: 1
+    path: Assets/Apps/ReversiDemo/Scenes/ReversiDemo.unity
+    guid: 12617e2dad05748e581a7fd0e60d032c
   m_configObjects: {}
