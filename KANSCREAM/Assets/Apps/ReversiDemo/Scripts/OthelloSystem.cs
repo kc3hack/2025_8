@@ -11,8 +11,8 @@ public class OthelloSystem : MonoBehaviour
     private int SelectedFieldCubePosX;//指定しているマスのX座標
     private int SelectedFieldCubePosY;//指定しているマスのY座標
 
-    private bool _KantoCheckFlag = false;
-    private bool _KansaiCheckFlag = false;
+    private bool _KantoCheckFlag = true;
+    private bool _KansaiCheckFlag = true;
     private SpriteState _PlayerTurn = SpriteState.KANTO;//プレイヤーのターン(関東先手)
     private bool turnCheck = false;
 
@@ -102,11 +102,15 @@ public class OthelloSystem : MonoBehaviour
             SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
         }
 
-        turnCheck = false;
+        //デバッグ用
+        if(Input.GetKeyDown(KeyCode.Space)){
+            Debug.Log(_PlayerTurn + "のターン");
+        }
 
         //スペースキーで駒を置く
         if (Input.GetKeyDown(KeyCode.Return))
         {
+            turnCheck = false;
             //全方向に対してコマを置けるかどうかの判定
             for (int i = 0; i < 8; i++)
             {
@@ -114,6 +118,17 @@ public class OthelloSystem : MonoBehaviour
                 {
                     turnCheck = true;
                 }
+            }
+
+            if(_KantoCheckFlag){
+                Debug.Log("関東は置けるマスがある");
+            }else{
+                Debug.Log("関東は置けるマスがない");
+            }
+            if(_KansaiCheckFlag){
+                Debug.Log("関西は置けるマスがある");
+            }else{
+                Debug.Log("関西は置けるマスがない");
             }
 
             // Debug.Log("115:turnCheck: " + turnCheck);
@@ -174,8 +189,8 @@ public class OthelloSystem : MonoBehaviour
             }
         }
 
-        Debug.Log("関東の石の数: " + kantoStoneNum);
-        Debug.Log("関西の石の数: " + kansaiStoneNum);
+        // Debug.Log("関東の石の数: " + kantoStoneNum);
+        // Debug.Log("関西の石の数: " + kansaiStoneNum);
 
         if (kantoStoneNum + kansaiStoneNum == FIELD_SIZE_X * FIELD_SIZE_Y || (!_KantoCheckFlag && !_KansaiCheckFlag))
         {
@@ -313,7 +328,7 @@ public class OthelloSystem : MonoBehaviour
                     break;
             }
 
-            //左隣に相手のコマがあるときその情報をリストに追加
+            //指定した方向に相手のコマがあるときその情報をリストに追加
             if (_FieldState[posX, posY] == opponentPlayerTurn)
             {
                 opponentInfoList.Add((posX, posY));
