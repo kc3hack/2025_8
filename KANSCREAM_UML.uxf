@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
-  <zoom_level>4</zoom_level>
+  <zoom_level>6</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>80</x>
-      <y>104</y>
-      <w>84</w>
-      <h>76</h>
+      <x>120</x>
+      <y>0</y>
+      <w>126</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>
 --
@@ -20,9 +20,9 @@
     <id>Relation</id>
     <coordinates>
       <x>0</x>
-      <y>120</y>
-      <w>76</w>
-      <h>12</h>
+      <y>24</y>
+      <w>114</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
@@ -31,9 +31,9 @@
     <id>Relation</id>
     <coordinates>
       <x>0</x>
-      <y>132</y>
-      <w>76</w>
-      <h>12</h>
+      <y>42</y>
+      <w>114</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;.</panel_attributes>
     <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
@@ -41,10 +41,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>604</x>
-      <y>412</y>
-      <w>84</w>
-      <h>76</h>
+      <x>906</x>
+      <y>462</y>
+      <w>126</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>StateManager
 --
@@ -63,10 +63,10 @@ public enum SpriteState
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>896</x>
-      <y>296</y>
-      <w>132</w>
-      <h>76</h>
+      <x>1344</x>
+      <y>288</y>
+      <w>198</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>&lt;&lt;interface&gt;&gt;
 IState
@@ -80,10 +80,10 @@ Start():void
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>784</x>
-      <y>412</y>
-      <w>132</w>
-      <h>76</h>
+      <x>1176</x>
+      <y>462</y>
+      <w>198</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>KantoState
 --
@@ -96,10 +96,10 @@ Start():void
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>784</x>
-      <y>500</y>
-      <w>132</w>
-      <h>76</h>
+      <x>1176</x>
+      <y>594</y>
+      <w>198</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>KansaiState
 --
@@ -112,10 +112,10 @@ Start():void
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>756</x>
-      <y>180</y>
-      <w>84</w>
-      <h>76</h>
+      <x>1134</x>
+      <y>114</y>
+      <w>126</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>SceneManager
 --
@@ -127,10 +127,10 @@ Start():void
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1088</x>
-      <y>604</y>
-      <w>84</w>
-      <h>76</h>
+      <x>1632</x>
+      <y>750</y>
+      <w>126</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>SelectedSpriteModel
 --
@@ -143,10 +143,10 @@ Start():void
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>756</x>
-      <y>392</y>
-      <w>188</w>
-      <h>204</h>
+      <x>1134</x>
+      <y>432</y>
+      <w>282</w>
+      <h>306</h>
     </coordinates>
     <panel_attributes>MonoBehaviour
 bg=pink
@@ -157,9 +157,9 @@ bg=pink
     <id>Relation</id>
     <coordinates>
       <x>0</x>
-      <y>156</y>
-      <w>76</w>
-      <h>12</h>
+      <y>78</y>
+      <w>114</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
     <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
@@ -168,9 +168,9 @@ bg=pink
     <id>Relation</id>
     <coordinates>
       <x>0</x>
-      <y>144</y>
-      <w>76</w>
-      <h>12</h>
+      <y>60</y>
+      <w>114</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
@@ -178,22 +178,19 @@ bg=pink
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>432</x>
-      <y>412</y>
-      <w>108</w>
-      <h>120</h>
+      <x>648</x>
+      <y>462</y>
+      <w>162</w>
+      <h>132</h>
     </coordinates>
     <panel_attributes>OthelloModel
 --
-+_KantoStonePosX:int
-+_KantoStonePosY:int
-+_KansaiStonePosX:int
-+_KansaiStonePosY:int
 -_KantoFlag:bool
 -_KansaiFlag:bool
 -_TurnCheck:bool
+-_PlayerTurn:
 -_CanSettingSpriteList:List&lt;(int, int)&gt;
--_StateManager:SatateManager
+-_StateManager:StateManager
 --
 初期設定
 指定マスにコマを置けるか判断
@@ -206,10 +203,10 @@ bg=pink
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>440</x>
-      <y>296</y>
-      <w>84</w>
-      <h>76</h>
+      <x>660</x>
+      <y>288</y>
+      <w>126</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>OthelloPresenter
 --
@@ -225,10 +222,10 @@ Start():void
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>412</x>
-      <y>184</y>
-      <w>140</w>
-      <h>76</h>
+      <x>618</x>
+      <y>120</y>
+      <w>210</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>OthelloView
 --
@@ -243,10 +240,10 @@ Start():void
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>604</x>
-      <y>308</y>
-      <w>84</w>
-      <h>76</h>
+      <x>906</x>
+      <y>306</y>
+      <w>126</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>Const
 --
@@ -259,10 +256,10 @@ _FIELD_SIZE_Y:int_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1088</x>
-      <y>408</y>
-      <w>84</w>
-      <h>76</h>
+      <x>1632</x>
+      <y>456</y>
+      <w>126</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>SelectedSpritePresenter
 --
@@ -277,10 +274,10 @@ Start():void
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1084</x>
-      <y>296</y>
-      <w>92</w>
-      <h>76</h>
+      <x>1626</x>
+      <y>288</y>
+      <w>138</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>SelectedSpriteView
 --
@@ -294,10 +291,10 @@ Start():void
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>476</x>
-      <y>256</y>
-      <w>12</w>
-      <h>48</h>
+      <x>714</x>
+      <y>228</y>
+      <w>18</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
@@ -305,10 +302,10 @@ Start():void
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>476</x>
-      <y>368</y>
-      <w>12</w>
-      <h>52</h>
+      <x>714</x>
+      <y>396</y>
+      <w>18</w>
+      <h>78</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
@@ -316,10 +313,10 @@ Start():void
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>388</x>
-      <y>164</y>
-      <w>188</w>
-      <h>224</h>
+      <x>582</x>
+      <y>90</y>
+      <w>282</w>
+      <h>336</h>
     </coordinates>
     <panel_attributes>MonoBehavior
 bg=pink</panel_attributes>
@@ -328,10 +325,10 @@ bg=pink</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1124</x>
-      <y>480</y>
-      <w>12</w>
-      <h>132</h>
+      <x>1686</x>
+      <y>564</y>
+      <w>18</w>
+      <h>198</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;310.0</additional_attributes>
@@ -339,10 +336,10 @@ bg=pink</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1124</x>
-      <y>368</y>
-      <w>12</w>
-      <h>48</h>
+      <x>1686</x>
+      <y>396</y>
+      <w>18</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
@@ -350,10 +347,10 @@ bg=pink</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>912</x>
-      <y>368</y>
-      <w>60</w>
-      <h>92</h>
+      <x>1368</x>
+      <y>396</y>
+      <w>90</w>
+      <h>138</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;.</panel_attributes>
     <additional_attributes>130.0;10.0;130.0;210.0;10.0;210.0</additional_attributes>
@@ -361,10 +358,10 @@ bg=pink</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>912</x>
-      <y>368</y>
-      <w>60</w>
-      <h>176</h>
+      <x>1368</x>
+      <y>396</y>
+      <w>90</w>
+      <h>264</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;.</panel_attributes>
     <additional_attributes>130.0;10.0;130.0;420.0;10.0;420.0</additional_attributes>
@@ -372,10 +369,10 @@ bg=pink</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>684</x>
-      <y>444</y>
-      <w>108</w>
-      <h>12</h>
+      <x>1026</x>
+      <y>510</y>
+      <w>162</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;250.0;10.0</additional_attributes>
@@ -383,10 +380,10 @@ bg=pink</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>536</x>
-      <y>444</y>
-      <w>560</w>
-      <h>208</h>
+      <x>804</x>
+      <y>510</y>
+      <w>840</w>
+      <h>312</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;100.0;10.0;100.0;500.0;1380.0;500.0</additional_attributes>
@@ -394,10 +391,10 @@ bg=pink</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>536</x>
-      <y>444</y>
-      <w>76</w>
-      <h>12</h>
+      <x>804</x>
+      <y>510</y>
+      <w>114</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
@@ -405,10 +402,10 @@ bg=pink</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>684</x>
-      <y>444</y>
-      <w>108</w>
-      <h>100</h>
+      <x>1026</x>
+      <y>510</y>
+      <w>162</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;140.0;10.0;140.0;230.0;250.0;230.0</additional_attributes>
@@ -416,10 +413,10 @@ bg=pink</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1052</x>
-      <y>272</y>
-      <w>160</w>
-      <h>236</h>
+      <x>1578</x>
+      <y>252</y>
+      <w>240</w>
+      <h>354</h>
     </coordinates>
     <panel_attributes>MonoBehaviour
 bg=pink</panel_attributes>

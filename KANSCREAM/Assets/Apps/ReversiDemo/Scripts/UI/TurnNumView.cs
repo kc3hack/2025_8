@@ -4,11 +4,11 @@ using UnityEngine.UI;
 public class TurnNumView : MonoBehaviour
 {
     [SerializeField] private Text _text;
-    private OthelloSystem othelloSystem;
+    private StateManager _stateManager;
 
     void Start()
     {
-        othelloSystem = FindObjectOfType<OthelloSystem>();
+        _stateManager = FindObjectOfType<StateManager>();
     }
 
 
