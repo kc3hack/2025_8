@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>4</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>80</x>
+      <y>104</y>
+      <w>84</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>
+--
+
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>0</x>
+      <y>120</y>
+      <w>76</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>0</x>
+      <y>132</y>
+      <w>76</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>604</x>
+      <y>412</y>
+      <w>84</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>StateManager
+--
+-_FieldState:SpriteState[,]
+-_KantoState:KantoState[,]
+-_KansaiState:KansaiState[,]
+--
+public enum SpriteState
+    {
+        NONE,
+        KANTO,
+        KANSAI,
+    }</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>896</x>
+      <y>296</y>
+      <w>132</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+IState
+--
+
+--
+Start():void
++SetState(OthelloSystem.SpriteState state):void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>784</x>
+      <y>412</y>
+      <w>132</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>KantoState
+--
+
+--
+Start():void
++SetState(OthelloSystem.SpriteState state):void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>784</x>
+      <y>500</y>
+      <w>132</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>KansaiState
+--
+
+--
+Start():void
++SetState(OthelloSystem.SpriteState state):void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>756</x>
+      <y>180</y>
+      <w>84</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>SceneManager
+--
+
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1088</x>
+      <y>604</y>
+      <w>84</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>SelectedSpriteModel
+--
++_SelectedSpritePosX:int
++_SelectedSpritePosY:int
+--
+指定マスを動かす</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>756</x>
+      <y>392</y>
+      <w>188</w>
+      <h>204</h>
+    </coordinates>
+    <panel_attributes>MonoBehaviour
+bg=pink
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>0</x>
+      <y>156</y>
+      <w>76</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>0</x>
+      <y>144</y>
+      <w>76</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>432</x>
+      <y>412</y>
+      <w>108</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>OthelloModel
+--
++_KantoStonePosX:int
++_KantoStonePosY:int
++_KansaiStonePosX:int
++_KansaiStonePosY:int
+-_KantoFlag:bool
+-_KansaiFlag:bool
+-_TurnCheck:bool
+-_CanSettingSpriteList:List&lt;(int, int)&gt;
+-_StateManager:SatateManager
+--
+初期設定
+指定マスにコマを置けるか判断
+指定マスにコマを置く
+盤上のコマを計算
+終了判定
+リスタート</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>440</x>
+      <y>296</y>
+      <w>84</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>OthelloPresenter
+--
+_Model:OthelloModel
+_View:OthelloModel
+--
+Start():void
+-SetEvents():void
+-GameStart():void
+-GameReStart():void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>412</x>
+      <y>184</y>
+      <w>140</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>OthelloView
+--
++_KantoStone:GameObject
++_KansaiStone:GameObject
+--
++UpdateView():void
++SetStonePos(state:StateManager,x:int,y:int):void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>604</x>
+      <y>308</y>
+      <w>84</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>Const
+--
+_FIELD_SIZE_X:int_
+_FIELD_SIZE_Y:int_
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1088</x>
+      <y>408</y>
+      <w>84</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>SelectedSpritePresenter
+--
+
+--
+Start():void
+-SetEvents():void
+-GameStart():void
+-GameReStart():void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1084</x>
+      <y>296</y>
+      <w>92</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>SelectedSpriteView
+--
++_SelectedSprite:GameObject
+--
+Start():void
++UpdateView():void
++SetSpritePos(x:int,y:int):void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>476</x>
+      <y>256</y>
+      <w>12</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>476</x>
+      <y>368</y>
+      <w>12</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>388</x>
+      <y>164</y>
+      <w>188</w>
+      <h>224</h>
+    </coordinates>
+    <panel_attributes>MonoBehavior
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1124</x>
+      <y>480</y>
+      <w>12</w>
+      <h>132</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;310.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1124</x>
+      <y>368</y>
+      <w>12</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>368</y>
+      <w>60</w>
+      <h>92</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>130.0;10.0;130.0;210.0;10.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>368</y>
+      <w>60</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>130.0;10.0;130.0;420.0;10.0;420.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>684</x>
+      <y>444</y>
+      <w>108</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;250.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>536</x>
+      <y>444</y>
+      <w>560</w>
+      <h>208</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;100.0;10.0;100.0;500.0;1380.0;500.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>536</x>
+      <y>444</y>
+      <w>76</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>684</x>
+      <y>444</y>
+      <w>108</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;140.0;10.0;140.0;230.0;250.0;230.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1052</x>
+      <y>272</y>
+      <w>160</w>
+      <h>236</h>
+    </coordinates>
+    <panel_attributes>MonoBehaviour
+bg=pink</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

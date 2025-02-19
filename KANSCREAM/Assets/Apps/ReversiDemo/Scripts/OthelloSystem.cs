@@ -8,6 +8,7 @@ public class OthelloSystem : MonoBehaviour
     public GameObject SelectedFieldCube;//選択中のフィールドを示すオブジェクト
     const int FIELD_SIZE_X = 6;//盤のサイズ
     const int FIELD_SIZE_Y = 6;//盤のサイズ
+    
     private int SelectedFieldCubePosX;//指定しているマスのX座標
     private int SelectedFieldCubePosY;//指定しているマスのY座標
 
