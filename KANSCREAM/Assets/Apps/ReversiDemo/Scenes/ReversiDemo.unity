@@ -122,33 +122,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &431780779 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6359363882106875951, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
-  m_PrefabInstance: {fileID: 4097198919707488842}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &431780781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 431780779}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 1
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!1 &480159100
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,7 +270,6 @@ GameObject:
   m_Component:
   - component: {fileID: 686691144}
   - component: {fileID: 686691143}
-  - component: {fileID: 686691145}
   m_Layer: 0
   m_Name: TurnManager
   m_TagString: Untagged
@@ -314,9 +286,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 686691142}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 026387f1ca45342e2a6561fdb3fd7a23, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a1b3bda60e9e804f87fd1e5d20a885a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TurnDuration: 20
 --- !u!4 &686691144
 Transform:
   m_ObjectHideFlags: 0
@@ -332,19 +305,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &686691145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 686691142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a1b3bda60e9e804f87fd1e5d20a885a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TurnDuration: 20
 --- !u!1 &780403783
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,10 +475,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 686190465154638886, guid: 14f009e0d0e164c3cb13df5a05ba5c79, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: fffa8305adc754e7480a6755b9045881, type: 2}
     - target: {fileID: 8316536535468251608, guid: 14f009e0d0e164c3cb13df5a05ba5c79, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2
@@ -621,6 +577,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6065258866336292974, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6359363882106875951, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
       propertyPath: m_Name
       value: ReversiBoard
@@ -628,10 +588,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6359363882106875951, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 431780781}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

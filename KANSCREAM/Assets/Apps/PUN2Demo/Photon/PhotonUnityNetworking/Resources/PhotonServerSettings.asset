@@ -40,6 +40,8 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - PlaceStone
+  - TurnCheck
+  - SyncInfoList
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0
