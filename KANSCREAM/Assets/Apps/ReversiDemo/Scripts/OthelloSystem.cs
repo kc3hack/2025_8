@@ -5,7 +5,6 @@ using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using System.Linq;
-
 public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 {
     public GameObject KantoStone;//オセロ駒オブジェクト
@@ -55,7 +54,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _FieldState[3, 3] = SpriteState.KANTO;
         _FieldState[2, 3] = SpriteState.KANSAI;
 
-        turnManager =  FindObjectOfType<PunTurnManager>();
+         turnManager =  FindObjectOfType<PunTurnManager>();
         if (turnManager == null)
         {
             Debug.LogError("PunTurnManager component is missing from this GameObject");
@@ -74,78 +73,22 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
     }
 
-void Update()
-{
-    if (turnManager == null)
+    void Update()
     {
-        return;
-    }
-
-    if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
-    {
-        // プレイヤーのターンかどうかを確認
-        if ((turnManager.Turn % 2 == 1 && isKantoPlayer) || (turnManager.Turn % 2 == 0 && !isKantoPlayer))
+            if (turnManager == null)
         {
-            UpdateSelectedFieldPosition();
+            return;
         }
-    }
-}
 
-public void UpdateSelectedFieldPosition()
-{
-    var position = SelectedFieldCube.transform.position;
-
-    // 選択中のフィールドを移動
-    if (Input.GetKeyDown(KeyCode.W) && SelectedFieldCubePosY < FIELD_SIZE_Y - 3)
-    {
-        SelectedFieldCubePosY++;
-        SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z + 1);
-    }
-    else if (Input.GetKeyDown(KeyCode.S) && SelectedFieldCubePosY > -2)
-    {
-        SelectedFieldCubePosY--;
-        SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z - 1);
-    }
-    else if (Input.GetKeyDown(KeyCode.A) && SelectedFieldCubePosX > -2)
-    {
-        SelectedFieldCubePosX--;
-        SelectedFieldCube.transform.position = new Vector3(position.x - 1, position.y, position.z);
-    }
-    else if (Input.GetKeyDown(KeyCode.D) && SelectedFieldCubePosX < FIELD_SIZE_X - 3)
-    {
-        SelectedFieldCubePosX++;
-        SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
-    }
-
-    turnCheck = false;
-
-    // エンターキーで駒を置く
-    if (Input.GetKeyDown(KeyCode.Return))
-    {
-        // 全方向に対してコマを置けるかどうかの判定
-        for (int i = 0; i < 8; i++)
+        if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
         {
-            if (TurnCheck(i))
+            // プレイヤーのターンかどうかを確認
+            if ((turnManager.Turn % 2 == 1 && isKantoPlayer) || (turnManager.Turn % 2 == 0 && !isKantoPlayer))
             {
-                turnCheck = true;
+                UpdateSelectedFieldPosition();
             }
         }
-
-        if (turnCheck && _FieldState[SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2] == SpriteState.NONE)
-        {
-            var playerTurn = isKantoPlayer ? SpriteState.KANTO : SpriteState.KANSAI;
-            Vector3 move = new Vector3(SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2, (int)playerTurn);
-
-            // _InfoList を int[] に変換
-            //int[] infoArray = _InfoList.SelectMany(info => new int[] { info.Item1, info.Item2 }).ToArray();
-
-            turnManager.SendMove(move, false);
-            //photonView.RPC("PlaceStone", RpcTarget.All, move, infoArray);
-            turnManager.SendMove(null, true);
-            turnManager.BeginTurn();
-        }
     }
-}
 
     //盤の初期設定
     private void Awake()
@@ -170,9 +113,80 @@ public void UpdateSelectedFieldPosition()
         }
     }
 
+    private void UpdateSelectedFieldPosition()
+    {
+        var position = SelectedFieldCube.transform.position;
 
+        //選択中のフィールドを移動
+        if (Input.GetKeyDown(KeyCode.W) && SelectedFieldCubePosY < FIELD_SIZE_Y - 3)
+        {
+            SelectedFieldCubePosY++;
+            SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z + 1);
+        }
+        else if (Input.GetKeyDown(KeyCode.S) && SelectedFieldCubePosY > -2)
+        {
+            SelectedFieldCubePosY--;
+            SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z - 1);
+        }
+        else if (Input.GetKeyDown(KeyCode.A) && SelectedFieldCubePosX > -2)
+        {
+            SelectedFieldCubePosX--;
+            SelectedFieldCube.transform.position = new Vector3(position.x - 1, position.y, position.z);
+        }
+        else if (Input.GetKeyDown(KeyCode.D) && SelectedFieldCubePosX < FIELD_SIZE_X - 3)
+        {
+            SelectedFieldCubePosX++;
+            SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
+        }
 
-[PunRPC]
+        //デバッグ用
+        if(Input.GetKeyDown(KeyCode.Space)){
+            Debug.Log(_PlayerTurn + "のターン");
+        }
+
+        //スペースキーで駒を置く
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            turnCheck = false;
+            //全方向に対してコマを置けるかどうかの判定
+            for (int i = 0; i < 8; i++)
+            {
+                if (TurnCheck(i))
+                {
+                    turnCheck = true;
+                }
+            }
+
+            if(_KantoCheckFlag){
+                Debug.Log("関東は置けるマスがある");
+            }else{
+                Debug.Log("関東は置けるマスがない");
+            }
+            if(_KansaiCheckFlag){
+                Debug.Log("関西は置けるマスがある");
+            }else{
+                Debug.Log("関西は置けるマスがない");
+            }
+
+            // Debug.Log("115:turnCheck: " + turnCheck);
+
+            if (turnCheck && _FieldState[SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2] == SpriteState.NONE)
+            {
+                var playerTurn = isKantoPlayer ? SpriteState.KANTO : SpriteState.KANSAI;
+                Vector3 move = new Vector3(SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2, (int)playerTurn);
+
+                // _InfoList を int[] に変換
+                //int[] infoArray = _InfoList.SelectMany(info => new int[] { info.Item1, info.Item2 }).ToArray();
+
+                turnManager.SendMove(move, false);
+                //photonView.RPC("PlaceStone", RpcTarget.All, move, infoArray);
+                turnManager.SendMove(null, true);
+                turnManager.BeginTurn();
+            }
+        }
+    }
+
+    [PunRPC]
 private void PlaceStone(Vector3 move, int[] infoArray)
 {
     int x = (int)move.x;
@@ -231,8 +245,8 @@ private void PlaceStone(Vector3 move, int[] infoArray)
             }
         }
 
-        Debug.Log("関東の石の数: " + kantoStoneNum);
-        Debug.Log("関西の石の数: " + kansaiStoneNum);
+        // Debug.Log("関東の石の数: " + kantoStoneNum);
+        // Debug.Log("関西の石の数: " + kansaiStoneNum);
 
         if (kantoStoneNum + kansaiStoneNum == FIELD_SIZE_X * FIELD_SIZE_Y || (!_KantoCheckFlag && !_KansaiCheckFlag))
         {
@@ -251,232 +265,280 @@ private void PlaceStone(Vector3 move, int[] infoArray)
         }
     }
 
-/// <summary>
-/// 置ける場所があるかどうかを判定
-/// </summary>
-private void CheckCanSettingStone()
-{
-    _KantoCheckFlag = false;
-    _KansaiCheckFlag = false;
-
-    for (int y = 0; y < FIELD_SIZE_Y; y++)
+    /// <summary>
+    /// 置ける場所があるかどうかを判定
+    /// </summary>
+    private void CheckCanSettingStone()
     {
-        for (int x = 0; x < FIELD_SIZE_X; x++)
+        for (int y = 0; y < FIELD_SIZE_Y; y++)
         {
-            if (_FieldState[x, y] == SpriteState.NONE)
+            for (int x = 0; x < FIELD_SIZE_X; x++)
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    // 現在のプレイヤーに基づいて判定
-                    if (TurnCheck(i, x, y))
+                    if (TurnCheck(i, x, y) && _FieldState[x, y] == SpriteState.NONE)
                     {
                         if (_PlayerTurn == SpriteState.KANTO)
                         {
                             _KantoCheckFlag = true;
+                            turnCheck = true;
+                            if (!_KansaiCheckFlag)
+                            {
+                                _KansaiCheckFlag = true;
+                            }
+                            break;
                         }
                         else if (_PlayerTurn == SpriteState.KANSAI)
                         {
                             _KansaiCheckFlag = true;
+                            turnCheck = true;
+                            if (!_KantoCheckFlag)
+                            {
+                                _KantoCheckFlag = true;
+                            }
+                            break;
                         }
                     }
                 }
             }
+            //一箇所も置ける場所がない場合
+            if (!turnCheck)
+            {
+                if (_PlayerTurn == SpriteState.KANTO)
+                {
+                    _KantoCheckFlag = false;
+                }
+                else if (_PlayerTurn == SpriteState.KANSAI)
+                {
+                    _KansaiCheckFlag = false;
+                }
+                _PlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+            }
+            CalcTotalStoneNum();
         }
     }
-
-    // どちらも置けない場合、ターンを変更
-    if (!_KantoCheckFlag && !_KansaiCheckFlag)
-    {
-        _PlayerTurn = (_PlayerTurn == SpriteState.KANTO) ? SpriteState.KANSAI : SpriteState.KANTO;
-    }
-
-    CalcTotalStoneNum();
-}
-
-
 
     /// <summary>
     /// コマを置けるかどうかの判定
     /// </summary>
     /// <returns></returns>
-   private bool TurnCheck(int direction)
-{
-    var posX = SelectedFieldCubePosX + 2;//選択中のフィールドの移動範囲調整
-    var posY = SelectedFieldCubePosY + 2;//選択中のフィールドの移動範囲調整
-
-    var opponentPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
-
-    var opponentInfoList = new List<(int, int)>();
-    var localTurnCheck = false;
-
-    while (0 <= posX && posX < FIELD_SIZE_X && 0 <= posY && posY < FIELD_SIZE_Y)
+    private bool TurnCheck(int direction)
     {
-        switch (direction)
-        {
-            case 0://左
-                if (posX == 0) { return localTurnCheck; }
-                posX--;
-                break;
-            case 1://右
-                if (posX == FIELD_SIZE_X - 1) { return localTurnCheck; }
-                posX++;
-                break;
-            case 2://下
-                if (posY == 0) { return localTurnCheck; }
-                posY--;
-                break;
-            case 3://上
-                if (posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-                posY++;
-                break;
-            case 4://右上
-                if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-                posX++;
-                posY++;
-                break;
-            case 5://左下
-                if (posX == 0 || posY == 0) { return localTurnCheck; }
-                posX--;
-                posY--;
-                break;
-            case 6://左上
-                if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-                posX--;
-                posY++;
-                break;
-            case 7://右下
-                if (posX == FIELD_SIZE_X - 1 || posY == 0) { return localTurnCheck; }
-                posX++;
-                posY--;
-                break;
-        }
+        var posX = SelectedFieldCubePosX + 2;//選択中のフィールドの移動範囲調整
+        var posY = SelectedFieldCubePosY + 2;//選択中のフィールドの移動範囲調整
 
-        //左隣に相手のコマがあるときその情報をリストに追加
-        if (_FieldState[posX, posY] == opponentPlayerTurn)
-        {
-            opponentInfoList.Add((posX, posY));
-        }
+        var opponentPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
 
-        //1回目のループで左のコマが自分のコマまたは空の場合は終了
-        if (opponentInfoList.Count == 0 && (_FieldState[posX, posY] == _PlayerTurn || _FieldState[posX, posY] == SpriteState.NONE))
-        {
-            localTurnCheck = false;
-            break;
-        }
+        var opponentInfoList = new List<(int, int)>();
+        var localTurnCheck = false;
+        int i = 0;
 
-        //2つ以上隣のコマが自分のコマの場合は置ける
-        if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn))
+        while (0 <= posX && posX <= FIELD_SIZE_X && 0 <= posY && posY <= FIELD_SIZE_Y)
         {
-            localTurnCheck = true;
-            foreach (var info in opponentInfoList)
+            i++;
+            switch (direction)
             {
-                _InfoList.Add(info);
+                case 0://左
+                    if (posX == 0) { return localTurnCheck; }
+                    posX--;
+                    // Debug.Log(i+"番目の左のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 1://右
+                    if (posX == FIELD_SIZE_X - 1) { return localTurnCheck; }
+                    posX++;
+                    // Debug.Log(i+"番目の右のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 2://下
+                    if (posY == 0) { return localTurnCheck; }
+                    posY--;
+                    // Debug.Log(i+"番目の下のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 3://上
+                    if (posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posY++;
+                    // Debug.Log(i+"番目の上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 4://右上
+                    if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posX++;
+                    posY++;
+                    // Debug.Log(i+"番目の右上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 5://左下
+                    if (posX == 0 || posY == 0) { return localTurnCheck; }
+                    posX--;
+                    posY--;
+                    // Debug.Log(i+"番目の左下のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 6://左上
+                    if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posX--;
+                    posY++;
+                    // Debug.Log(i+"番目の左上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 7://右下
+                    if (posX == FIELD_SIZE_X - 1 || posY == 0) { return localTurnCheck; }
+                    posX++;
+                    posY--;
+                    // Debug.Log(i+"番目の右下のコマ: " + _FieldState[posX, posY]);
+                    break;
             }
-            break;
+
+            //指定した方向に相手のコマがあるときその情報をリストに追加
+            if (_FieldState[posX, posY] == opponentPlayerTurn)
+            {
+                opponentInfoList.Add((posX, posY));
+            }
+
+            //1回目のループで左のコマが自分のコマまたは空の場合は終了
+            if (opponentInfoList.Count == 0 && (_FieldState[posX, posY] == _PlayerTurn || _FieldState[posX, posY] == SpriteState.NONE))
+            {
+                localTurnCheck = false;
+                break;
+            }
+
+            //2つ以上隣のコマが自分のコマの場合は置ける
+            if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn))
+            {
+                localTurnCheck = true;
+                foreach (var info in opponentInfoList)
+                {
+                    _InfoList.Add(info);
+                }
+                break;
+            }
         }
+        // Debug.Log("242:turnCheck: " + localTurnCheck);
+        return localTurnCheck;
     }
-    return localTurnCheck;
-}
 
-
-/// <summary>
-/// コマを置けるかどうかの判定
-/// </summary>
-/// <returns></returns>
-private bool TurnCheck(int direction, int pointX, int pointY)
-{
-    int posX = pointX;
-    int posY = pointY;
-
-    // 現在のプレイヤーの反対のプレイヤーを取得
-    var opponentPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
-
-    var opponentInfoList = new List<(int, int)>();
-    bool localTurnCheck = false;
-
-    // フィールドの範囲内かチェック
-    if (posX < 0 || posX >= FIELD_SIZE_X || posY < 0 || posY >= FIELD_SIZE_Y) 
+    /// <summary>
+    /// コマを置けるかどうかの判定
+    /// </summary>
+    /// <returns></returns>
+    private bool TurnCheck(int direction, int pointX, int pointY)
     {
-        return false;
+        var posX = pointX;//選択中のフィールドの移動範囲調整
+        var posY = pointY;//選択中のフィールドの移動範囲調整
+
+        var opponentPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+
+        var opponentInfoList = new List<(int, int)>();
+        var localTurnCheck = false;
+        int i = 0;
+
+        while (0 <= posX && posX <= FIELD_SIZE_X && 0 <= posY && posY <= FIELD_SIZE_Y)
+        {
+            i++;
+            switch (direction)
+            {
+                case 0://左
+                    if (posX == 0) { return localTurnCheck; }
+                    posX--;
+                    // Debug.Log(i+"番目の左のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 1://右
+                    if (posX == FIELD_SIZE_X - 1) { return localTurnCheck; }
+                    posX++;
+                    // Debug.Log(i+"番目の右のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 2://下
+                    if (posY == 0) { return localTurnCheck; }
+                    posY--;
+                    // Debug.Log(i+"番目の下のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 3://上
+                    if (posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posY++;
+                    // Debug.Log(i+"番目の上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 4://右上
+                    if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posX++;
+                    posY++;
+                    // Debug.Log(i+"番目の右上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 5://左下
+                    if (posX == 0 || posY == 0) { return localTurnCheck; }
+                    posX--;
+                    posY--;
+                    // Debug.Log(i+"番目の左下のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 6://左上
+                    if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posX--;
+                    posY++;
+                    // Debug.Log(i+"番目の左上のコマ: " + _FieldState[posX, posY]);
+                    break;
+                case 7://右下
+                    if (posX == FIELD_SIZE_X - 1 || posY == 0) { return localTurnCheck; }
+                    posX++;
+                    posY--;
+                    // Debug.Log(i+"番目の右下のコマ: " + _FieldState[posX, posY]);
+                    break;
+            }
+
+            //左隣に相手のコマがあるときその情報をリストに追加
+            if (_FieldState[posX, posY] == opponentPlayerTurn)
+            {
+                opponentInfoList.Add((posX, posY));
+            }
+
+            //1回目のループで左のコマが自分のコマまたは空の場合は終了
+            if (opponentInfoList.Count == 0 && (_FieldState[posX, posY] == _PlayerTurn || _FieldState[posX, posY] == SpriteState.NONE))
+            {
+                localTurnCheck = false;
+                break;
+            }
+
+            //2つ以上隣のコマが自分のコマの場合は置ける
+            if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn))
+            {
+                localTurnCheck = true;
+                foreach (var info in opponentInfoList)
+                {
+                    _InfoList.Add(info);
+                }
+                break;
+            }
+        }
+        // Debug.Log("242:turnCheck: " + localTurnCheck);
+        return localTurnCheck;
     }
-
-    while (true)
-    {
-        switch (direction)
-        {
-            case 0: posX--; break; // 左
-            case 1: posX++; break; // 右
-            case 2: posY--; break; // 下
-            case 3: posY++; break; // 上
-            case 4: posX++; posY++; break; // 右上
-            case 5: posX--; posY--; break; // 左下
-            case 6: posX--; posY++; break; // 左上
-            case 7: posX++; posY--; break; // 右下
-        }
-
-        // 範囲外なら終了
-        if (posX < 0 || posX >= FIELD_SIZE_X || posY < 0 || posY >= FIELD_SIZE_Y)
-        {
-            return false;
-        }
-
-        // 相手のコマならリストに追加
-        if (_FieldState[posX, posY] == opponentPlayerTurn)
-        {
-            opponentInfoList.Add((posX, posY));
-            continue;
-        }
-
-        // もし相手のコマが挟まれていて、現在のプレイヤーのコマにぶつかったらOK
-        if (opponentInfoList.Count > 0 && _FieldState[posX, posY] == _PlayerTurn)
-        {
-            localTurnCheck = true;
-            _InfoList.AddRange(opponentInfoList);
-            break;
-        }
-
-        // それ以外（空マスまたは自分のコマが続いた場合）は無効
-        break;
-    }
-
-    return localTurnCheck;
-}
-
-
 
     public void OnTurnBegins(int turn)
-{
-    Debug.Log("Turn begins: " + turn);
-}
+    {
+        Debug.Log("Turn begins: " + turn);
+    }
 
-public void OnTurnCompleted(int turn)
-{
-    Debug.Log("Turn completed: " + turn);
-}
-public void OnPlayerMove(Player player, int turn, object move)
-{
-    Debug.Log("Player move: " + player.NickName + " Turn: " + turn);
+    public void OnTurnCompleted(int turn)
+    {
+        Debug.Log("Turn completed: " + turn);
+    }
+    public void OnPlayerMove(Player player, int turn, object move)
+    {
+        Debug.Log("Player move: " + player.NickName + " Turn: " + turn);
 
-    // move オブジェクトを Vector3 にキャスト
-    Vector3 movePosition = (Vector3)move;
-    int posX = (int)movePosition.x;
-    int posY = (int)movePosition.y;
-    SpriteState playerTurn = (SpriteState)(int)movePosition.z;
+        // move オブジェクトを Vector3 にキャスト
+        Vector3 movePosition = (Vector3)move;
+        int posX = (int)movePosition.x;
+        int posY = (int)movePosition.y;
+        SpriteState playerTurn = (SpriteState)(int)movePosition.z;
 
-    // _InfoList を int[] に変換
-    int[] infoArray = _InfoList.SelectMany(info => new int[] { info.Item1, info.Item2 }).ToArray();
+        // _InfoList を int[] に変換
+        int[] infoArray = _InfoList.SelectMany(info => new int[] { info.Item1, info.Item2 }).ToArray();
 
-    // PlaceStone メソッドを呼び出して駒を置く
-    photonView.RPC("PlaceStone", RpcTarget.All, movePosition, infoArray);
-}
+        // PlaceStone メソッドを呼び出して駒を置く
+        photonView.RPC("PlaceStone", RpcTarget.All, movePosition, infoArray);
+    }
 
-public void OnPlayerFinished(Player player, int turn, object move)
-{
-    Debug.Log("Player finished: " + player.NickName + " Turn: " + turn);
-}
+    public void OnPlayerFinished(Player player, int turn, object move)
+    {
+        Debug.Log("Player finished: " + player.NickName + " Turn: " + turn);
+    }
 
-public void OnTurnTimeEnds(int turn)
-{
-    Debug.Log("Turn time ends: " + turn);
-}
+    public void OnTurnTimeEnds(int turn)
+    {
+        Debug.Log("Turn time ends: " + turn);
+    }
 }
