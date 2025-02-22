@@ -5,15 +5,19 @@ using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using System.Linq;
+using UnityEngine.UI;
 public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 {
     public GameObject KantoStone;//オセロ駒オブジェクト
     public GameObject KansaiStone;//オセロ駒オブジェクト
     public GameObject SelectedFieldCube;//選択中のフィールドを示すオブジェクト
+    public GameObject KansaiButtonPrefab; // 関西プレイヤー用のボタンプレハブ
+    private GameObject kansaiButtonInstance; // 関西プレイヤー用のボタンインスタンス
     const int FIELD_SIZE_X = 6;//盤のサイズ
     const int FIELD_SIZE_Y = 6;//盤のサイズ
     private int SelectedFieldCubePosX;//指定しているマスのX座標
     private int SelectedFieldCubePosY;//指定しているマスのY座標
+    private bool isPushButton = false;
 
     private bool _KantoCheckFlag = true;
     private bool _KansaiCheckFlag = true;
@@ -49,10 +53,20 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _KantoStoneObj[3, 3].SetState(SpriteState.KANTO);
         _KansaiStoneObj[2, 3].SetState(SpriteState.KANSAI);
 
+        _KantoStoneObj[0,0].SetState(SpriteState.KANTO);
+        _KantoStoneObj[5,0].SetState(SpriteState.KANTO);
+        _KantoStoneObj[5,5].SetState(SpriteState.KANTO);
+        _KantoStoneObj[0,5].SetState(SpriteState.KANTO);
+
         _FieldState[2, 2] = SpriteState.KANTO;
         _FieldState[3, 2] = SpriteState.KANSAI;
         _FieldState[3, 3] = SpriteState.KANTO;
         _FieldState[2, 3] = SpriteState.KANSAI;
+
+        _FieldState[0, 0] = SpriteState.KANTO;
+        _FieldState[5, 0] = SpriteState.KANTO;
+        _FieldState[5, 5] = SpriteState.KANTO;
+        _FieldState[0, 5] = SpriteState.KANTO;
 
          turnManager =  FindObjectOfType<PunTurnManager>();
         if (turnManager == null)
@@ -70,7 +84,24 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         else
         {
             isKantoPlayer = false; // 2人目のプレイヤーはKansaiプレイヤー
+            CreateKansaiButton(); // 関西プレイヤー用のボタンを生成
         }
+    }
+
+    void CreateKansaiButton()
+    {
+        if (KansaiButtonPrefab != null)
+        {
+            kansaiButtonInstance = Instantiate(KansaiButtonPrefab, GameObject.Find("Canvas").transform);
+            kansaiButtonInstance.GetComponent<Button>().onClick.AddListener(OnKansaiButtonClick);
+        }
+    }
+
+    void OnKansaiButtonClick()
+    {
+        // ボタンがクリックされたときの処理
+        Debug.Log("Kansai button clicked");
+        KanScream();
     }
 
     void Update()
@@ -116,6 +147,16 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     private void UpdateSelectedFieldPosition()
     {
         var position = SelectedFieldCube.transform.position;
+
+        if (!_KantoCheckFlag) {
+            turnManager.SendMove(null, true);
+            turnManager.BeginTurn();
+        }
+
+        if(!_KansaiCheckFlag) {
+            turnManager.SendMove(null, true);
+            turnManager.BeginTurn();
+        }
 
         //選択中のフィールドを移動
         if (Input.GetKeyDown(KeyCode.W) && SelectedFieldCubePosY < FIELD_SIZE_Y - 3)
@@ -265,6 +306,85 @@ private void PlaceStone(Vector3 move, int[] infoArray)
         }
     }
 
+public void KanScream()
+{
+    if (isPushButton) return;
+    isPushButton = true;
+
+    // Kantoのコマの位置をリストに収集
+    List<(int, int)> kantoPositions = new List<(int, int)>();
+    for (int y = 0; y < FIELD_SIZE_Y; y++)
+    {
+        for (int x = 0; x < FIELD_SIZE_X; x++)
+        {
+            if (_FieldState[x, y] == SpriteState.KANTO)
+            {
+                kantoPositions.Add((x, y));
+            }
+        }
+    }
+
+    // Kantoのコマが2つ以上ある場合
+    if (kantoPositions.Count >= 2)
+    {
+        // ランダムに2つの位置を選択
+        System.Random rand = new System.Random();
+        var selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(2).ToList();
+
+        // ひっくり返す位置を収集
+        List<int> infoList = new List<int>();
+        foreach (var pos in selectedPositions)
+        {
+            int x = pos.Item1;
+            int y = pos.Item2;
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (TurnCheck(i, x, y))
+                {
+                    foreach (var info in _InfoList)
+                    {
+                        infoList.Add(info.Item1);
+                        infoList.Add(info.Item2);
+                    }
+                    _InfoList.Clear();
+                }
+            }
+        }
+
+        // 変更を同期
+        photonView.RPC("KanScreamRPC", RpcTarget.All, selectedPositions[0].Item1, selectedPositions[0].Item2, selectedPositions[1].Item1, selectedPositions[1].Item2, infoList.ToArray());
+    }
+}
+
+[PunRPC]
+private void KanScreamRPC(int x1, int y1, int x2, int y2, int[] infoArray)
+{
+    List<(int, int)> positions = new List<(int, int)> { (x1, y1), (x2, y2) };
+
+    foreach (var pos in positions)
+    {
+        int x = pos.Item1;
+        int y = pos.Item2;
+
+        // Kansaiコマに置き換え
+        _FieldState[x, y] = SpriteState.KANSAI;
+        _KantoStoneObj[x, y].SetState(SpriteState.NONE);
+        _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
+    }
+
+    // ひっくり返す処理
+    for (int i = 0; i < infoArray.Length; i += 2)
+    {
+        int posX = infoArray[i];
+        int posY = infoArray[i + 1];
+        _FieldState[posX, posY] = SpriteState.KANSAI;
+        _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
+        _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
+    }
+}
+
+
     /// <summary>
     /// 置ける場所があるかどうかを判定
     /// </summary>
@@ -392,6 +512,13 @@ private void PlaceStone(Vector3 move, int[] infoArray)
 
             //1回目のループで左のコマが自分のコマまたは空の場合は終了
             if (opponentInfoList.Count == 0 && (_FieldState[posX, posY] == _PlayerTurn || _FieldState[posX, posY] == SpriteState.NONE))
+            {
+                localTurnCheck = false;
+                break;
+            }
+
+            //2つ以上隣のコマが空白の場合メソッドを終了
+            if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == SpriteState.NONE))
             {
                 localTurnCheck = false;
                 break;
