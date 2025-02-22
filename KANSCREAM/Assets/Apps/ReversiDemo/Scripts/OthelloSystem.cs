@@ -39,6 +39,14 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     private PunTurnManager turnManager;
     private bool isKantoPlayer;
 
+    public GameObject VictoryPanel; // 勝利画面のパネル
+    public GameObject DefeatPanel; // 敗北画面のパネル
+
+    public GameObject CurrentPlayerKantoStone; // 現在のプレイヤーの関東コマを表示するオブジェクト
+    public GameObject CurrentPlayerKansaiStone; // 現在のプレイヤーの関西コマを表示するオブジェクト
+
+    private SpriteState CurrentPlayerTurn = SpriteState.KANSAI; // 現在のプレイヤーのターン
+
     void Start()
     {
         //選択中のフィールドを示すオブジェクトの初期位置を設定
@@ -53,20 +61,20 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _KantoStoneObj[2, 3].SetState(SpriteState.KANTO);
         _KansaiStoneObj[3, 3].SetState(SpriteState.KANSAI);
 
-        // _KantoStoneObj[0,0].SetState(SpriteState.KANTO);
-        // _KantoStoneObj[5,0].SetState(SpriteState.KANTO);
-        // _KantoStoneObj[5,5].SetState(SpriteState.KANTO);
-        // _KantoStoneObj[0,5].SetState(SpriteState.KANTO);
+        _KantoStoneObj[0,0].SetState(SpriteState.KANTO);
+        _KantoStoneObj[5,0].SetState(SpriteState.KANTO);
+        _KantoStoneObj[5,5].SetState(SpriteState.KANTO);
+        _KantoStoneObj[0,5].SetState(SpriteState.KANTO);
 
         _FieldState[3, 2] = SpriteState.KANTO;
         _FieldState[2, 2] = SpriteState.KANSAI;
         _FieldState[2, 3] = SpriteState.KANTO;
         _FieldState[3, 3] = SpriteState.KANSAI;
 
-        // _FieldState[0, 0] = SpriteState.KANTO;
-        // _FieldState[5, 0] = SpriteState.KANTO;
-        // _FieldState[5, 5] = SpriteState.KANTO;
-        // _FieldState[0, 5] = SpriteState.KANTO;
+        _FieldState[0, 0] = SpriteState.KANTO;
+        _FieldState[5, 0] = SpriteState.KANTO;
+        _FieldState[5, 5] = SpriteState.KANTO;
+        _FieldState[0, 5] = SpriteState.KANTO;
 
          turnManager =  FindObjectOfType<PunTurnManager>();
         if (turnManager == null)
@@ -119,6 +127,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 UpdateSelectedFieldPosition();
             }
         }
+
+        //photonView.RPC("UpdateCurrentPlayerStone", RpcTarget.All);
     }
 
     //盤の初期設定
@@ -143,6 +153,21 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             }
         }
     }
+
+    [PunRPC]
+    private void UpdateCurrentPlayerStone()
+{
+    if (CurrentPlayerTurn == SpriteState.KANTO)
+    {
+        CurrentPlayerKantoStone.SetActive(true);
+        CurrentPlayerKansaiStone.SetActive(false);
+    }
+    else
+    {
+        CurrentPlayerKantoStone.SetActive(false);
+        CurrentPlayerKansaiStone.SetActive(true);
+    }
+}
 
     private void UpdateSelectedFieldPosition()
     {
@@ -219,13 +244,17 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 // _InfoList を int[] に変換
                 //int[] infoArray = _InfoList.SelectMany(info => new int[] { info.Item1, info.Item2 }).ToArray();
 
+                //CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
                 turnManager.SendMove(move, false);
                 //photonView.RPC("PlaceStone", RpcTarget.All, move, infoArray);
                 turnManager.SendMove(null, true);
                 turnManager.BeginTurn();
 
+                //photonView.RPC("UpdateCurrentPlayerStone", RpcTarget.All); // ターンが切り替わったタイミングでUIを更新
+
                 if(!FieldStateCheck(_PlayerTurn))
                 {
+                    CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
                     turnManager.SendMove(null, true);
                     turnManager.BeginTurn();
 
@@ -233,6 +262,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                     var nextPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
                     if(!FieldStateCheck(nextPlayerTurn))
                     {
+                        CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
                         // 次のプレイヤーも置けない場合はターンを飛ばす
                         turnManager.SendMove(null, true);
                         turnManager.BeginTurn();
@@ -304,43 +334,45 @@ private bool FieldStateCheck(SpriteState playerTurn)
 }
 
     private void CalcTotalStoneNum()
+{
+    var kantoStoneNum = 0;
+    var kansaiStoneNum = 0;
+    for (int y = 0; y < FIELD_SIZE_Y; y++)
     {
-        var kantoStoneNum = 0;
-        var kansaiStoneNum = 0;
-        for (int y = 0; y < FIELD_SIZE_Y; y++)
+        for (int x = 0; x < FIELD_SIZE_X; x++)
         {
-            for (int x = 0; x < FIELD_SIZE_X; x++)
+            if (_FieldState[x, y] == SpriteState.KANTO)
             {
-                if (_FieldState[x, y] == SpriteState.KANTO)
-                {
-                    kantoStoneNum++;
-                }
-                else if (_FieldState[x, y] == SpriteState.KANSAI)
-                {
-                    kansaiStoneNum++;
-                }
+                kantoStoneNum++;
             }
-        }
-
-        // Debug.Log("関東の石の数: " + kantoStoneNum);
-        // Debug.Log("関西の石の数: " + kansaiStoneNum);
-
-        if (kantoStoneNum + kansaiStoneNum == FIELD_SIZE_X * FIELD_SIZE_Y || (!_KantoCheckFlag && !_KansaiCheckFlag))
-        {
-            if (kantoStoneNum > kansaiStoneNum)
+            else if (_FieldState[x, y] == SpriteState.KANSAI)
             {
-                Debug.Log("関東の勝ち");
-            }
-            else if (kantoStoneNum < kansaiStoneNum)
-            {
-                Debug.Log("関西の勝ち");
-            }
-            else
-            {
-                Debug.Log("引き分け");
+                kansaiStoneNum++;
             }
         }
     }
+
+    // Debug.Log("関東の石の数: " + kantoStoneNum);
+    // Debug.Log("関西の石の数: " + kansaiStoneNum);
+
+    if (kantoStoneNum + kansaiStoneNum == FIELD_SIZE_X * FIELD_SIZE_Y || (!_KantoCheckFlag && !_KansaiCheckFlag))
+    {
+        if (kantoStoneNum > kansaiStoneNum)
+        {
+            Debug.Log("関東の勝ち");
+            ShowResultPanel(true);
+        }
+        else if (kantoStoneNum < kansaiStoneNum)
+        {
+            Debug.Log("関西の勝ち");
+            ShowResultPanel(false);
+        }
+        else
+        {
+            Debug.Log("引き分け");
+        }
+    }
+}
 
 public void KanScream()
 {
@@ -757,9 +789,27 @@ private void KanScreamRPC(int x1, int y1, int x2, int y2, int[] infoArray)
     return localTurnCheck;
 }
 
-    public void OnTurnBegins(int turn)
+    private void ShowResultPanel(bool isKantoWinner)
+    {
+        if (isKantoPlayer && isKantoWinner)
+        {
+            VictoryPanel.SetActive(true);
+        }
+        else if (!isKantoPlayer && !isKantoWinner)
+        {
+            VictoryPanel.SetActive(true);
+        }
+        else
+        {
+            DefeatPanel.SetActive(true);
+        }
+    }
+
+   public void OnTurnBegins(int turn)
     {
         Debug.Log("Turn begins: " + turn);
+        photonView.RPC("UpdateCurrentPlayerStone", RpcTarget.All); // ターンが始まったタイミングでUIを更新
+         CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
     }
 
     public void OnTurnCompleted(int turn)
