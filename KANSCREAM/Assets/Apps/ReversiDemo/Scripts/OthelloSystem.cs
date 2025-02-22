@@ -514,16 +514,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             int posY = infoArray[i + 1];
             // Kansaiコマに置き換え
             _FieldState[posY, posY] = SpriteState.KANSAI;
-           // await _KantoStoneObj[posX, posY].transform.DOLocalMoveY(0.5f, 0.2f).SetEase(Ease.OutBounce);
-            // 0.5秒待機
-            //await UniTask.Delay(500);
-            //await _KantoStoneObj[posX, posY].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
             _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
             _KansaiStoneObj[posX, posY].transform.position = new Vector3(_KansaiStoneObj[posX, posY].transform.position.x, 3f, _KansaiStoneObj[posX, posY].transform.position.z);
             _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
-            //await _KansaiStoneObj[posX, posY].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
-            //await UniTask.Delay(700);
-            //await _KansaiStoneObj[posX, posY].transform.DOLocalMoveY(0.119f, 0.2f).SetEase(Ease.OutBounce);
         }
         _gameBGM.UnPause();
     }
