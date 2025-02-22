@@ -24,7 +24,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     private bool _KantoCheckFlag = true;
     private bool _KansaiCheckFlag = true;
-    private SpriteState _PlayerTurn = SpriteState.KANTO;//プレイヤーのターン(関東先手)
+    private SpriteState _PlayerTurn = SpriteState.KANSAI;//プレイヤーのターン(関東先手)
     private bool turnCheck = false;
 
     private List<(int, int)> _InfoList = new List<(int, int)>();//置ける場所のリスト
@@ -203,7 +203,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [PunRPC]
     private void UpdateCurrentPlayerStone()
     {
-        if (CurrentPlayerTurn == SpriteState.KANTO)
+        if (_PlayerTurn == SpriteState.KANTO)
         {
             CurrentPlayerKantoStone.SetActive(true);
             CurrentPlayerKansaiStone.SetActive(false);
@@ -309,23 +309,29 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 turnManager.SendMove(null, true);
                 turnManager.BeginTurn();
 
-                if (!FieldStateCheck(_PlayerTurn))
-                {
-                    //CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
-                    turnManager.SendMove(null, true);
-                    turnManager.BeginTurn();
+                // if (!FieldStateCheck(_PlayerTurn))
+                // {
+                //     //CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+                //     turnManager.SendMove(null, true);
+                //     turnManager.BeginTurn();
 
-                    // 次のプレイヤーのターンをチェック
-                    var nextPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
-                    if (!FieldStateCheck(nextPlayerTurn))
-                    {
-                        //CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
-                        // 次のプレイヤーも置けない場合はターンを飛ばす
-                        turnManager.SendMove(null, true);
-                        turnManager.BeginTurn();
-                    }
-                }
+                //     // 次のプレイヤーのターンをチェック
+                //     var nextPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+                //     if (!FieldStateCheck(nextPlayerTurn))
+                //     {
+                //         //CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+                //         // 次のプレイヤーも置けない場合はターンを飛ばす
+                //         turnManager.SendMove(null, true);
+                //         turnManager.BeginTurn();
+                //     }
+                // }
             }
+        }
+
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            turnManager.SendMove(null, true);
+            turnManager.BeginTurn();
         }
     }
 
@@ -515,7 +521,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             // Kansaiコマに置き換え
             _FieldState[posY, posY] = SpriteState.KANSAI;
             _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
-            _KansaiStoneObj[posX, posY].transform.position = new Vector3(_KansaiStoneObj[posX, posY].transform.position.x, 3f, _KansaiStoneObj[posX, posY].transform.position.z);
+           // _KansaiStoneObj[posX, posY].transform.position = new Vector3(_KansaiStoneObj[posX, posY].transform.position.x, 3f, _KansaiStoneObj[posX, posY].transform.position.z);
             _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
         }
         _gameBGM.UnPause();
@@ -569,7 +575,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 {
                     _KansaiCheckFlag = false;
                 }
-                _PlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+                //_PlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
             }
             CalcTotalStoneNum();
         }
@@ -885,6 +891,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         Debug.Log("Turn begins: " + turn);
         photonView.RPC("UpdateCurrentPlayerStone", RpcTarget.All); // ターンが始まったタイミングでUIを更新
         CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+        _PlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
     }
 
     public void OnTurnCompleted(int turn)
