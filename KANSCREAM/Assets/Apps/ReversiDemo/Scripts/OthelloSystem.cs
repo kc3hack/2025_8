@@ -209,17 +209,17 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     {
         var position = SelectedFieldCube.transform.position;
 
-        if (!_KantoCheckFlag)
-        {
-            turnManager.SendMove(null, true);
-            turnManager.BeginTurn();
-        }
+        // if (!_KantoCheckFlag)
+        // {
+        //     turnManager.SendMove(null, true);
+        //     turnManager.BeginTurn();
+        // }
 
-        if (!_KansaiCheckFlag)
-        {
-            turnManager.SendMove(null, true);
-            turnManager.BeginTurn();
-        }
+        // if (!_KansaiCheckFlag)
+        // {
+        //     turnManager.SendMove(null, true);
+        //     turnManager.BeginTurn();
+        // }
 
         //選択中のフィールドを移動
         if (Input.GetKeyDown(KeyCode.W) && SelectedFieldCubePosY < FIELD_SIZE_Y - 3)
