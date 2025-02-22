@@ -6,6 +6,9 @@ using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using System.Linq;
 using UnityEngine.UI;
+using System.Threading.Tasks;
+using DG.Tweening;
+using Cysharp.Threading.Tasks;
 public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 {
     public GameObject KantoStone;//オセロ駒オブジェクト
@@ -38,6 +41,12 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     private PunTurnManager turnManager;
     private bool isKantoPlayer;
+    private float duration = 3.0f;
+    [SerializeField] private AudioSource _gameBGM;
+    [SerializeField] private AudioSource _winBGM;
+    [SerializeField] private AudioSource _loseBGM;
+    [SerializeField] private AudioSource _betraySE;
+    [SerializeField] private AudioSource _shineSE;
 
     public GameObject VictoryPanel; // 勝利画面のパネル
     public GameObject DefeatPanel; // 敗北画面のパネル
@@ -49,6 +58,14 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     void Start()
     {
+        _gameBGM = GetComponent<AudioSource>();
+        _winBGM = GetComponent<AudioSource>();
+        _loseBGM = GetComponent<AudioSource>();
+        _betraySE = GetComponent<AudioSource>();
+        _shineSE = GetComponent<AudioSource>();
+
+        _gameBGM.Play();
+
         //選択中のフィールドを示すオブジェクトの初期位置を設定
         SelectedFieldCubePosX = (int)SelectedFieldCube.transform.position.x;
         SelectedFieldCubePosY = (int)SelectedFieldCube.transform.position.z;
@@ -61,9 +78,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _KantoStoneObj[2, 3].SetState(SpriteState.KANTO);
         _KansaiStoneObj[3, 3].SetState(SpriteState.KANSAI);
 
-        _KantoStoneObj[0,0].SetState(SpriteState.KANTO);
+        // _KantoStoneObj[0,0].SetState(SpriteState.KANTO);
         _KantoStoneObj[5,0].SetState(SpriteState.KANTO);
-        _KantoStoneObj[5,5].SetState(SpriteState.KANTO);
+        // _KantoStoneObj[5,5].SetState(SpriteState.KANTO);
         _KantoStoneObj[0,5].SetState(SpriteState.KANTO);
 
         _FieldState[3, 2] = SpriteState.KANTO;
@@ -71,12 +88,12 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _FieldState[2, 3] = SpriteState.KANTO;
         _FieldState[3, 3] = SpriteState.KANSAI;
 
-        _FieldState[0, 0] = SpriteState.KANTO;
+        // _FieldState[0, 0] = SpriteState.KANTO;
         _FieldState[5, 0] = SpriteState.KANTO;
-        _FieldState[5, 5] = SpriteState.KANTO;
+        // _FieldState[5, 5] = SpriteState.KANTO;
         _FieldState[0, 5] = SpriteState.KANTO;
 
-         turnManager =  FindObjectOfType<PunTurnManager>();
+        turnManager = FindObjectOfType<PunTurnManager>();
         if (turnManager == null)
         {
             Debug.LogError("PunTurnManager component is missing from this GameObject");
@@ -92,29 +109,48 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         else
         {
             isKantoPlayer = false; // 2人目のプレイヤーはKansaiプレイヤー
-            CreateKansaiButton(); // 関西プレイヤー用のボタンを生成
+            // CreateKansaiButton(); // 関西プレイヤー用のボタンを生成
         }
     }
 
-    void CreateKansaiButton()
-    {
-        if (KansaiButtonPrefab != null)
-        {
-            kansaiButtonInstance = Instantiate(KansaiButtonPrefab, GameObject.Find("Canvas").transform);
-            kansaiButtonInstance.GetComponent<Button>().onClick.AddListener(OnKansaiButtonClick);
-        }
-    }
+    // void CreateKansaiButton()
+    // {
+    //     if (KansaiButtonPrefab != null)
+    //     {
+    //         kansaiButtonInstance = Instantiate(KansaiButtonPrefab, GameObject.Find("Canvas").transform);
+    //         kansaiButtonInstance.GetComponent<Button>().onClick.AddListener(OnKansaiButtonClick);
+    //     }
+    // }
 
     void OnKansaiButtonClick()
     {
+        _gameBGM.Pause();
         // ボタンがクリックされたときの処理
         Debug.Log("Kansai button clicked");
-        KanScream();
+
+        GetComponent<AudioRecorder>().StartRecording();
+        StartCoroutine(WaitAndCheckSimilarity(duration));
+    }
+
+    IEnumerator<object> WaitAndCheckSimilarity(float duration)
+    {
+        // 3秒待機
+        yield return new WaitForSeconds(duration);
+
+        // 類似度を取得して処理を行う
+        float similarity = GetComponent<AudioRecorder>().GetSimilarity();
+        Debug.Log("OthelloSystem 類似度: " + similarity);
+
+        if (similarity < 6000f)
+        {
+            KanScream();
+            
+        }
     }
 
     void Update()
     {
-            if (turnManager == null)
+        if (turnManager == null)
         {
             return;
         }
@@ -140,7 +176,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             for (int x = 0; x < FIELD_SIZE_X; x++)
             {
                 var kanto = Instantiate(KantoStone
-                                        , new Vector3(-0.937f+x, -0.119f,-2.465f+y)
+                                        , new Vector3(-0.937f + x, -0.119f, -2.465f + y)
                                         , Quaternion.Euler(0, 0, 0));
                 var kansai = Instantiate(KansaiStone
                                         , new Vector3(-2.314f + x, 0.155f, -2.378f + y)
@@ -173,12 +209,14 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     {
         var position = SelectedFieldCube.transform.position;
 
-        if (!_KantoCheckFlag) {
+        if (!_KantoCheckFlag)
+        {
             turnManager.SendMove(null, true);
             turnManager.BeginTurn();
         }
 
-        if(!_KansaiCheckFlag) {
+        if (!_KansaiCheckFlag)
+        {
             turnManager.SendMove(null, true);
             turnManager.BeginTurn();
         }
@@ -205,12 +243,16 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
         }
 
-        //デバッグ用
+        //スペースキーで録音開始
         if(Input.GetKeyDown(KeyCode.Space)){
-            Debug.Log(_PlayerTurn + "のターン");
+            //Debug.Log(_PlayerTurn + "のターン");
+            if(!isKantoPlayer)
+            {
+                OnKansaiButtonClick();
+            }
         }
 
-        //スペースキーで駒を置く
+        //エンターキーで駒を置く
         if (Input.GetKeyDown(KeyCode.Return))
         {
             turnCheck = false;
@@ -223,14 +265,20 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 }
             }
 
-            if(_KantoCheckFlag){
+            if (_KantoCheckFlag)
+            {
                 Debug.Log("関東は置けるマスがある");
-            }else{
+            }
+            else
+            {
                 Debug.Log("関東は置けるマスがない");
             }
-            if(_KansaiCheckFlag){
+            if (_KansaiCheckFlag)
+            {
                 Debug.Log("関西は置けるマスがある");
-            }else{
+            }
+            else
+            {
                 Debug.Log("関西は置けるマスがない");
             }
 
@@ -250,19 +298,17 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 turnManager.SendMove(null, true);
                 turnManager.BeginTurn();
 
-                //photonView.RPC("UpdateCurrentPlayerStone", RpcTarget.All); // ターンが切り替わったタイミングでUIを更新
-
                 if(!FieldStateCheck(_PlayerTurn))
                 {
-                    CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+                    //CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
                     turnManager.SendMove(null, true);
                     turnManager.BeginTurn();
 
                     // 次のプレイヤーのターンをチェック
                     var nextPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
-                    if(!FieldStateCheck(nextPlayerTurn))
+                    if (!FieldStateCheck(nextPlayerTurn))
                     {
-                        CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+                        //CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
                         // 次のプレイヤーも置けない場合はターンを飛ばす
                         turnManager.SendMove(null, true);
                         turnManager.BeginTurn();
@@ -273,65 +319,65 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     }
 
     [PunRPC]
-private void PlaceStone(Vector3 move, int[] infoArray)
-{
-    int x = (int)move.x;
-    int y = (int)move.y;
-    SpriteState playerTurn = (SpriteState)(int)move.z;
+    private void PlaceStone(Vector3 move, int[] infoArray)
+    {
+        int x = (int)move.x;
+        int y = (int)move.y;
+        SpriteState playerTurn = (SpriteState)(int)move.z;
 
-    _FieldState[x, y] = playerTurn;
-    if (playerTurn == SpriteState.KANTO)
-    {
-        _KantoStoneObj[x, y].SetState(SpriteState.KANTO);
-    }
-    else
-    {
-        _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
-    }
-
-    // 駒をひっくり返す
-    for (int i = 0; i < infoArray.Length; i += 2)
-    {
-        int posX = infoArray[i];
-        int posY = infoArray[i + 1];
-        _FieldState[posX, posY] = playerTurn;
+        _FieldState[x, y] = playerTurn;
         if (playerTurn == SpriteState.KANTO)
         {
-            _KantoStoneObj[posX, posY].SetState(SpriteState.KANTO);
-            _KansaiStoneObj[posX, posY].SetState(SpriteState.NONE);
+            _KantoStoneObj[x, y].SetState(SpriteState.KANTO);
         }
-        else if (playerTurn == SpriteState.KANSAI)
+        else
         {
-            _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
-            _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
+            _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
         }
+
+        // 駒をひっくり返す
+        for (int i = 0; i < infoArray.Length; i += 2)
+        {
+            int posX = infoArray[i];
+            int posY = infoArray[i + 1];
+            _FieldState[posX, posY] = playerTurn;
+            if (playerTurn == SpriteState.KANTO)
+            {
+                _KansaiStoneObj[posX, posY].SetState(SpriteState.NONE);
+                _KantoStoneObj[posX, posY].SetState(SpriteState.KANTO);
+            }
+            else if (playerTurn == SpriteState.KANSAI)
+            {
+                _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
+                _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
+            }
+        }
+
+        CheckCanSettingStone();
+
+        _InfoList.Clear();
     }
 
-    CheckCanSettingStone();
-
-    _InfoList.Clear();
-}
-
-private bool FieldStateCheck(SpriteState playerTurn)
-{
-    for (int y = 0; y < FIELD_SIZE_Y; y++)
+    private bool FieldStateCheck(SpriteState playerTurn)
     {
-        for (int x = 0; x < FIELD_SIZE_X; x++)
+        for (int y = 0; y < FIELD_SIZE_Y; y++)
         {
-            if (_FieldState[x, y] == SpriteState.NONE)
+            for (int x = 0; x < FIELD_SIZE_X; x++)
             {
-                for (int i = 0; i < 8; i++)
+                if (_FieldState[x, y] == SpriteState.NONE)
                 {
-                    if (TurnCheck(i, x, y, playerTurn))
+                    for (int i = 0; i < 8; i++)
                     {
-                        return true;
+                        if (TurnCheck(i, x, y, playerTurn))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
         }
+        return false;
     }
-    return false;
-}
 
     private void CalcTotalStoneNum()
 {
@@ -374,83 +420,109 @@ private bool FieldStateCheck(SpriteState playerTurn)
     }
 }
 
-public void KanScream()
-{
-    if (isPushButton) return;
-    isPushButton = true;
-
-    // Kantoのコマの位置をリストに収集
-    List<(int, int)> kantoPositions = new List<(int, int)>();
-    for (int y = 0; y < FIELD_SIZE_Y; y++)
+    public void KanScream()
     {
-        for (int x = 0; x < FIELD_SIZE_X; x++)
+        if (isPushButton) return;
+        isPushButton = true;
+
+        // Kantoのコマの位置をリストに収集
+        List<(int, int)> kantoPositions = new List<(int, int)>();
+        for (int y = 0; y < FIELD_SIZE_Y; y++)
         {
-            if (_FieldState[x, y] == SpriteState.KANTO)
+            for (int x = 0; x < FIELD_SIZE_X; x++)
             {
-                kantoPositions.Add((x, y));
-            }
-        }
-    }
-
-    // Kantoのコマが2つ以上ある場合
-    if (kantoPositions.Count >= 2)
-    {
-        // ランダムに2つの位置を選択
-        System.Random rand = new System.Random();
-        var selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(2).ToList();
-
-        // ひっくり返す位置を収集
-        List<int> infoList = new List<int>();
-        foreach (var pos in selectedPositions)
-        {
-            int x = pos.Item1;
-            int y = pos.Item2;
-
-            for (int i = 0; i < 8; i++)
-            {
-                if (TurnCheck(i, x, y))
+                if (_FieldState[x, y] == SpriteState.KANTO)
                 {
-                    foreach (var info in _InfoList)
-                    {
-                        infoList.Add(info.Item1);
-                        infoList.Add(info.Item2);
-                    }
-                    _InfoList.Clear();
+                    kantoPositions.Add((x, y));
                 }
             }
         }
 
-        // 変更を同期
-        photonView.RPC("KanScreamRPC", RpcTarget.All, selectedPositions[0].Item1, selectedPositions[0].Item2, selectedPositions[1].Item1, selectedPositions[1].Item2, infoList.ToArray());
+        // Kantoのコマが2つ以上ある場合
+        if (kantoPositions.Count >= 2)
+        {
+            // ランダムに2つの位置を選択
+            System.Random rand = new System.Random();
+            var selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(2).ToList();
+
+            // ひっくり返す位置を収集
+            List<int> infoList = new List<int>();
+            foreach (var pos in selectedPositions)
+            {
+                int x = pos.Item1;
+                int y = pos.Item2;
+
+                for (int i = 0; i < 8; i++)
+                {
+                    if (TurnCheck(i, x, y))
+                    {
+                        foreach (var info in _InfoList)
+                        {
+                            infoList.Add(info.Item1);
+                            infoList.Add(info.Item2);
+                        }
+                        _InfoList.Clear();
+                    }
+                }
+            }
+
+            // 変更を同期
+            photonView.RPC("KanScreamRPC", RpcTarget.All, selectedPositions[0].Item1, selectedPositions[0].Item2, selectedPositions[1].Item1, selectedPositions[1].Item2, infoList.ToArray());
+        }
     }
-}
 
-[PunRPC]
-private void KanScreamRPC(int x1, int y1, int x2, int y2, int[] infoArray)
-{
-    List<(int, int)> positions = new List<(int, int)> { (x1, y1), (x2, y2) };
-
-    foreach (var pos in positions)
+    [PunRPC]
+    private async UniTask KanScreamRPC(int x1, int y1, int x2, int y2, int[] infoArray)
     {
-        int x = pos.Item1;
-        int y = pos.Item2;
+        List<(int, int)> positions = new List<(int, int)> { (x1, y1), (x2, y2) };
+        var rotateNum = 360 * 3;
 
-        // Kansaiコマに置き換え
-        _FieldState[x, y] = SpriteState.KANSAI;
-        _KantoStoneObj[x, y].SetState(SpriteState.NONE);
-        _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
-    }
+        foreach (var pos in positions)
+        {
+            int x = pos.Item1;
+            int y = pos.Item2;
 
-    // ひっくり返す処理
-    for (int i = 0; i < infoArray.Length; i += 2)
-    {
-        int posX = infoArray[i];
-        int posY = infoArray[i + 1];
-        _FieldState[posX, posY] = SpriteState.KANSAI;
-        _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
-        _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
+            // Kansaiコマに置き換え
+            _FieldState[x, y] = SpriteState.KANSAI;
+            _shineSE.PlayOneShot(_shineSE.clip);
+            await UniTask.Delay(1000);
+            _betraySE.PlayOneShot(_betraySE.clip);
+            await UniTask.Delay(2000);
+            await _KantoStoneObj[x, y].transform.DOLocalMoveY(0.5f, 0.5f).SetEase(Ease.OutBounce);
+            // 0.5秒待機
+            await UniTask.Delay(500);
+            await _KantoStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
+            _KantoStoneObj[x, y].SetState(SpriteState.NONE);
+            _KansaiStoneObj[x, y].transform.position = new Vector3(_KansaiStoneObj[x, y].transform.position.x, 3f, _KansaiStoneObj[x, y].transform.position.z);
+            _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
+            await _KansaiStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
+            await UniTask.Delay(500);
+            await _KansaiStoneObj[x, y].transform.DOLocalMoveY(0.119f, 0.2f).SetEase(Ease.OutBounce);
+        }
+
+        // ひっくり返す処理
+        for (int i = 0; i < infoArray.Length; i += 2)
+        {
+            int posX = infoArray[i];
+            int posY = infoArray[i + 1];
+            // Kansaiコマに置き換え
+            _FieldState[posY, posY] = SpriteState.KANSAI;
+            _shineSE.PlayOneShot(_shineSE.clip);
+            await UniTask.Delay(1000);
+            _betraySE.PlayOneShot(_betraySE.clip);
+            await UniTask.Delay(2000);
+            await _KantoStoneObj[posX, posY].transform.DOLocalMoveY(0.5f, 0.2f).SetEase(Ease.OutBounce);
+            // 0.5秒待機
+            await UniTask.Delay(500);
+            await _KantoStoneObj[posX, posY].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
+            _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
+            _KansaiStoneObj[posX, posY].transform.position = new Vector3(_KansaiStoneObj[posX, posY].transform.position.x, 3f, _KansaiStoneObj[posX, posY].transform.position.z);
+            _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
+            await _KansaiStoneObj[posX, posY].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
+            await UniTask.Delay(500);
+            await _KansaiStoneObj[posX, posY].transform.DOLocalMoveY(0.119f, 0.2f).SetEase(Ease.OutBounce);
+        }
     }
-}
 
 
     /// <summary>
@@ -702,60 +774,60 @@ private void KanScreamRPC(int x1, int y1, int x2, int y2, int[] infoArray)
     }
 
     private bool TurnCheck(int direction, int pointX, int pointY, SpriteState playerTurn)
-{
-    var posX = pointX;
-    var posY = pointY;
-
-    var opponentPlayerTurn = playerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
-
-    var opponentInfoList = new List<(int, int)>();
-    var localTurnCheck = false;
-    int i = 0;
-
-    while (0 <= posX && posX < FIELD_SIZE_X && 0 <= posY && posY < FIELD_SIZE_Y)
     {
-        i++;
-        switch (direction)
-        {
-            case 0://左
-                if (posX == 0) { return localTurnCheck; }
-                posX--;
-                break;
-            case 1://右
-                if (posX == FIELD_SIZE_X - 1) { return localTurnCheck; }
-                posX++;
-                break;
-            case 2://下
-                if (posY == 0) { return localTurnCheck; }
-                posY--;
-                break;
-            case 3://上
-                if (posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-                posY++;
-                break;
-            case 4://右上
-                if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-                posX++;
-                posY++;
-                break;
-            case 5://左下
-                if (posX == 0 || posY == 0) { return localTurnCheck; }
-                posX--;
-                posY--;
-                break;
-            case 6://左上
-                if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-                posX--;
-                posY++;
-                break;
-            case 7://右下
-                if (posX == FIELD_SIZE_X - 1 || posY == 0) { return localTurnCheck; }
-                posX++;
-                posY--;
-                break;
-        }
+        var posX = pointX;
+        var posY = pointY;
 
-        //指定した方向に相手のコマがあるときその情報をリストに追加
+        var opponentPlayerTurn = playerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+
+        var opponentInfoList = new List<(int, int)>();
+        var localTurnCheck = false;
+        int i = 0;
+
+        while (0 <= posX && posX < FIELD_SIZE_X && 0 <= posY && posY < FIELD_SIZE_Y)
+        {
+            i++;
+            switch (direction)
+            {
+                case 0://左
+                    if (posX == 0) { return localTurnCheck; }
+                    posX--;
+                    break;
+                case 1://右
+                    if (posX == FIELD_SIZE_X - 1) { return localTurnCheck; }
+                    posX++;
+                    break;
+                case 2://下
+                    if (posY == 0) { return localTurnCheck; }
+                    posY--;
+                    break;
+                case 3://上
+                    if (posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posY++;
+                    break;
+                case 4://右上
+                    if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posX++;
+                    posY++;
+                    break;
+                case 5://左下
+                    if (posX == 0 || posY == 0) { return localTurnCheck; }
+                    posX--;
+                    posY--;
+                    break;
+                case 6://左上
+                    if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                    posX--;
+                    posY++;
+                    break;
+                case 7://右下
+                    if (posX == FIELD_SIZE_X - 1 || posY == 0) { return localTurnCheck; }
+                    posX++;
+                    posY--;
+                    break;
+            }
+
+            //指定した方向に相手のコマがあるときその情報をリストに追加
             if (_FieldState[posX, posY] == opponentPlayerTurn)
             {
                 opponentInfoList.Add((posX, posY));
