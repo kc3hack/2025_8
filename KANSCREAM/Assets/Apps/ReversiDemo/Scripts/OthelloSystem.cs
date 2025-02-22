@@ -55,9 +55,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _KansaiStoneObj[3, 3].SetState(SpriteState.KANSAI);
 
         // _KantoStoneObj[0,0].SetState(SpriteState.KANTO);
-        // _KantoStoneObj[5,0].SetState(SpriteState.KANTO);
+        _KantoStoneObj[5,0].SetState(SpriteState.KANTO);
         // _KantoStoneObj[5,5].SetState(SpriteState.KANTO);
-        // _KantoStoneObj[0,5].SetState(SpriteState.KANTO);
+        _KantoStoneObj[0,5].SetState(SpriteState.KANTO);
 
         _FieldState[3, 2] = SpriteState.KANTO;
         _FieldState[2, 2] = SpriteState.KANSAI;
@@ -65,9 +65,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _FieldState[3, 3] = SpriteState.KANSAI;
 
         // _FieldState[0, 0] = SpriteState.KANTO;
-        // _FieldState[5, 0] = SpriteState.KANTO;
+        _FieldState[5, 0] = SpriteState.KANTO;
         // _FieldState[5, 5] = SpriteState.KANTO;
-        // _FieldState[0, 5] = SpriteState.KANTO;
+        _FieldState[0, 5] = SpriteState.KANTO;
 
          turnManager =  FindObjectOfType<PunTurnManager>();
         if (turnManager == null)
@@ -85,18 +85,18 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         else
         {
             isKantoPlayer = false; // 2人目のプレイヤーはKansaiプレイヤー
-            CreateKansaiButton(); // 関西プレイヤー用のボタンを生成
+            // CreateKansaiButton(); // 関西プレイヤー用のボタンを生成
         }
     }
 
-    void CreateKansaiButton()
-    {
-        if (KansaiButtonPrefab != null)
-        {
-            kansaiButtonInstance = Instantiate(KansaiButtonPrefab, GameObject.Find("Canvas").transform);
-            kansaiButtonInstance.GetComponent<Button>().onClick.AddListener(OnKansaiButtonClick);
-        }
-    }
+    // void CreateKansaiButton()
+    // {
+    //     if (KansaiButtonPrefab != null)
+    //     {
+    //         kansaiButtonInstance = Instantiate(KansaiButtonPrefab, GameObject.Find("Canvas").transform);
+    //         kansaiButtonInstance.GetComponent<Button>().onClick.AddListener(OnKansaiButtonClick);
+    //     }
+    // }
 
     void OnKansaiButtonClick()
     {
@@ -198,12 +198,16 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
         }
 
-        //デバッグ用
+        //スペースキーで録音開始
         if(Input.GetKeyDown(KeyCode.Space)){
-            Debug.Log(_PlayerTurn + "のターン");
+            //Debug.Log(_PlayerTurn + "のターン");
+            if(!isKantoPlayer)
+            {
+                OnKansaiButtonClick();
+            }
         }
 
-        //スペースキーで駒を置く
+        //エンターキーで駒を置く
         if (Input.GetKeyDown(KeyCode.Return))
         {
             turnCheck = false;
