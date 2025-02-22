@@ -780,11 +780,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 994018722}
   m_CullTransparentMesh: 1
---- !u!1 &1324580045 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7881372168803724853, guid: 0a5b0c5ba44d441b284f7a0fe5573ea3, type: 3}
-  m_PrefabInstance: {fileID: 638817291}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1388310794
 GameObject:
   m_ObjectHideFlags: 0
@@ -832,8 +827,8 @@ MonoBehaviour:
   _shineSE: {fileID: 1187014399408821269, guid: b5b2e07a5055d4924b013e6a5d0a7d9d, type: 3}
   VictoryPanel: {fileID: 1933477424}
   DefeatPanel: {fileID: 2086853652}
-  CurrentPlayerKantoStone: {fileID: 1324580045}
-  CurrentPlayerKansaiStone: {fileID: 1946546671}
+  CurrentPlayerKantoStone: {fileID: 7881372168803724853, guid: 0a5b0c5ba44d441b284f7a0fe5573ea3, type: 3}
+  CurrentPlayerKansaiStone: {fileID: 3623757504519349880, guid: 63842c2bee9a54c99b0b83e390b5041d, type: 3}
 --- !u!4 &1388310796
 Transform:
   m_ObjectHideFlags: 0
@@ -1280,7 +1275,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 57c9a35850e984f799108fea14759f8e, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -1696,11 +1691,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1933477424}
   m_CullTransparentMesh: 1
---- !u!1 &1946546671 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3623757504519349880, guid: 63842c2bee9a54c99b0b83e390b5041d, type: 3}
-  m_PrefabInstance: {fileID: 1836292161}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2086853652
 GameObject:
   m_ObjectHideFlags: 0
