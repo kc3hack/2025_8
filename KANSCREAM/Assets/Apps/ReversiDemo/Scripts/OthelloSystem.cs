@@ -48,25 +48,25 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         Awake();
 
         //初期配置  関東:黒  関西:白
-        _KantoStoneObj[2, 2].SetState(SpriteState.KANTO);
-        _KansaiStoneObj[3, 2].SetState(SpriteState.KANSAI);
-        _KantoStoneObj[3, 3].SetState(SpriteState.KANTO);
-        _KansaiStoneObj[2, 3].SetState(SpriteState.KANSAI);
+        _KantoStoneObj[3, 2].SetState(SpriteState.KANTO);
+        _KansaiStoneObj[2, 2].SetState(SpriteState.KANSAI);
+        _KantoStoneObj[2, 3].SetState(SpriteState.KANTO);
+        _KansaiStoneObj[3, 3].SetState(SpriteState.KANSAI);
 
-        _KantoStoneObj[0,0].SetState(SpriteState.KANTO);
-        _KantoStoneObj[5,0].SetState(SpriteState.KANTO);
-        _KantoStoneObj[5,5].SetState(SpriteState.KANTO);
-        _KantoStoneObj[0,5].SetState(SpriteState.KANTO);
+        // _KantoStoneObj[0,0].SetState(SpriteState.KANTO);
+        // _KantoStoneObj[5,0].SetState(SpriteState.KANTO);
+        // _KantoStoneObj[5,5].SetState(SpriteState.KANTO);
+        // _KantoStoneObj[0,5].SetState(SpriteState.KANTO);
 
-        _FieldState[2, 2] = SpriteState.KANTO;
-        _FieldState[3, 2] = SpriteState.KANSAI;
-        _FieldState[3, 3] = SpriteState.KANTO;
-        _FieldState[2, 3] = SpriteState.KANSAI;
+        _FieldState[3, 2] = SpriteState.KANTO;
+        _FieldState[2, 2] = SpriteState.KANSAI;
+        _FieldState[2, 3] = SpriteState.KANTO;
+        _FieldState[3, 3] = SpriteState.KANSAI;
 
-        _FieldState[0, 0] = SpriteState.KANTO;
-        _FieldState[5, 0] = SpriteState.KANTO;
-        _FieldState[5, 5] = SpriteState.KANTO;
-        _FieldState[0, 5] = SpriteState.KANTO;
+        // _FieldState[0, 0] = SpriteState.KANTO;
+        // _FieldState[5, 0] = SpriteState.KANTO;
+        // _FieldState[5, 5] = SpriteState.KANTO;
+        // _FieldState[0, 5] = SpriteState.KANTO;
 
          turnManager =  FindObjectOfType<PunTurnManager>();
         if (turnManager == null)
@@ -223,6 +223,21 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 //photonView.RPC("PlaceStone", RpcTarget.All, move, infoArray);
                 turnManager.SendMove(null, true);
                 turnManager.BeginTurn();
+
+                if(!FieldStateCheck(_PlayerTurn))
+                {
+                    turnManager.SendMove(null, true);
+                    turnManager.BeginTurn();
+
+                    // 次のプレイヤーのターンをチェック
+                    var nextPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+                    if(!FieldStateCheck(nextPlayerTurn))
+                    {
+                        // 次のプレイヤーも置けない場合はターンを飛ばす
+                        turnManager.SendMove(null, true);
+                        turnManager.BeginTurn();
+                    }
+                }
             }
         }
     }
@@ -265,6 +280,27 @@ private void PlaceStone(Vector3 move, int[] infoArray)
     CheckCanSettingStone();
 
     _InfoList.Clear();
+}
+
+private bool FieldStateCheck(SpriteState playerTurn)
+{
+    for (int y = 0; y < FIELD_SIZE_Y; y++)
+    {
+        for (int x = 0; x < FIELD_SIZE_X; x++)
+        {
+            if (_FieldState[x, y] == SpriteState.NONE)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    if (TurnCheck(i, x, y, playerTurn))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
 }
 
     private void CalcTotalStoneNum()
@@ -632,6 +668,94 @@ private void KanScreamRPC(int x1, int y1, int x2, int y2, int[] infoArray)
         // Debug.Log("242:turnCheck: " + localTurnCheck);
         return localTurnCheck;
     }
+
+    private bool TurnCheck(int direction, int pointX, int pointY, SpriteState playerTurn)
+{
+    var posX = pointX;
+    var posY = pointY;
+
+    var opponentPlayerTurn = playerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+
+    var opponentInfoList = new List<(int, int)>();
+    var localTurnCheck = false;
+    int i = 0;
+
+    while (0 <= posX && posX < FIELD_SIZE_X && 0 <= posY && posY < FIELD_SIZE_Y)
+    {
+        i++;
+        switch (direction)
+        {
+            case 0://左
+                if (posX == 0) { return localTurnCheck; }
+                posX--;
+                break;
+            case 1://右
+                if (posX == FIELD_SIZE_X - 1) { return localTurnCheck; }
+                posX++;
+                break;
+            case 2://下
+                if (posY == 0) { return localTurnCheck; }
+                posY--;
+                break;
+            case 3://上
+                if (posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                posY++;
+                break;
+            case 4://右上
+                if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                posX++;
+                posY++;
+                break;
+            case 5://左下
+                if (posX == 0 || posY == 0) { return localTurnCheck; }
+                posX--;
+                posY--;
+                break;
+            case 6://左上
+                if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
+                posX--;
+                posY++;
+                break;
+            case 7://右下
+                if (posX == FIELD_SIZE_X - 1 || posY == 0) { return localTurnCheck; }
+                posX++;
+                posY--;
+                break;
+        }
+
+        //指定した方向に相手のコマがあるときその情報をリストに追加
+            if (_FieldState[posX, posY] == opponentPlayerTurn)
+            {
+                opponentInfoList.Add((posX, posY));
+            }
+
+            //1回目のループで左のコマが自分のコマまたは空の場合は終了
+            if (opponentInfoList.Count == 0 && (_FieldState[posX, posY] == _PlayerTurn || _FieldState[posX, posY] == SpriteState.NONE))
+            {
+                localTurnCheck = false;
+                break;
+            }
+
+            //2つ以上隣のコマが空白の場合メソッドを終了
+            if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == SpriteState.NONE))
+            {
+                localTurnCheck = false;
+                break;
+            }
+
+            //2つ以上隣のコマが自分のコマの場合は置ける
+            if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn))
+            {
+                localTurnCheck = true;
+                foreach (var info in opponentInfoList)
+                {
+                    _InfoList.Add(info);
+                }
+                break;
+            }
+    }
+    return localTurnCheck;
+}
 
     public void OnTurnBegins(int turn)
     {
