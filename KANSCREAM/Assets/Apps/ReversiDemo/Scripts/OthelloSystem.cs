@@ -870,14 +870,20 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         if (isKantoPlayer && isKantoWinner)
         {
             VictoryPanel.SetActive(true);
+            _gameBGM.Stop();
+            _winBGM.Play();
         }
         else if (!isKantoPlayer && !isKantoWinner)
         {
             VictoryPanel.SetActive(true);
+            _gameBGM.Stop();
+            _winBGM.Play();
         }
         else
         {
             DefeatPanel.SetActive(true);
+            _gameBGM.Stop();
+            _loseBGM.Play();
         }
     }
 
