@@ -38,6 +38,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     private PunTurnManager turnManager;
     private bool isKantoPlayer;
+    private float duration = 3.0f;
 
     void Start()
     {
@@ -101,7 +102,24 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     {
         // ボタンがクリックされたときの処理
         Debug.Log("Kansai button clicked");
-        KanScream();
+
+        GetComponent<AudioRecorder>().StartRecording();
+        StartCoroutine(WaitAndCheckSimilarity(duration));
+    }
+
+    IEnumerator<object> WaitAndCheckSimilarity(float duration)
+    {
+        // 3秒待機
+        yield return new WaitForSeconds(duration);
+
+        // 類似度を取得して処理を行う
+        float similarity = GetComponent<AudioRecorder>().GetSimilarity();
+        Debug.Log("OthelloSystem 類似度: " + similarity);
+
+        if (similarity < 6000f)
+        {
+            KanScream();
+        }
     }
 
     void Update()
