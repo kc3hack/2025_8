@@ -686,8 +686,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 }
                 //_PlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
             }
-            CalcTotalStoneNum();
         }
+        CalcTotalStoneNum();
     }
 
     /// <summary>
