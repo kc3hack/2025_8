@@ -539,10 +539,23 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
 
         // Kantoのコマが1つ以上ある場合
-        if (kantoPositions.Count >= 1)
+        if (kantoPositions.Count >= 5)
         {
             var selectedPositions = new List<(int, int)>();
-            if (similarity < 4500f)
+            
+            if (similarity < 3000f)
+            {
+                // ランダムに5つの位置を選択
+                System.Random rand = new System.Random();
+                selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(5).ToList();
+            }
+            else if (similarity < 4000f)
+            {
+                // ランダムに4つの位置を選択
+                System.Random rand = new System.Random();
+                selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(4).ToList();
+            }
+            else if (similarity < 5500f)
             {
                 // ランダムに3つの位置を選択
                 System.Random rand = new System.Random();
