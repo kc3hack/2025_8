@@ -49,8 +49,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [SerializeField] private AudioSource _betraySE;
     [SerializeField] private AudioSource _shineSE;
     [SerializeField] private AudioSource _screamBGM;
-    [SerializeField] private VideoPlayer _winnerBG;
-    [SerializeField] private VideoPlayer _looserBG;
+    [SerializeField] private GameObject _winnerBG;
+    [SerializeField] private GameObject _looserBG;
+    [SerializeField] private GameObject _nomalBG;
 
     public GameObject VictoryPanel; // 勝利画面のパネル
     public GameObject DefeatPanel; // 敗北画面のパネル
@@ -122,6 +123,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             isKantoPlayer = false; // 2人目のプレイヤーはKansaiプレイヤー
             // CreateKansaiButton(); // 関西プレイヤー用のボタンを生成
         }
+
+        ResetBG();
+        NomalBGCheange();
     }
 
     // void CreateKansaiButton()
@@ -197,6 +201,31 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
 
         //photonView.RPC("UpdateCurrentPlayerStone", RpcTarget.All);
+    }
+
+    private void WinnerBGChange()
+    {
+        _winnerBG.SetActive(true);
+        _winnerBG.GetComponent<VideoPlayer>().Play();
+    }
+
+    private void LooserBGChange()
+    {
+        _looserBG.SetActive(true);
+        _looserBG.GetComponent<VideoPlayer>().Play();
+    }
+
+    private void NomalBGCheange()
+    {
+        _nomalBG.SetActive(true);
+        _nomalBG.GetComponent<VideoPlayer>().Play();
+    }
+
+    private void ResetBG()
+    {
+        _winnerBG.SetActive(false);
+        _looserBG.SetActive(false);
+        _nomalBG.SetActive(false);
     }
 
     //盤の初期設定
@@ -382,10 +411,12 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _FieldState[x, y] = playerTurn;
         if (playerTurn == SpriteState.KANTO)
         {
+            _KantoStoneObj[x, y].transform.position = new Vector3(x, 0, y);
             _KantoStoneObj[x, y].SetState(SpriteState.KANTO);
         }
         else
         {
+            _KansaiStoneObj[x, y].transform.position = new Vector3(x, 0, y);
             _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
         }
 
@@ -513,13 +544,13 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         if (kantoPositions.Count >= 1)
         {
             var selectedPositions = new List<(int, int)>();
-            if(similarity < 4500f)
+            if (similarity < 4500f)
             {
                 // ランダムに3つの位置を選択
                 System.Random rand = new System.Random();
                 selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(3).ToList();
             }
-            else if(similarity < 7000f)
+            else if (similarity < 7000f)
             {
                 // ランダムに2つの位置を選択
                 System.Random rand = new System.Random();
@@ -589,7 +620,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         await _KansaiStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 180, 0), 0.2f);
         await UniTask.Delay(700);
         await _KansaiStoneObj[x, y].transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBounce);
-        
+
 
         // ひっくり返す処理
         for (int i = 0; i < infoArray.Length; i += 2)
@@ -947,7 +978,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     {
         if (isKantoPlayer && isKantoWinner)
         {
-            // _winnerVideo.GetComponent<ResultBGManager>().SetIsActive(true);
+            WinnerBGChange();
             VictoryPanel.SetActive(true);
             _gameBGM.Stop();
             _screamBGM.Stop();
@@ -955,7 +986,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
         else if (!isKantoPlayer && !isKantoWinner)
         {
-            // _winnerVideo.GetComponent<ResultBGManager>().SetIsActive(true);
+            WinnerBGChange();
             VictoryPanel.SetActive(true);
             _gameBGM.Stop();
             _screamBGM.Stop();
@@ -963,7 +994,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
         else
         {
-            // _loserVideo.GetComponent<ResultBGManager>().SetIsActive(true);
+            LooserBGChange();
             DefeatPanel.SetActive(true);
             _gameBGM.Stop();
             _screamBGM.Stop();
