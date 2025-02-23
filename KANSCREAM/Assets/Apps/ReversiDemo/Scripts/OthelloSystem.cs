@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
+using UnityEngine.Video;
 public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 {
     public GameObject KantoStone;//オセロ駒オブジェクト
@@ -48,6 +49,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [SerializeField] private AudioSource _betraySE;
     [SerializeField] private AudioSource _shineSE;
     [SerializeField] private AudioSource _screamBGM;
+    [SerializeField] private VideoPlayer _winnerBG;
+    [SerializeField] private VideoPlayer _looserBG;
 
     public GameObject VictoryPanel; // 勝利画面のパネル
     public GameObject DefeatPanel; // 敗北画面のパネル
@@ -71,8 +74,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _betraySE = GetComponent<AudioSource>().GetComponents<AudioSource>()[4];
         _shineSE = GetComponent<AudioSource>().GetComponents<AudioSource>()[3];
         _screamBGM = GetComponent<AudioSource>().GetComponents<AudioSource>()[5];
-
         _gameBGM.Play();
+
 
         //選択中のフィールドを示すオブジェクトの初期位置を設定
         SelectedFieldCubePosX = (int)SelectedFieldCube.transform.position.x;
@@ -944,6 +947,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     {
         if (isKantoPlayer && isKantoWinner)
         {
+            // _winnerVideo.GetComponent<ResultBGManager>().SetIsActive(true);
             VictoryPanel.SetActive(true);
             _gameBGM.Stop();
             _screamBGM.Stop();
@@ -951,6 +955,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
         else if (!isKantoPlayer && !isKantoWinner)
         {
+            // _winnerVideo.GetComponent<ResultBGManager>().SetIsActive(true);
             VictoryPanel.SetActive(true);
             _gameBGM.Stop();
             _screamBGM.Stop();
@@ -958,6 +963,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
         else
         {
+            // _loserVideo.GetComponent<ResultBGManager>().SetIsActive(true);
             DefeatPanel.SetActive(true);
             _gameBGM.Stop();
             _screamBGM.Stop();
