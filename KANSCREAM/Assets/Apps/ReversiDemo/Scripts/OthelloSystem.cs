@@ -162,7 +162,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     private async UniTask PlayScreamBGM()
     {
-        await UniTask.Delay(3000);
+        await UniTask.Delay(5000);
         _screamBGM.Play();
     }
 
@@ -561,7 +561,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             await _KantoStoneObj[x, y].transform.DOLocalMoveY(1.5f, 0.5f).SetEase(Ease.OutBounce);
             // 0.5秒待機
             await UniTask.Delay(500);
-            await _KantoStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
+            await _KantoStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, rotateNum, rotateNum), 0.5f, RotateMode.FastBeyond360);
             _KantoStoneObj[x, y].SetState(SpriteState.NONE);
             _KansaiStoneObj[x, y].transform.position = new Vector3(_KansaiStoneObj[x, y].transform.position.x, 1.5f, _KansaiStoneObj[x, y].transform.position.z);
             _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
