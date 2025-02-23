@@ -71,7 +71,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         SelectedFieldCubePosX = (int)SelectedFieldCube.transform.position.x;
         SelectedFieldCubePosY = (int)SelectedFieldCube.transform.position.z;
 
-        Awake();
+        // Awake();
 
         //初期配置  関東:黒  関西:白
         _KantoStoneObj[3, 2].SetState(SpriteState.KANTO);
@@ -186,10 +186,10 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             for (int x = 0; x < FIELD_SIZE_X; x++)
             {
                 var kanto = Instantiate(KantoStone
-                                        , new Vector3(-0.937f + x, -0.119f, -2.465f + y)
+                                        , new Vector3(x, 0, y)
                                         , Quaternion.Euler(0, 0, 0));
                 var kansai = Instantiate(KansaiStone
-                                        , new Vector3(-2.314f + x, 0.155f, -2.378f + y)
+                                        , new Vector3(x, 0, y)
                                         , Quaternion.Euler(0, 0, 0));
                 _FieldState[x, y] = SpriteState.NONE;
                 _KantoStoneObj[x, y] = kanto.GetComponent<KantoStoneObj>();
@@ -232,22 +232,22 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         // }
 
         //選択中のフィールドを移動
-        if (Input.GetKeyDown(KeyCode.W) && SelectedFieldCubePosY < FIELD_SIZE_Y - 3)
+        if (Input.GetKeyDown(KeyCode.W) && SelectedFieldCubePosY < FIELD_SIZE_Y - 1)
         {
             SelectedFieldCubePosY++;
             SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z + 1);
         }
-        else if (Input.GetKeyDown(KeyCode.S) && SelectedFieldCubePosY > -2)
+        else if (Input.GetKeyDown(KeyCode.S) && SelectedFieldCubePosY > 0)
         {
             SelectedFieldCubePosY--;
             SelectedFieldCube.transform.position = new Vector3(position.x, position.y, position.z - 1);
         }
-        else if (Input.GetKeyDown(KeyCode.A) && SelectedFieldCubePosX > -2)
+        else if (Input.GetKeyDown(KeyCode.A) && SelectedFieldCubePosX > 0)
         {
             SelectedFieldCubePosX--;
             SelectedFieldCube.transform.position = new Vector3(position.x - 1, position.y, position.z);
         }
-        else if (Input.GetKeyDown(KeyCode.D) && SelectedFieldCubePosX < FIELD_SIZE_X - 3)
+        else if (Input.GetKeyDown(KeyCode.D) && SelectedFieldCubePosX < FIELD_SIZE_X - 1)
         {
             SelectedFieldCubePosX++;
             SelectedFieldCube.transform.position = new Vector3(position.x + 1, position.y, position.z);
@@ -295,10 +295,10 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
             // Debug.Log("115:turnCheck: " + turnCheck);
 
-            if (turnCheck && _FieldState[SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2] == SpriteState.NONE)
+            if (turnCheck && _FieldState[SelectedFieldCubePosX, SelectedFieldCubePosY] == SpriteState.NONE)
             {
                 var playerTurn = isKantoPlayer ? SpriteState.KANTO : SpriteState.KANSAI;
-                Vector3 move = new Vector3(SelectedFieldCubePosX + 2, SelectedFieldCubePosY + 2, (int)playerTurn);
+                Vector3 move = new Vector3(SelectedFieldCubePosX, SelectedFieldCubePosY, (int)playerTurn);
 
                 // _InfoList を int[] に変換
                 //int[] infoArray = _InfoList.SelectMany(info => new int[] { info.Item1, info.Item2 }).ToArray();
@@ -508,7 +508,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             _KantoStoneObj[x, y].SetState(SpriteState.NONE);
             _KansaiStoneObj[x, y].transform.position = new Vector3(_KansaiStoneObj[x, y].transform.position.x, 3f, _KansaiStoneObj[x, y].transform.position.z);
             _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
-            await _KansaiStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
+            await _KansaiStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 180, 0), 0.2f);
             await UniTask.Delay(700);
             await _KansaiStoneObj[x, y].transform.DOLocalMoveY(0.119f, 0.2f).SetEase(Ease.OutBounce);
         }
@@ -586,8 +586,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     /// <returns></returns>
     private bool TurnCheck(int direction)
     {
-        var posX = SelectedFieldCubePosX + 2;//選択中のフィールドの移動範囲調整
-        var posY = SelectedFieldCubePosY + 2;//選択中のフィールドの移動範囲調整
+        var posX = SelectedFieldCubePosX;//選択中のフィールドの移動範囲調整
+        var posY = SelectedFieldCubePosY;//選択中のフィールドの移動範囲調整
 
         var opponentPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
 

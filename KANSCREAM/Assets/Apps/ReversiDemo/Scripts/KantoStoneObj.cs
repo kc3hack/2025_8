@@ -10,7 +10,7 @@ public class KantoStoneObj : MonoBehaviour
     void Start()
     {
         sound = GetComponent<AudioSource>();
-        this.transform.rotation = Quaternion.Euler(-90, 180, 0);
+        this.transform.rotation = Quaternion.Euler(0, 180, 0);
     }
     public void SetState(OthelloSystem.SpriteState state)
     {
