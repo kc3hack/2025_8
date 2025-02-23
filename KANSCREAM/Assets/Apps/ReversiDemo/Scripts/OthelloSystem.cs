@@ -173,6 +173,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
     }
 
+    Awake();
+
     // 初期配置 関東:黒 関西:白
     _KantoStoneObj[3, 2].SetState(SpriteState.KANTO);
     _KansaiStoneObj[2, 2].SetState(SpriteState.KANSAI);
