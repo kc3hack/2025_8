@@ -577,8 +577,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             int posY = infoArray[i + 1];
             // Kansaiコマに置き換え
             _FieldState[posY, posY] = SpriteState.KANSAI;
-            _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
-            _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
+            ReverseKanto(posX, posY).Forget();
         }
     }
 
@@ -925,18 +924,21 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         {
             VictoryPanel.SetActive(true);
             _gameBGM.Stop();
+            _screamBGM.Stop();
             _winBGM.Play();
         }
         else if (!isKantoPlayer && !isKantoWinner)
         {
             VictoryPanel.SetActive(true);
             _gameBGM.Stop();
+            _screamBGM.Stop();
             _winBGM.Play();
         }
         else
         {
             DefeatPanel.SetActive(true);
             _gameBGM.Stop();
+            _screamBGM.Stop();
             _loseBGM.Play();
         }
     }
