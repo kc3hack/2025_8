@@ -59,6 +59,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     private int passNum = 0; // パスした回数
 
+    private bool isKanScreamRPCCompleted = false; // 非同期のメソッドが終了したかのフラグ
+    private bool isReverseKantoRPCCompleted = false; // 非同期のメソッドが終了したかのフラグ
+
     void Start()
     {
         // それぞれに対応したAudioSourceコンポーネントを取得する
@@ -420,6 +423,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _KansaiStoneObj[posX, posY].transform.rotation = Quaternion.Euler(0, 180, 90);
         _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
         await _KansaiStoneObj[posX, posY].transform.DORotate(new Vector3(0, 180, 0), 0.1f);
+        isReverseKantoRPCCompleted = true;
     }
 
     private bool FieldStateCheck(SpriteState playerTurn)
@@ -484,7 +488,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
     }
 
-    public void KanScream(float similarity)
+    public async UniTask KanScream(float similarity)
     {
         if (isPushButton) return;
         isPushButton = true;
@@ -544,10 +548,15 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                         _InfoList.Clear();
                     }
                 }
-            }
 
-            // 変更を同期
-            photonView.RPC("KanScreamRPC", RpcTarget.All, selectedPositions[0].Item1, selectedPositions[0].Item2, selectedPositions[1].Item1, selectedPositions[1].Item2, infoList.ToArray());
+                // フラグを初期化
+                isKanScreamRPCCompleted = false;
+                // 変更を同期
+                photonView.RPC("KanScreamRPC", RpcTarget.All, x, y, infoList.ToArray());
+                infoList.Clear();
+                // フラグが設定されるまで待機
+                await UniTask.WaitUntil(() => isKanScreamRPCCompleted);
+            }
         }
     }
 
@@ -555,36 +564,29 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     /// 叫んだ時にひっくり返す
     /// アニメーション
     /// </summary>
-    /// <param name="x1"></param>
-    /// <param name="y1"></param>
-    /// <param name="x2"></param>
-    /// <param name="y2"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
     /// <param name="infoArray"></param>
     /// <returns></returns>
     [PunRPC]
-    private async UniTask KanScreamRPC(int x1, int y1, int x2, int y2, int[] infoArray)
+    private async UniTask KanScreamRPC(int x, int y, int[] infoArray)
     {
-        List<(int, int)> positions = new List<(int, int)> { (x1, y1), (x2, y2) };
+        isKanScreamRPCCompleted = false; // 終了フラグをリセット
         var rotateNum = 360 * 3;
 
-        foreach (var pos in positions)
-        {
-            int x = pos.Item1;
-            int y = pos.Item2;
-
-            // Kansaiコマに置き換え
-            _FieldState[x, y] = SpriteState.KANSAI;
-            await _KantoStoneObj[x, y].transform.DOLocalMoveY(1.5f, 0.5f).SetEase(Ease.OutBounce);
-            // 0.5秒待機
-            await UniTask.Delay(500);
-            await _KantoStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, rotateNum, rotateNum), 0.5f, RotateMode.FastBeyond360);
-            _KantoStoneObj[x, y].SetState(SpriteState.NONE);
-            _KansaiStoneObj[x, y].transform.position = new Vector3(_KansaiStoneObj[x, y].transform.position.x, 1.5f, _KansaiStoneObj[x, y].transform.position.z);
-            _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
-            await _KansaiStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 180, 0), 0.2f);
-            await UniTask.Delay(700);
-            await _KansaiStoneObj[x, y].transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBounce);
-        }
+        // Kansaiコマに置き換え
+        _FieldState[x, y] = SpriteState.KANSAI;
+        await _KantoStoneObj[x, y].transform.DOLocalMoveY(1.5f, 0.5f).SetEase(Ease.OutBounce);
+        // 0.5秒待機
+        await UniTask.Delay(500);
+        await _KantoStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, rotateNum, rotateNum), 0.5f, RotateMode.FastBeyond360);
+        _KantoStoneObj[x, y].SetState(SpriteState.NONE);
+        _KansaiStoneObj[x, y].transform.position = new Vector3(_KansaiStoneObj[x, y].transform.position.x, 1.5f, _KansaiStoneObj[x, y].transform.position.z);
+        _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
+        await _KansaiStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 180, 0), 0.2f);
+        await UniTask.Delay(700);
+        await _KansaiStoneObj[x, y].transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBounce);
+        
 
         // ひっくり返す処理
         for (int i = 0; i < infoArray.Length; i += 2)
@@ -594,7 +596,11 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             // Kansaiコマに置き換え
             _FieldState[posY, posY] = SpriteState.KANSAI;
             ReverseKanto(posX, posY).Forget();
+            await UniTask.WaitUntil(() => isReverseKantoRPCCompleted);
+            isReverseKantoRPCCompleted = false;
         }
+
+        isKanScreamRPCCompleted = true; // 終了フラグを設定
     }
 
 
