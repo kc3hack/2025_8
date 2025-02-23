@@ -56,6 +56,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     private SpriteState CurrentPlayerTurn = SpriteState.KANSAI; // 現在のプレイヤーのターン
 
+    private int passNum = 0; // パスした回数
+
     void Start()
     {
         // それぞれに対応したAudioSourceコンポーネントを取得する
@@ -97,7 +99,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         turnManager = FindObjectOfType<PunTurnManager>();
         if (turnManager == null)
         {
-            Debug.LogError("PunTurnManager component is missing from this GameObject");
+            // Debug.LogError("PunTurnManager component is missing from this GameObject");
             return;
         }
         turnManager.TurnManagerListener = this;
@@ -127,7 +129,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     {
         _gameBGM.Pause();
         // ボタンがクリックされたときの処理
-        Debug.Log("Kansai button clicked");
+        // Debug.Log("Kansai button clicked");
 
         GetComponent<AudioRecorder>().StartRecording();
         StartCoroutine(WaitAndCheckSimilarity(duration));
@@ -140,7 +142,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
         // 類似度を取得して処理を行う
         float similarity = GetComponent<AudioRecorder>().GetSimilarity();
-        Debug.Log("OthelloSystem 類似度: " + similarity);
+        // Debug.Log("OthelloSystem 類似度: " + similarity);
 
         JudgeScream().Forget();
 
@@ -276,27 +278,28 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 }
             }
 
-            if (_KantoCheckFlag)
-            {
-                Debug.Log("関東は置けるマスがある");
-            }
-            else
-            {
-                Debug.Log("関東は置けるマスがない");
-            }
-            if (_KansaiCheckFlag)
-            {
-                Debug.Log("関西は置けるマスがある");
-            }
-            else
-            {
-                Debug.Log("関西は置けるマスがない");
-            }
+            // if (_KantoCheckFlag)
+            // {
+            //     Debug.Log("関東は置けるマスがある");
+            // }
+            // else
+            // {
+            //     Debug.Log("関東は置けるマスがない");
+            // }
+            // if (_KansaiCheckFlag)
+            // {
+            //     Debug.Log("関西は置けるマスがある");
+            // }
+            // else
+            // {
+            //     Debug.Log("関西は置けるマスがない");
+            // }
 
             // Debug.Log("115:turnCheck: " + turnCheck);
 
             if (turnCheck && _FieldState[SelectedFieldCubePosX, SelectedFieldCubePosY] == SpriteState.NONE)
             {
+                passNum = 0;//連続のパス回数をリセット
                 var playerTurn = isKantoPlayer ? SpriteState.KANTO : SpriteState.KANSAI;
                 Vector3 move = new Vector3(SelectedFieldCubePosX, SelectedFieldCubePosY, (int)playerTurn);
 
@@ -332,6 +335,19 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         {
             turnManager.SendMove(null, true);
             turnManager.BeginTurn();
+            photonView.RPC("ClacPassNum", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void ClacPassNum()
+    {
+        passNum++;
+        if (passNum == 2)
+        {
+            _KansaiCheckFlag = false;
+            _KantoCheckFlag = false;
+            CalcTotalStoneNum();
         }
     }
 
@@ -422,17 +438,17 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         {
             if (kantoStoneNum > kansaiStoneNum)
             {
-                Debug.Log("関東の勝ち");
+                // Debug.Log("関東の勝ち");
                 ShowResultPanel(true);
             }
             else if (kantoStoneNum < kansaiStoneNum)
             {
-                Debug.Log("関西の勝ち");
+                // Debug.Log("関西の勝ち");
                 ShowResultPanel(false);
             }
             else
             {
-                Debug.Log("引き分け");
+                // Debug.Log("引き分け");
             }
         }
     }
@@ -887,7 +903,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     public void OnTurnBegins(int turn)
     {
-        Debug.Log("Turn begins: " + turn);
+        // Debug.Log("Turn begins: " + turn);
         photonView.RPC("UpdateCurrentPlayerStone", RpcTarget.All); // ターンが始まったタイミングでUIを更新
         CurrentPlayerTurn = CurrentPlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
         _PlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
@@ -895,11 +911,11 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     public void OnTurnCompleted(int turn)
     {
-        Debug.Log("Turn completed: " + turn);
+        // Debug.Log("Turn completed: " + turn);
     }
     public void OnPlayerMove(Player player, int turn, object move)
     {
-        Debug.Log("Player move: " + player.NickName + " Turn: " + turn);
+        // Debug.Log("Player move: " + player.NickName + " Turn: " + turn);
 
         // move オブジェクトを Vector3 にキャスト
         Vector3 movePosition = (Vector3)move;
@@ -916,11 +932,11 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     public void OnPlayerFinished(Player player, int turn, object move)
     {
-        Debug.Log("Player finished: " + player.NickName + " Turn: " + turn);
+        // Debug.Log("Player finished: " + player.NickName + " Turn: " + turn);
     }
 
     public void OnTurnTimeEnds(int turn)
     {
-        Debug.Log("Turn time ends: " + turn);
+        // Debug.Log("Turn time ends: " + turn);
     }
 }
