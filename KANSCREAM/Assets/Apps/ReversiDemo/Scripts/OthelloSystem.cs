@@ -47,6 +47,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [SerializeField] private AudioSource _loseBGM;
     [SerializeField] private AudioSource _betraySE;
     [SerializeField] private AudioSource _shineSE;
+    [SerializeField] private AudioSource _screamBGM;
 
     public GameObject VictoryPanel; // 勝利画面のパネル
     public GameObject DefeatPanel; // 敗北画面のパネル
@@ -66,6 +67,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _loseBGM = GetComponent<AudioSource>().GetComponents<AudioSource>()[2];
         _betraySE = GetComponent<AudioSource>().GetComponents<AudioSource>()[4];
         _shineSE = GetComponent<AudioSource>().GetComponents<AudioSource>()[3];
+        _screamBGM = GetComponent<AudioSource>().GetComponents<AudioSource>()[5];
 
         _gameBGM.Play();
 
@@ -148,8 +150,20 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
         if (similarity < 6000f)
         {
+            PlayScreamBGM().Forget();
             KanScream();
         }
+        else
+        {
+            _gameBGM.UnPause();
+        }
+
+    }
+
+    private async UniTask PlayScreamBGM()
+    {
+        await UniTask.Delay(3000);
+        _screamBGM.Play();
     }
 
     private async UniTask JudgeScream()
@@ -261,7 +275,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             //Debug.Log(_PlayerTurn + "のターン");
             if (!isKantoPlayer)
             {
-                
+
                 OnKansaiButtonClick();
             }
         }
@@ -332,7 +346,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             turnManager.SendMove(null, true);
             turnManager.BeginTurn();
@@ -377,19 +391,35 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             _FieldState[posX, posY] = playerTurn;
             if (playerTurn == SpriteState.KANTO)
             {
-                _KansaiStoneObj[posX, posY].SetState(SpriteState.NONE);
-                _KantoStoneObj[posX, posY].SetState(SpriteState.KANTO);
+                ReverseKansai(posX, posY).Forget();
             }
             else if (playerTurn == SpriteState.KANSAI)
             {
-                _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
-                _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
+                ReverseKanto(posX, posY).Forget();
             }
         }
 
         CheckCanSettingStone();
 
         _InfoList.Clear();
+    }
+
+    private async UniTask ReverseKansai(int posX, int posY)
+    {
+        await _KansaiStoneObj[posX, posY].transform.DORotate(new Vector3(0, 0, 90), 0.1f);
+        _KansaiStoneObj[posX, posY].SetState(SpriteState.NONE);
+        _KantoStoneObj[posX, posY].transform.rotation = Quaternion.Euler(0, 180, 90);
+        _KantoStoneObj[posX, posY].SetState(SpriteState.KANTO);
+        await _KantoStoneObj[posX, posY].transform.DORotate(new Vector3(0, 180, 0), 0.1f);
+    }
+
+    private async UniTask ReverseKanto(int posX, int posY)
+    {
+        await _KantoStoneObj[posX, posY].transform.DORotate(new Vector3(0, 0, 90), 0.1f);
+        _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
+        _KansaiStoneObj[posX, posY].transform.rotation = Quaternion.Euler(0, 180, 90);
+        _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
+        await _KansaiStoneObj[posX, posY].transform.DORotate(new Vector3(0, 180, 0), 0.1f);
     }
 
     private bool FieldStateCheck(SpriteState playerTurn)
@@ -550,7 +580,6 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             _KantoStoneObj[posX, posY].SetState(SpriteState.NONE);
             _KansaiStoneObj[posX, posY].SetState(SpriteState.KANSAI);
         }
-        _gameBGM.UnPause();
     }
 
 
