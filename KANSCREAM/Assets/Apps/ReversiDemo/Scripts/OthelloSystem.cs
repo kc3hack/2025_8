@@ -9,13 +9,14 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
+using TMPro;
 public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 {
     public GameObject KantoStone;//オセロ駒オブジェクト
     public GameObject KansaiStone;//オセロ駒オブジェクト
     public GameObject SelectedFieldCube;//選択中のフィールドを示すオブジェクト
-    public GameObject KansaiButtonPrefab; // 関西プレイヤー用のボタンプレハブ
-    private GameObject kansaiButtonInstance; // 関西プレイヤー用のボタンインスタンス
+    public GameObject restartButton; // 関西プレイヤー用のボタンプレハブ
+    //private GameObject restartButton; // 関西プレイヤー用のボタンインスタンス
     const int FIELD_SIZE_X = 6;//盤のサイズ
     const int FIELD_SIZE_Y = 6;//盤のサイズ
     private int SelectedFieldCubePosX;//指定しているマスのX座標
@@ -49,15 +50,23 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [SerializeField] private AudioSource _shineSE;
     [SerializeField] private AudioSource _screamBGM;
 
-    public GameObject VictoryPanel; // 勝利画面のパネル
-    public GameObject DefeatPanel; // 敗北画面のパネル
 
-    public GameObject CurrentPlayerKantoStone; // 現在のプレイヤーの関東コマを表示するオブジェクト
-    public GameObject CurrentPlayerKansaiStone; // 現在のプレイヤーの関西コマを表示するオブジェクト
+    [SerializeField] private Image CurrentPlayerKantoStone; // 現在のプレイヤーの関東コマを表示するオブジェクト
+    [SerializeField] private Image CurrentPlayerKansaiStone; // 現在のプレイヤーの関西コマを表示するオブジェクト
 
     private SpriteState CurrentPlayerTurn = SpriteState.KANSAI; // 現在のプレイヤーのターン
 
     private int passNum = 0; // パスした回数
+
+     [SerializeField] private Image victoryImage; // 勝利イメージ
+    [SerializeField] private Image defeatImage; // 敗北イメージ
+    [SerializeField] private Image whiteBack; // ホワイトバック
+
+    [SerializeField] private TextMeshProUGUI finishKantoStoneNum; // 現在のプレイヤーの関東コマの数を表示するテキスト 
+    [SerializeField] private TextMeshProUGUI finishKansaiStoneNum; // 現在のプレイヤーの関西コマの数を表示するテキスト
+
+    [SerializeField] private Image finishKantoStone;
+    [SerializeField] private Image finishKansaiStone;
 
     void Start()
     {
@@ -135,6 +144,61 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
         GetComponent<AudioRecorder>().StartRecording();
         StartCoroutine(WaitAndCheckSimilarity(duration));
+    }
+
+    public void onClick() {
+        photonView.RPC("ReStartReversi", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void ReStartReversi() {
+        // 盤面の初期化
+    for (int y = 0; y < FIELD_SIZE_Y; y++)
+    {
+        for (int x = 0; x < FIELD_SIZE_X; x++)
+        {
+            _FieldState[x, y] = SpriteState.NONE;
+            _KantoStoneObj[x, y].SetState(SpriteState.NONE);
+            _KansaiStoneObj[x, y].SetState(SpriteState.NONE);
+        }
+    }
+
+    // 初期配置 関東:黒 関西:白
+    _KantoStoneObj[3, 2].SetState(SpriteState.KANTO);
+    _KansaiStoneObj[2, 2].SetState(SpriteState.KANSAI);
+    _KantoStoneObj[2, 3].SetState(SpriteState.KANTO);
+    _KansaiStoneObj[3, 3].SetState(SpriteState.KANSAI);
+
+    _FieldState[3, 2] = SpriteState.KANTO;
+    _FieldState[2, 2] = SpriteState.KANSAI;
+    _FieldState[2, 3] = SpriteState.KANTO;
+    _FieldState[3, 3] = SpriteState.KANSAI;
+
+
+    _KantoStoneObj[5, 0].SetState(SpriteState.KANTO);
+    _KantoStoneObj[0, 5].SetState(SpriteState.KANTO);
+    _FieldState[5, 0] = SpriteState.KANTO;
+    _FieldState[0, 5] = SpriteState.KANTO;
+
+    // ターンの初期化
+    _PlayerTurn = SpriteState.KANTO;
+    CurrentPlayerTurn = SpriteState.KANTO;
+    // turnManagerのturnを0にする
+    turnManager.SetTurn(1);
+
+    finishKantoStoneNum.gameObject.SetActive(false);
+    finishKansaiStoneNum.gameObject.SetActive(false);
+    whiteBack.gameObject.SetActive(false);
+    restartButton.gameObject.SetActive(false);
+    finishKantoStone.gameObject.SetActive(false);
+    finishKansaiStone.gameObject.SetActive(false);
+    victoryImage.gameObject.SetActive(false);
+    defeatImage.gameObject.SetActive(false);
+
+
+    _winBGM.Stop();
+    _loseBGM.Stop();
+    _gameBGM.Play();
     }
 
     IEnumerator<object> WaitAndCheckSimilarity(float duration)
@@ -221,13 +285,13 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     {
         if (_PlayerTurn == SpriteState.KANTO)
         {
-            CurrentPlayerKantoStone.SetActive(true);
-            CurrentPlayerKansaiStone.SetActive(false);
+            CurrentPlayerKantoStone.gameObject.SetActive(true);
+            CurrentPlayerKansaiStone.gameObject.SetActive(false);
         }
         else
         {
-            CurrentPlayerKantoStone.SetActive(false);
-            CurrentPlayerKansaiStone.SetActive(true);
+            CurrentPlayerKantoStone.gameObject.SetActive(false);
+            CurrentPlayerKansaiStone.gameObject.SetActive(true);
         }
     }
 
@@ -918,30 +982,70 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         return localTurnCheck;
     }
 
-    private void ShowResultPanel(bool isKantoWinner)
+   private void ShowResultPanel(bool isKantoWinner)
+{
+    Debug.Log("ShowResultPanel called");
+
+    // コマの数を計算
+    int kantoStoneNum = 0;
+    int kansaiStoneNum = 0;
+    for (int y = 0; y < FIELD_SIZE_Y; y++)
+    {
+        for (int x = 0; x < FIELD_SIZE_X; x++)
+        {
+            if (_FieldState[x, y] == SpriteState.KANTO)
+            {
+                kantoStoneNum++;
+            }
+            else if (_FieldState[x, y] == SpriteState.KANSAI)
+            {
+                kansaiStoneNum++;
+            }
+        }
+    }
+
+    // Debug.Log("Kanto Stone Num: " + kantoStoneNum);
+    // Debug.Log("Kansai Stone Num: " + kansaiStoneNum);
+
+
+    finishKantoStoneNum.text = "×" + kantoStoneNum.ToString();
+    finishKantoStoneNum.gameObject.SetActive(true);
+    finishKansaiStoneNum.text = "×" + kansaiStoneNum.ToString();
+    finishKansaiStoneNum.gameObject.SetActive(true);
+    whiteBack.gameObject.SetActive(true);
+    restartButton.gameObject.SetActive(true); // リスタートボタンを表示
+    finishKantoStone.gameObject.SetActive(true);
+    finishKansaiStone.gameObject.SetActive(true);
+    
+
+    if (victoryImage != null && defeatImage != null)
     {
         if (isKantoPlayer && isKantoWinner)
         {
-            VictoryPanel.SetActive(true);
+            victoryImage.gameObject.SetActive(true);
             _gameBGM.Stop();
-            _screamBGM.Stop();
             _winBGM.Play();
         }
         else if (!isKantoPlayer && !isKantoWinner)
         {
-            VictoryPanel.SetActive(true);
+            victoryImage.gameObject.SetActive(true);
             _gameBGM.Stop();
-            _screamBGM.Stop();
             _winBGM.Play();
         }
         else
         {
-            DefeatPanel.SetActive(true);
+            defeatImage.gameObject.SetActive(true);
             _gameBGM.Stop();
-            _screamBGM.Stop();
             _loseBGM.Play();
         }
     }
+    else
+    {
+        Debug.LogError("victoryImage or defeatImage is not assigned");
+    }
+
+    Debug.Log("ShowResultPanel completed");
+}
 
     public void OnTurnBegins(int turn)
     {

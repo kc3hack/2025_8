@@ -40,13 +40,18 @@ namespace Photon.Pun.UtilityScripts
         public int Turn
         {
             get { return PhotonNetwork.CurrentRoom.GetTurn(); }
-            private set
+             set
             {
 
                 _isOverCallProcessed = false;
 
                 PhotonNetwork.CurrentRoom.SetTurn(value, true);
             }
+        }
+
+        public void SetTurn(int turn)
+        {
+        Turn = turn;
         }
 
 
