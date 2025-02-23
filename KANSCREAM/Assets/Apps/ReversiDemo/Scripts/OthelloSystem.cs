@@ -314,7 +314,6 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
             if (turnCheck && _FieldState[SelectedFieldCubePosX, SelectedFieldCubePosY] == SpriteState.NONE)
             {
-                passNum = 0;//連続のパス回数をリセット
                 var playerTurn = isKantoPlayer ? SpriteState.KANTO : SpriteState.KANSAI;
                 Vector3 move = new Vector3(SelectedFieldCubePosX, SelectedFieldCubePosY, (int)playerTurn);
 
@@ -369,6 +368,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [PunRPC]
     private void PlaceStone(Vector3 move, int[] infoArray)
     {
+        passNum = 0;//連続のパス回数をリセット
         int x = (int)move.x;
         int y = (int)move.y;
         SpriteState playerTurn = (SpriteState)(int)move.z;
