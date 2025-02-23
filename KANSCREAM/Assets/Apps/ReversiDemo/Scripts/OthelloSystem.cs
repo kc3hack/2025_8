@@ -501,16 +501,16 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
             // Kansaiコマに置き換え
             _FieldState[x, y] = SpriteState.KANSAI;
-            //await _KantoStoneObj[x, y].transform.DOLocalMoveY(0.5f, 0.5f).SetEase(Ease.OutBounce);
+            await _KantoStoneObj[x, y].transform.DOLocalMoveY(0.5f, 0.5f).SetEase(Ease.OutBounce);
             // 0.5秒待機
-            //await UniTask.Delay(500);
-            //await _KantoStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
+            await UniTask.Delay(500);
+            await _KantoStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
             _KantoStoneObj[x, y].SetState(SpriteState.NONE);
             _KansaiStoneObj[x, y].transform.position = new Vector3(_KansaiStoneObj[x, y].transform.position.x, 3f, _KansaiStoneObj[x, y].transform.position.z);
             _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
-            //await _KansaiStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
-            //await UniTask.Delay(700);
-            //await _KansaiStoneObj[x, y].transform.DOLocalMoveY(0.119f, 0.2f).SetEase(Ease.OutBounce);
+            await _KansaiStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, 0, 0), 0.2f);
+            await UniTask.Delay(700);
+            await _KansaiStoneObj[x, y].transform.DOLocalMoveY(0.119f, 0.2f).SetEase(Ease.OutBounce);
         }
 
         // ひっくり返す処理
