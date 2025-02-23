@@ -148,10 +148,10 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
         JudgeScream().Forget();
 
-        if (similarity < 6000f)
+        if (similarity < 10000f)
         {
             PlayScreamBGM().Forget();
-            KanScream();
+            KanScream(similarity);
         }
         else
         {
@@ -484,7 +484,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
     }
 
-    public void KanScream()
+    public void KanScream(float similarity)
     {
         if (isPushButton) return;
         isPushButton = true;
@@ -502,12 +502,28 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             }
         }
 
-        // Kantoのコマが2つ以上ある場合
-        if (kantoPositions.Count >= 2)
+        // Kantoのコマが1つ以上ある場合
+        if (kantoPositions.Count >= 1)
         {
-            // ランダムに2つの位置を選択
-            System.Random rand = new System.Random();
-            var selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(2).ToList();
+            var selectedPositions = new List<(int, int)>();
+            if(similarity < 4500f)
+            {
+                // ランダムに3つの位置を選択
+                System.Random rand = new System.Random();
+                selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(3).ToList();
+            }
+            else if(similarity < 7000f)
+            {
+                // ランダムに2つの位置を選択
+                System.Random rand = new System.Random();
+                selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(2).ToList();
+            }
+            else
+            {
+                // ランダムに1つの位置を選択
+                System.Random rand = new System.Random();
+                selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(1).ToList();
+            }
 
             // ひっくり返す位置を収集
             List<int> infoList = new List<int>();

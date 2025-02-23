@@ -31,7 +31,7 @@ public class AudioComparison
             using (StreamReader reader = process.StandardOutput)
             {
                 string result = reader.ReadToEnd();
-                UnityEngine.Debug.Log("結果:" + result);
+                // UnityEngine.Debug.Log("結果:" + result);
 
                 // 結果を解析して類似度を取得
                 try
@@ -43,7 +43,7 @@ public class AudioComparison
                         {
                             string similarityStr = line.Split(':')[1].Trim();
                             similarity = float.Parse(similarityStr);
-                            //UnityEngine.Debug.Log("類似度: " + similarity);
+                            // UnityEngine.Debug.Log("類似度: " + similarity);
                         }
                     }
                 }
