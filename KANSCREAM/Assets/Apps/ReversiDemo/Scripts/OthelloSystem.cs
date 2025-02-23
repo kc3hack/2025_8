@@ -597,7 +597,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             int posX = infoArray[i];
             int posY = infoArray[i + 1];
             // Kansaiコマに置き換え
-            _FieldState[posY, posY] = SpriteState.KANSAI;
+            _FieldState[posX, posY] = SpriteState.KANSAI;
             ReverseKanto(posX, posY).Forget();
             await UniTask.WaitUntil(() => isReverseKantoRPCCompleted);
             isReverseKantoRPCCompleted = false;
