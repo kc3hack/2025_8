@@ -411,12 +411,10 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _FieldState[x, y] = playerTurn;
         if (playerTurn == SpriteState.KANTO)
         {
-            _KantoStoneObj[x, y].transform.position = new Vector3(x, 0, y);
             _KantoStoneObj[x, y].SetState(SpriteState.KANTO);
         }
         else
         {
-            _KansaiStoneObj[x, y].transform.position = new Vector3(x, 0, y);
             _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
         }
 
@@ -614,6 +612,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         // 0.5秒待機
         await UniTask.Delay(500);
         await _KantoStoneObj[x, y].transform.DORotate(new Vector3(rotateNum, rotateNum, rotateNum), 0.5f, RotateMode.FastBeyond360);
+        _KantoStoneObj[x, y].transform.position = new Vector3(_KantoStoneObj[x, y].transform.position.x, 0, _KantoStoneObj[x, y].transform.position.z);
         _KantoStoneObj[x, y].SetState(SpriteState.NONE);
         _KansaiStoneObj[x, y].transform.position = new Vector3(_KansaiStoneObj[x, y].transform.position.x, 1.5f, _KansaiStoneObj[x, y].transform.position.z);
         _KansaiStoneObj[x, y].SetState(SpriteState.KANSAI);
