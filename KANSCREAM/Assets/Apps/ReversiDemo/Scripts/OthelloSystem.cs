@@ -163,6 +163,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         }
     }
 
+    Awake();
+
     // 初期配置 関東:黒 関西:白
     _KantoStoneObj[3, 2].SetState(SpriteState.KANTO);
     _KansaiStoneObj[2, 2].SetState(SpriteState.KANSAI);
@@ -185,6 +187,12 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     CurrentPlayerTurn = SpriteState.KANTO;
     // turnManagerのturnを0にする
     turnManager.SetTurn(1);
+
+    isPushButton = false;
+    _KantoCheckFlag = true;
+    _KansaiCheckFlag = true;
+    turnCheck = false;
+    passNum = 0;
 
     finishKantoStoneNum.gameObject.SetActive(false);
     finishKansaiStoneNum.gameObject.SetActive(false);
