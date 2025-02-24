@@ -53,6 +53,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [SerializeField] private GameObject _winnerBG;
     [SerializeField] private GameObject _looserBG;
     [SerializeField] private GameObject _nomalBG;
+    [SerializeField] private GameObject _resultBG;
 
 
     [SerializeField] private Image CurrentPlayerKantoStone; // 現在のプレイヤーの関東コマを表示するオブジェクト
@@ -206,6 +207,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     finishKansaiStone.gameObject.SetActive(false);
     victoryImage.gameObject.SetActive(false);
     defeatImage.gameObject.SetActive(false);
+    _resultBG.gameObject.SetActive(false);
 
 
     _winBGM.Stop();
@@ -1086,6 +1088,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     restartButton.gameObject.SetActive(true); // リスタートボタンを表示
     finishKantoStone.gameObject.SetActive(true);
     finishKansaiStone.gameObject.SetActive(true);
+    _resultBG.gameObject.SetActive(true);
     
 
     if (victoryImage != null && defeatImage != null)
