@@ -76,6 +76,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [SerializeField] private Image finishKantoStone;
     [SerializeField] private Image finishKansaiStone;
 
+    private bool finished = false;
+
     void Start()
     {
         // それぞれに対応したAudioSourceコンポーネントを取得する
@@ -223,6 +225,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     _loseBGM.Stop();
     _gameBGM.Play();
     NomalBGCheange();
+    finished = false;
     }
 
     IEnumerator<object> WaitAndCheckSimilarity(float duration)
@@ -335,6 +338,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [PunRPC]
     private void UpdateCurrentPlayerStone()
     {
+        if(finished) return;
+
         if (_PlayerTurn == SpriteState.KANTO)
         {
             CurrentPlayerKantoStone.gameObject.SetActive(true);
@@ -1091,7 +1096,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     // Debug.Log("Kanto Stone Num: " + kantoStoneNum);
     // Debug.Log("Kansai Stone Num: " + kansaiStoneNum);
-
+    
+    finished = true;
     CurrentPlayerKansaiStone.gameObject.SetActive(false);
     CurrentPlayerKantoStone.gameObject.SetActive(false);
     //CurrentPlayerTurn.gameObject.SetActive(false);
