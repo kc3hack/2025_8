@@ -52,7 +52,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [SerializeField] private GameObject _winnerBG;
     [SerializeField] private GameObject _looserBG;
     [SerializeField] private GameObject _nomalBG;
-
+    [SerializeField] private GameObject _screamVideo;
     public GameObject VictoryPanel; // 勝利画面のパネル
     public GameObject DefeatPanel; // 敗北画面のパネル
 
@@ -142,7 +142,6 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         _gameBGM.Pause();
         // ボタンがクリックされたときの処理
         // Debug.Log("Kansai button clicked");
-
         GetComponent<AudioRecorder>().StartRecording();
         StartCoroutine(WaitAndCheckSimilarity(duration));
     }
@@ -218,7 +217,6 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     private void NomalBGCheange()
     {
         _nomalBG.SetActive(true);
-        _nomalBG.GetComponent<VideoPlayer>().Play();
     }
 
     private void ResetBG()
@@ -310,7 +308,6 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             //Debug.Log(_PlayerTurn + "のターン");
             if (!isKantoPlayer)
             {
-
                 OnKansaiButtonClick();
             }
         }
@@ -386,6 +383,14 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             turnManager.BeginTurn();
             photonView.RPC("ClacPassNum", RpcTarget.All);
         }
+    }
+
+    private async UniTask ScreamAnimation()
+    {
+        _screamVideo.SetActive(true);
+        _screamVideo.GetComponent<VideoPlayer>().Play();
+        await UniTask.Delay(3000);
+        _screamVideo.SetActive(false);
     }
 
     [PunRPC]
