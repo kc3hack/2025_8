@@ -217,7 +217,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     CurrentPlayerKansaiStone.gameObject.SetActive(true);
     CurrentPlayerKantoStone.gameObject.SetActive(true);
-    CurrentPlayerTurn.gameObject.SetActive(true);
+    //CurrentPlayerTurn.gameObject.SetActive(true);
 
     _winBGM.Stop();
     _loseBGM.Stop();
@@ -299,7 +299,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     {
         ResetBG();
         _nomalBG.SetActive(true);
-        _nomalBG.GetComponent<VideoPlayer>().Play();
+        // _nomalBG.GetComponent<VideoPlayer>().Play();
     }
 
     private void ResetBG()
@@ -1094,7 +1094,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     CurrentPlayerKansaiStone.gameObject.SetActive(false);
     CurrentPlayerKantoStone.gameObject.SetActive(false);
-    CurrentPlayerTurn.gameObject.SetActive(false);
+    //CurrentPlayerTurn.gameObject.SetActive(false);
 
 
     finishKantoStoneNum.text = "×" + kantoStoneNum.ToString();
