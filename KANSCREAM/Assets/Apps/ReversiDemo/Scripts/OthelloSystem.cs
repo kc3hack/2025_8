@@ -134,7 +134,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
             // CreateKansaiButton(); // 関西プレイヤー用のボタンを生成
         }
 
-        ResetBG();
+        //ResetBG();
         NomalBGCheange();
     }
 
