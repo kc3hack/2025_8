@@ -199,6 +199,12 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     // turnManagerのturnを0にする
     turnManager.SetTurn(1);
 
+    isPushButton = false;
+    _KantoCheckFlag = true;
+     _KansaiCheckFlag = true;
+    turnCheck = false;
+    passNum = 0;
+
     finishKantoStoneNum.gameObject.SetActive(false);
     finishKansaiStoneNum.gameObject.SetActive(false);
     whiteBack.gameObject.SetActive(false);
@@ -213,6 +219,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     _winBGM.Stop();
     _loseBGM.Stop();
     _gameBGM.Play();
+    NomalBGCheange();
     }
 
     IEnumerator<object> WaitAndCheckSimilarity(float duration)
@@ -273,18 +280,21 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     private void WinnerBGChange()
     {
+        ResetBG();
         _winnerBG.SetActive(true);
         _winnerBG.GetComponent<VideoPlayer>().Play();
     }
 
     private void LooserBGChange()
     {
+        ResetBG();
         _looserBG.SetActive(true);
         _looserBG.GetComponent<VideoPlayer>().Play();
     }
 
     private void NomalBGCheange()
     {
+        ResetBG();
         _nomalBG.SetActive(true);
         _nomalBG.GetComponent<VideoPlayer>().Play();
     }
