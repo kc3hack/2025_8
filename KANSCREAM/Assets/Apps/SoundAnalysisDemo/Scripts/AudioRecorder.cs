@@ -27,7 +27,7 @@ public class AudioRecorder : MonoBehaviour
     {
         isRecording = true;
         filePath = Path.Combine(Application.dataPath, "Apps", "SoundAnalysisDemo", "Audio", "recorded.wav");
-        recording = Microphone.Start(/*"Yeti Stereo Microphone"*/"MacBook Airのマイク", false, (int)recordingDuration, frequency);
+        recording = Microphone.Start("Yeti Stereo Microphone", false, (int)recordingDuration, frequency);
         StartCoroutine(StopRecordingAfterDuration(recordingDuration));
         Debug.Log("録音開始...");
     }
