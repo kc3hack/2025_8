@@ -43,6 +43,7 @@
 
 ### (最終発表後追記)
 KANSCREAMがデザイン賞に選ばれたので、UXに関して注力したポイントを記事にした
+<br>
 Qiita URL: https://qiita.com/nut_nuts_nut/items/a7f6cf3cc2211835e938
 
 ### その他
