@@ -51,7 +51,7 @@ Qiita URL: https://qiita.com/nut_nuts_nut/items/a7f6cf3cc2211835e938
 
 ## 使用技術
 
-- c##
+- C#
 - Unity
 - PUN2
 - Python
