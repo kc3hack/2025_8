@@ -41,6 +41,10 @@
 <br>
 また、躍動感のあるアニメーションをBlenderで1から作成することでゲームに緩急をつけた
 
+### (最終発表後追記)
+KANSCREAMがデザイン賞に選ばれたので、UXに関して注力したポイントを記事にした
+Qiita URL: https://qiita.com/nut_nuts_nut/items/a7f6cf3cc2211835e938
+
 ### その他
 チームのそれぞれが触れたことのない技術に触れるようにした
 
@@ -53,10 +57,6 @@
 - Blender
 - AfterEffects
 - Illustrator
-<!-- 使用技術を入力してください -->
 
-
-<!--
-markdownの記法はこちらを参照してください！
-https://docs.github.com/ja/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
--->
+## 発表スライド
+https://www.canva.com/design/DAGf-ThUbdw/4Y9rzRtUiksbQDW9X7gSiA/edit?utm_content=DAGf-ThUbdw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
