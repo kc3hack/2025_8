@@ -1,4 +1,4 @@
-# KAN SCREAM
+# KANSCREAM
 <!-- プロダクト名に変更してください -->
 
 ![KANSCREAM](https://github.com/user-attachments/assets/189b0726-fb97-4cb4-b0dc-785a939a0a4c)
