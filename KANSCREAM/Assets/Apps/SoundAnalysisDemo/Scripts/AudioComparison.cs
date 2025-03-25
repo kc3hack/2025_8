@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AudioComparison
 {
-    public string pythonPath = ".venv/bin/python3"; // Pythonのパス
+    public string pythonPath = Path.Combine(Application.dataPath, "..", ".venv", "bin", "python3"); // 仮想環境の Python パス
     private float similarity = 0.0f;
 
     public void CompareAudio()
@@ -43,7 +43,7 @@ public class AudioComparison
                         {
                             string similarityStr = line.Split(':')[1].Trim();
                             similarity = float.Parse(similarityStr);
-                            // UnityEngine.Debug.Log("類似度: " + similarity);
+                            UnityEngine.Debug.Log("類似度: " + similarity);
                         }
                     }
                 }

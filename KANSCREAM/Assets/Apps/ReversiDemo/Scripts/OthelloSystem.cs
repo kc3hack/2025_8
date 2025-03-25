@@ -16,7 +16,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     public GameObject KantoStone;//オセロ駒オブジェクト
     public GameObject KansaiStone;//オセロ駒オブジェクト
     public GameObject SelectedFieldCube;//選択中のフィールドを示すオブジェクト
-    public GameObject restartButton; // 関西プレイヤー用のボタンプレハブ
+    //public GameObject restartButton; // 関西プレイヤー用のボタンプレハブ
     //private GameObject restartButton; // 関西プレイヤー用のボタンインスタンス
     const int FIELD_SIZE_X = 6;//盤のサイズ
     const int FIELD_SIZE_Y = 6;//盤のサイズ
@@ -76,7 +76,8 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     [SerializeField] private Image finishKantoStone;
     [SerializeField] private Image finishKansaiStone;
 
-    private bool finished = false;
+  [SerializeField] private TurnText turnText;
+  private bool finished = false;
 
     void Start()
     {
@@ -210,7 +211,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     finishKantoStoneNum.gameObject.SetActive(false);
     finishKansaiStoneNum.gameObject.SetActive(false);
     whiteBack.gameObject.SetActive(false);
-    restartButton.gameObject.SetActive(false);
+    //restartButton.gameObject.SetActive(false);
     finishKantoStone.gameObject.SetActive(false);
     finishKansaiStone.gameObject.SetActive(false);
     victoryImage.gameObject.SetActive(false);
@@ -220,6 +221,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     CurrentPlayerKansaiStone.gameObject.SetActive(true);
     CurrentPlayerKantoStone.gameObject.SetActive(true);
     //CurrentPlayerTurn.gameObject.SetActive(true);
+    turnText.TurnTextOn();
 
     _winBGM.Stop();
     _loseBGM.Stop();
@@ -393,10 +395,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         //スペースキーで録音開始
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //Debug.Log(_PlayerTurn + "のターン");
+            Debug.Log(_PlayerTurn + "のターン");
             if (!isKantoPlayer)
             {
-
                 OnKansaiButtonClick();
             }
         }
@@ -1108,10 +1109,11 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     finishKansaiStoneNum.text = "×" + kansaiStoneNum.ToString();
     finishKansaiStoneNum.gameObject.SetActive(true);
     whiteBack.gameObject.SetActive(true);
-    restartButton.gameObject.SetActive(true); // リスタートボタンを表示
+    //restartButton.gameObject.SetActive(true); // リスタートボタンを表示
     finishKantoStone.gameObject.SetActive(true);
     finishKansaiStone.gameObject.SetActive(true);
     _resultBG.gameObject.SetActive(true);
+    turnText.TurnTextOff();
     
 
     if (victoryImage != null && defeatImage != null)

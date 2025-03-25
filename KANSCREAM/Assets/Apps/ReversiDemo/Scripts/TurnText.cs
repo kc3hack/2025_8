@@ -23,4 +23,14 @@ public class TurnText : MonoBehaviour
             turnText.text = "Turn: " + turnManager.Turn; // フィールド名を変更
         }
     }
+
+    public void TurnTextOff()
+    {
+        turnText.gameObject.SetActive(false);
+    }
+
+    public void TurnTextOn()
+    {
+        turnText.gameObject.SetActive(true);
+    }
 }
