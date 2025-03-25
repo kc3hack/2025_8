@@ -1114,6 +1114,9 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
     finishKansaiStone.gameObject.SetActive(true);
     _resultBG.gameObject.SetActive(true);
     turnText.TurnTextOff();
+
+    victoryImage.gameObject.SetActive(false);
+    defeatImage.gameObject.SetActive(false);
     
 
     if (victoryImage != null && defeatImage != null)
