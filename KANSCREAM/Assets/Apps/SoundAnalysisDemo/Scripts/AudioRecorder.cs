@@ -29,10 +29,13 @@ public class AudioRecorder : MonoBehaviour
         string micDevice =  "Yeti Stereo Microphone";
         foreach (var device in Microphone.devices)
         {
-            if (device == "MacBook Airのマイク" || device == "Yeti Stereo Microphone")
+            if (device == "Yeti Stereo Microphone")
             {
                 micDevice = device;
                 break;
+            }else if (device == "MacBook Airのマイク")
+            {
+                micDevice = device;
             }
         }
         isRecording = true;
