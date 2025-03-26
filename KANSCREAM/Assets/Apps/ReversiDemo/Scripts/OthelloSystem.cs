@@ -970,6 +970,13 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 break;
             }
 
+            //2つ以上隣のコマが空白の場合メソッドを終了
+            if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == SpriteState.NONE))
+            {
+                localTurnCheck = false;
+                break;
+            }
+
             //2つ以上隣のコマが自分のコマの場合は置ける
             if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn))
             {
