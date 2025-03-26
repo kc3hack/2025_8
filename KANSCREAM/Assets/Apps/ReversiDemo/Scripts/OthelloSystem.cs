@@ -225,7 +225,6 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     _winBGM.Stop();
     _loseBGM.Stop();
-    _screamBGM.Stop();
     _gameBGM.Play();
     NomalBGCheange();
     finished = false;
@@ -591,6 +590,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
         if (kantoStoneNum + kansaiStoneNum == FIELD_SIZE_X * FIELD_SIZE_Y || (!_KantoCheckFlag && !_KansaiCheckFlag))
         {
+            _screamBGM.Stop();
             if (kantoStoneNum > kansaiStoneNum)
             {
                 // Debug.Log("関東の勝ち");
