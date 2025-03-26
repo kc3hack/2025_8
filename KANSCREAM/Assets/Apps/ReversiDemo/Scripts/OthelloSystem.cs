@@ -152,7 +152,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     void OnKansaiButtonClick()
     {
-        _gameBGM.Pause();
+        _gameBGM.Stop();
         // ボタンがクリックされたときの処理
         // Debug.Log("Kansai button clicked");
 
@@ -204,7 +204,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     isPushButton = false;
     _KantoCheckFlag = true;
-     _KansaiCheckFlag = true;
+    _KansaiCheckFlag = true;
     turnCheck = false;
     passNum = 0;
 
@@ -225,6 +225,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
 
     _winBGM.Stop();
     _loseBGM.Stop();
+    _screamBGM.Stop();
     _gameBGM.Play();
     NomalBGCheange();
     finished = false;
