@@ -14,6 +14,7 @@ namespace refactor
 
         private ReactiveProperty<CellState[,]> _boardState = new ReactiveProperty<CellState[,]>();
         public ReadOnlyReactiveProperty<CellState[,]> BoardState => _boardState.ToReadOnlyReactiveProperty();
+        public CellState[,] BoardStateValue { get => _boardState.Value; set => _boardState.Value = value; }
 
         public void Initialize()
         {
