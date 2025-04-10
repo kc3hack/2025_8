@@ -649,6 +649,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6359363882106875951, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4097198919707488844}
+    - targetCorrespondingSourceObject: {fileID: 6359363882106875951, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4097198919707488848}
+    - targetCorrespondingSourceObject: {fileID: 6359363882106875951, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4097198919707488846}
+    - targetCorrespondingSourceObject: {fileID: 6359363882106875951, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4097198919707488847}
   m_SourcePrefab: {fileID: 100100000, guid: 9f65e603831cc44c4aa92df9da578b98, type: 3}
 --- !u!1 &4097198919707488843 stripped
 GameObject:
@@ -669,6 +678,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _supportObj: {fileID: 9037801958668571037, guid: 0a15b697a721e4f3995c13c11ede258c, type: 3}
   _supportParentObj: {fileID: 1921229086}
+--- !u!114 &4097198919707488846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4097198919707488843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81d7d1304da3b47f8b6a946e4142b7eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4097198919707488847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4097198919707488843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f3c14f2847f45ed96a0463303d2650, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _kantoPiece: {fileID: 7251778951121144102, guid: 665619defc7bc40279550da32792bfe3, type: 3}
+  _kansaiPiece: {fileID: 5618039504971116742, guid: 431e2b9eca6364b99aa679252588e9c5, type: 3}
+  _kantoParent: {fileID: 1400323414377673209, guid: 188bc901796df424497fdb5b771a0cee, type: 3}
+  _kansaiParent: {fileID: 3606789154565734576, guid: 0dc5e40bc70b7431c982b50f264da624, type: 3}
+  _pieceParent: {fileID: 1628199853980942040, guid: 49936af7f2b384c1f9e8609e27272b56, type: 3}
+--- !u!114 &4097198919707488848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4097198919707488843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13fc56ec245fc40e48e4f098f47f1241, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

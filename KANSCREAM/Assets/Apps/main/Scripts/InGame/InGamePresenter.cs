@@ -7,6 +7,7 @@ namespace refactor
     {
         public const int MAX_X = 6;
         public const int MAX_Z = 6;
+        private BoardManagerPresenter _boardManagerPresenter;
         [SerializeField] private GameObject _supportObj;
         [SerializeField] private GameObject _supportParentObj;
 
@@ -17,6 +18,9 @@ namespace refactor
 
         private void Initialize()
         {
+            _boardManagerPresenter = GetComponent<BoardManagerPresenter>();
+            _boardManagerPresenter.Initialize();
+
             for (int x = 0; x < MAX_X; x++)
             {
                 for (int z = 0; z < MAX_Z; z++)
