@@ -7,7 +7,7 @@ from librosa.sequence import dtw
 import soundfile as sf
 import os
 
-def extract_mfcc_resampled(file_path, target_duration=2.0, n_mfcc=13):
+def extract_mfcc_resampled(file_path, target_duration=2.0, n_mfcc=20):
     y, sr = librosa.load(file_path, sr=None)
     y = librosa.effects.preemphasis(y)  # プリエンファシスフィルタを適用
     
@@ -22,17 +22,17 @@ def extract_mfcc_resampled(file_path, target_duration=2.0, n_mfcc=13):
     mfcc = librosa.feature.mfcc(y=y_resampled, sr=sr, n_mfcc=n_mfcc)
     return mfcc
 
-def dtw_distance(mfcc1, mfcc2):
+def dtw_distance(file_path1, file_path2):
     #MFCCのリシェイプ
-    mfcc1 = extract_mfcc_resampled(mfcc1)
-    mfcc2 = extract_mfcc_resampled(mfcc2)
+    mfcc1 = extract_mfcc_resampled(file_path1)
+    mfcc2 = extract_mfcc_resampled(file_path2)
 
     print(f"mfcc_max: {np.max(mfcc1)}")
     print(f"mfcc_min: {np.min(mfcc1)}")
     # MFCCの系列間距離を計算
-    if mfcc1.shape[1] != mfcc2.shape[1]:
-        raise ValueError("MFCCの形状が一致しません")
-    D, wp = dtw(mfcc1.T, mfcc2.T, metric='euclidean')
+    # if mfcc1.shape[1] != mfcc2.shape[1]:
+    #     raise ValueError("MFCCの形状が一致しません")
+    D, wp = dtw(mfcc1.T, mfcc2.T, metric='cosine')
     print(f"D: {D[-1, -1]}")
     
     return D[-1, -1]
