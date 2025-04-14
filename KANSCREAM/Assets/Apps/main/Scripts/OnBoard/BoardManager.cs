@@ -8,6 +8,8 @@ namespace refactor
         [SerializeField] private GameObject _kansaiPiece;
         [SerializeField] private GameObject _kantoParent;
         [SerializeField] private GameObject _kansaiParent;
+        private int _currentPosX;
+        private int _currentPosZ;
         private BoardChecker _boardChecker;
         public enum CellState// 盤上のマスの状態
         {
@@ -55,6 +57,8 @@ namespace refactor
                     Debugger.Log($"無効な座標: ({x}, {z})");
                     return;
                 }
+                _currentPosX = x;
+                _currentPosZ = z;
                 _boardState[x, z] = _turnState;
                 Show(x, z);
                 TurnChange();
@@ -90,9 +94,17 @@ namespace refactor
             _turnState = _turnState == CellState.KANTO ? CellState.KANSAI : CellState.KANTO;
         }
 
+        /// <summary>
+        /// ターンのチェックを行うメソッド
+        /// 盤面の状態と現在のターンを引数に渡して、ターンが可能かどうかを判定する
+        /// ターンが可能な場合はtrueを返す
+        /// ターンが不可能な場合はfalseを返す
+        /// </summary>
+        /// <returns></returns>
         private bool TurnCheck()
         {
-            return _boardChecker.TurnCheck(0);
+            _boardChecker.SetPlayerInfo(_currentPosX, _currentPosZ, _boardState, _turnState);
+            return _boardChecker.TurnCheck();
         }
     }
 }

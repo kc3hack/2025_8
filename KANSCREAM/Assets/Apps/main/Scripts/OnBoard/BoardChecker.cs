@@ -16,7 +16,30 @@ namespace refactor
             return BoardManager.CellState.NONE;
         }
 
-        public bool TurnCheck(int direction)
+        /// <summary>
+        /// ターン可能かどうかを判定するメソッド
+        /// ターン可能な場合はtrueを返す
+        /// ターン不可能な場合はfalseを返す
+        /// </summary>
+        /// <returns></returns>
+        public bool TurnCheck()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                if (TurnCheckSpecifidDirection(i))
+                {
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 指定した方向にターン可能かどうかを判定するメソッド
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        private bool TurnCheckSpecifidDirection(int direction)
         {
             // var opponentPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
 
@@ -112,6 +135,13 @@ namespace refactor
             return true;
         }
 
+        /// <summary>
+        /// ターン可能なマスを取得するメソッド
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="boardState"></param>
+        /// <param name="playerTurn"></param>
         public void SetPlayerInfo(int x, int y, BoardManager.CellState[,] boardState, BoardManager.CellState playerTurn)
         {
             _specifidPosX = x;
