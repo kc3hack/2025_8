@@ -8,6 +8,7 @@ namespace refactor
         [SerializeField] private GameObject _kansaiPiece;
         [SerializeField] private GameObject _kantoParent;
         [SerializeField] private GameObject _kansaiParent;
+        private BoardChecker _boardChecker;
         public enum CellState// 盤上のマスの状態
         {
             NONE,
@@ -20,6 +21,9 @@ namespace refactor
         public void Initialize()
         {
             _boardState = new CellState[InGamePresenter.MAX_X, InGamePresenter.MAX_Z];
+
+            _boardChecker = new BoardChecker();
+
             for (int x = 0; x < InGamePresenter.MAX_X; x++)
             {
                 for (int z = 0; z < InGamePresenter.MAX_Z; z++)
@@ -44,14 +48,17 @@ namespace refactor
         /// <param name="z"></param>
         public void SetUpPiece(int x, int z)
         {
-            if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
+            if (_boardChecker.JudgeGame() == CellState.NONE)
             {
-                Debugger.Log($"無効な座標: ({x}, {z})");
-                return;
+                if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
+                {
+                    Debugger.Log($"無効な座標: ({x}, {z})");
+                    return;
+                }
+                _boardState[x, z] = _turnState;
+                Show(x, z);
+                TurnChange();
             }
-            _boardState[x, z] = _turnState;
-            Show(x, z);
-            TurnChange();
         }
 
         /// <summary>
@@ -61,7 +68,6 @@ namespace refactor
         /// <param name="z"></param>
         public void Show(int x, int z)
         {
-            Debugger.Log("Bind成功");
             if (_turnState == CellState.KANTO)
             {
                 var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
@@ -82,6 +88,11 @@ namespace refactor
         private void TurnChange()
         {
             _turnState = _turnState == CellState.KANTO ? CellState.KANSAI : CellState.KANTO;
+        }
+
+        private bool TurnCheck()
+        {
+            return _boardChecker.TurnCheck(0);
         }
     }
 }
