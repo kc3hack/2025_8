@@ -2,14 +2,22 @@ using UnityEngine;
 
 namespace refactor
 {
+    /// <summary>
+    /// 盤面の管理を行うクラス
+    /// 盤面の状態を保持し、駒を置く処理やターンの交代を行う
+    /// 盤面の状態は2次元配列で保持し、各マスの状態を管理する
+    /// 駒の表示は親オブジェクトを持ち、子オブジェクトとして駒を配置する
+    /// 駒の表示は非アクティブにしておき、駒を置くときにアクティブにする
+    /// 駒の種類は関東と関西の2種類を用意し、ターンごとに交代する
+    /// </summary>
     public class BoardManager : MonoBehaviour
     {
-        [SerializeField] private GameObject _kantoPiece;
-        [SerializeField] private GameObject _kansaiPiece;
-        [SerializeField] private GameObject _kantoParent;
-        [SerializeField] private GameObject _kansaiParent;
-        private int _currentPosX;
-        private int _currentPosZ;
+        [SerializeField] private GameObject _kantoPiece;// 関東の駒
+        [SerializeField] private GameObject _kansaiPiece;// 関西の駒
+        [SerializeField] private GameObject _kantoParent;// 関東の駒をまとめる親オブジェクト
+        [SerializeField] private GameObject _kansaiParent;// 関西の駒をまとめる親オブジェクト
+        private int _specifidPosX;// 現在のX座標
+        private int _specifidPosZ;// 現在のZ座標
         private BoardChecker _boardChecker;
         public enum CellState// 盤上のマスの状態
         {
@@ -62,8 +70,8 @@ namespace refactor
                     Debugger.Log($"無効な座標: ({x}, {z})");
                     return;
                 }
-                _currentPosX = x;
-                _currentPosZ = z;
+                _specifidPosX = x;
+                _specifidPosZ = z;
                 _boardState[x, z] = _turnState;
                 if(TurnCheck())
                     Show(x, z);
@@ -111,8 +119,8 @@ namespace refactor
         /// <returns></returns>
         private bool TurnCheck()
         {
-            _boardChecker.SetPlayerInfo(_currentPosX, _currentPosZ, _boardState, _turnState);
-            return _boardChecker.TurnCheck(_currentPosX, _currentPosZ);
+            _boardChecker.SetPlayerInfo(_specifidPosX, _specifidPosZ, _boardState, _turnState);
+            return _boardChecker.TurnCheck(_specifidPosX, _specifidPosZ);
         }
     }
 }

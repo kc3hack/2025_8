@@ -33,10 +33,14 @@ namespace refactor
             }
             
             // 関東の初期配置
-            _boardManager.SetUpPiece(2, 2);
             _boardManager.SetUpPiece(2, 3);
-            _boardManager.SetUpPiece(3, 3);
+            _boardManager.SetUpPiece(2, 2);
             _boardManager.SetUpPiece(3, 2);
+            _boardManager.SetUpPiece(3, 3);
+            _boardManager.SetUpPiece(0, 5);
+            _boardManager.TurnChange();// 次のターンを関東に変更
+            _boardManager.SetUpPiece(5, 0);
+            _boardManager.TurnChange();// 初期のターンを関東に変更
         }
 
         private void Bind()

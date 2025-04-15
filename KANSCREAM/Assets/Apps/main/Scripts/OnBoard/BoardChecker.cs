@@ -2,12 +2,17 @@ using System.Collections.Generic;
 
 namespace refactor
 {
+    /// <summary>
+    /// 盤面の状態を管理するクラス
+    /// 指定したマスにコマを置けるかどうかを判定する
+    /// 全探索をして、置けるマスをtrueにして配列に格納
+    /// </summary>
     public class BoardChecker
     {
-        private int _specifidPosX;
-        private int _specifidPosY;
-        private BoardManager.CellState[,] _boardState;
-        private BoardManager.CellState _turnState;
+        private int _specifidPosX;// 指定したマスのX座標
+        private int _specifidPosY;// 指定したマスのY座標
+        private BoardManager.CellState[,] _boardState;// 盤面の状態を保持する2次元配列
+        private BoardManager.CellState _turnState;// 現在のターン
         private SettableCellList _settableCellList;
         public BoardChecker()
         {
