@@ -39,37 +39,37 @@ public class AudioComparison
                     string[] lines = result.Split('\n');
                     foreach (string line in lines)
                     {
-                        // if (line.StartsWith("Total Score:"))
-                        // {
-                        //     string similarityStr = line.Split(':')[1].Trim();
-                        //     similarity = float.Parse(similarityStr);
-                        //     UnityEngine.Debug.Log("類似度: " + similarity);
-                        // }
-                        // else if (line.StartsWith("DTW Score:"))
-                        // {
-                        //     string similarityStr = line.Split(':')[1].Trim();
-                        //     similarity = float.Parse(similarityStr);
-                        //     UnityEngine.Debug.Log("DTW Score: " + similarity);
-                        // }
-                        // else if (line.StartsWith("Volume Bonus:"))
-                        // {
-                        //     string similarityStr = line.Split(':')[1].Trim();
-                        //     similarity = float.Parse(similarityStr);
-                        //     UnityEngine.Debug.Log("音量ボーナス: " + similarity);
-                        // }
-                        // else if (line.StartsWith("DTW:"))
-                        // {
-                        //     string similarityStr = line.Split(':')[1].Trim();
-                        //     similarity = float.Parse(similarityStr);
-                        //     UnityEngine.Debug.Log("DTW: " + similarity);
-                        // }
-                        // else if (line.StartsWith("Volume2:"))
-                        // {
-                        //     string similarityStr = line.Split(':')[1].Trim();
-                        //     similarity = float.Parse(similarityStr);
-                        //     UnityEngine.Debug.Log("音量: " + similarity);
-                        // }
-                        if (line.StartsWith("distance:"))
+                        if (line.StartsWith("Total Score:"))
+                        {
+                            string similarityStr = line.Split(':')[1].Trim();
+                            similarity = float.Parse(similarityStr);
+                            UnityEngine.Debug.Log("類似度: " + similarity);
+                        }
+                        else if (line.StartsWith("DTW Score:"))
+                        {
+                            string similarityStr = line.Split(':')[1].Trim();
+                            similarity = float.Parse(similarityStr);
+                            UnityEngine.Debug.Log("DTW Score: " + similarity);
+                        }
+                        else if (line.StartsWith("Volume Bonus:"))
+                        {
+                            string similarityStr = line.Split(':')[1].Trim();
+                            similarity = float.Parse(similarityStr);
+                            UnityEngine.Debug.Log("音量ボーナス: " + similarity);
+                        }
+                        else if (line.StartsWith("DTW:"))
+                        {
+                            string similarityStr = line.Split(':')[1].Trim();
+                            similarity = float.Parse(similarityStr);
+                            UnityEngine.Debug.Log("DTW: " + similarity);
+                        }
+                        else if (line.StartsWith("Volume2:"))
+                        {
+                            string similarityStr = line.Split(':')[1].Trim();
+                            similarity = float.Parse(similarityStr);
+                            UnityEngine.Debug.Log("音量: " + similarity);
+                        }
+                        else if (line.StartsWith("distance:"))
                         {
                             string similarityStr = line.Split(':')[1].Trim();
                             similarity = float.Parse(similarityStr);
