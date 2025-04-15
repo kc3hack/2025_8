@@ -637,19 +637,19 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
                 System.Random rand = new System.Random();
                 selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(4).ToList();
             }
-            else if (similarity >= 75f)
+            else if (similarity >= 65f)
             {
                 // ランダムに3つの位置を選択
                 System.Random rand = new System.Random();
                 selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(3).ToList();
             }
-            else if (similarity >= 60f)
+            else if (similarity >= 50f)
             {
                 // ランダムに2つの位置を選択
                 System.Random rand = new System.Random();
                 selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(2).ToList();
             }
-            else if (similarity >= 50f)
+            else if (similarity >= 30f)
             {
                 // ランダムに1つの位置を選択
                 System.Random rand = new System.Random();
