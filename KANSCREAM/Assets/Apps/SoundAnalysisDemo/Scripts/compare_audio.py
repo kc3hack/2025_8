@@ -31,9 +31,14 @@ def calculate_similarity(file_path1, file_path2, max_distance=100, max_volume_bo
     D, wp = dtw(mfcc1.T, mfcc2.T, metric='cosine')
     dtw_score = D[-1, -1]
     print(f"DTW: {dtw_score}")
-
-    # 距離を非線形変換してスコアに変換
-    similarity_score = 20 + (80 * (1 - np.tanh(dtw_score / 30)))  # tanhでスコアを圧縮
+    
+    # DTWスコアをスケーリング
+    if dtw_score <= 7:
+        similarity_score = 100
+    elif dtw_score >= 16:
+        similarity_score = 0
+    else:
+        similarity_score = 100 - ((dtw_score - 7) * (100 / (16 - 7)))
 
     # 音量を計算
     y2, sr2 = librosa.load(file_path2, sr=None)
@@ -41,7 +46,7 @@ def calculate_similarity(file_path1, file_path2, max_distance=100, max_volume_bo
     print(f"Volume2: {volume2}")
 
     # 音量の加点
-    volume_bonus = min(max_volume_bonus, (volume2 / 50))
+    volume_bonus = min(max_volume_bonus, (volume2 / 10))
 
     # 総合スコアを計算
     total_score = similarity_score + volume_bonus
