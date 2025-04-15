@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace refactor
 {
     public class BoardChecker
@@ -6,14 +8,21 @@ namespace refactor
         private int _specifidPosY;
         private BoardManager.CellState[,] _boardState;
         private BoardManager.CellState _turnState;
+        private SettableCellList _settableCellList;
         public BoardChecker()
         {
-            
+            _settableCellList = new SettableCellList();
         }
 
-        public BoardManager.CellState JudgeGame()
+        /// <summary>
+        /// ゲームの勝敗を判定するメソッド
+        /// 現状コマのステートで判定しているけど
+        /// ゲーム画面ステートで判定する方がいいかも
+        /// </summary>
+        /// <returns></returns>
+        public GameSceneStateEnum.GameSceneState JudgeGame()
         {
-            return BoardManager.CellState.NONE;
+            return GameSceneStateEnum.GameSceneState.BeforeScream;// デバッグ用
         }
 
         /// <summary>
@@ -22,15 +31,21 @@ namespace refactor
         /// ターン不可能な場合はfalseを返す
         /// </summary>
         /// <returns></returns>
-        public bool TurnCheck()
+        public bool TurnCheck(int posX, int posY)
         {
-            for (int i = 0; i < 8; i++)
+            // for (int i = 0; i < 8; i++)
+            // {
+            //     if (TurnCheckSpecifidDirection(i))
+            //     {
+            //         return true;
+            //     }
+            // }
+
+            if (TurnCheckSpecifidDirection(posX, posY, 0))
             {
-                if (TurnCheckSpecifidDirection(i))
-                {
-                    return true;
-                }
+                return true;
             }
+
             return true;
         }
 
@@ -39,100 +54,101 @@ namespace refactor
         /// </summary>
         /// <param name="direction"></param>
         /// <returns></returns>
-        private bool TurnCheckSpecifidDirection(int direction)
+        private bool TurnCheckSpecifidDirection(int posX, int posY, int direction)
         {
-            // var opponentPlayerTurn = _PlayerTurn == SpriteState.KANTO ? SpriteState.KANSAI : SpriteState.KANTO;
+            _specifidPosX = posX;
+            _specifidPosY = posY;
+            var opponentPlayerTurn = _turnState == BoardManager.CellState.KANTO ? BoardManager.CellState.KANSAI : BoardManager.CellState.KANTO;
 
-            // var opponentInfoList = new List<(int, int)>();
-            // var turnCheck = false;
+            var opponentInfoList = new List<(int, int)>();
+            var turnCheck = false;
 
-            // int i = 0;
+            int i = 0;
 
-            // while (0 <= posX && posX <= FIELD_SIZE_X && 0 <= posY && posY <= FIELD_SIZE_Y)
-            // {
-            //     i++;
-            //     switch (direction)
-            //     {
-            //         case 0://左
-            //             if (posX == 0) { return localTurnCheck; }
-            //             posX--;
-            //             // Debug.Log(i+"番目の左のコマ: " + _FieldState[posX, posY]);
-            //             break;
-            //         case 1://右
-            //             if (posX == FIELD_SIZE_X - 1) { return localTurnCheck; }
-            //             posX++;
-            //             // Debug.Log(i+"番目の右のコマ: " + _FieldState[posX, posY]);
-            //             break;
-            //         case 2://下
-            //             if (posY == 0) { return localTurnCheck; }
-            //             posY--;
-            //             // Debug.Log(i+"番目の下のコマ: " + _FieldState[posX, posY]);
-            //             break;
-            //         case 3://上
-            //             if (posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-            //             posY++;
-            //             // Debug.Log(i+"番目の上のコマ: " + _FieldState[posX, posY]);
-            //             break;
-            //         case 4://右上
-            //             if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-            //             posX++;
-            //             posY++;
-            //             // Debug.Log(i+"番目の右上のコマ: " + _FieldState[posX, posY]);
-            //             break;
-            //         case 5://左下
-            //             if (posX == 0 || posY == 0) { return localTurnCheck; }
-            //             posX--;
-            //             posY--;
-            //             // Debug.Log(i+"番目の左下のコマ: " + _FieldState[posX, posY]);
-            //             break;
-            //         case 6://左上
-            //             if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return localTurnCheck; }
-            //             posX--;
-            //             posY++;
-            //             // Debug.Log(i+"番目の左上のコマ: " + _FieldState[posX, posY]);
-            //             break;
-            //         case 7://右下
-            //             if (posX == FIELD_SIZE_X - 1 || posY == 0) { return localTurnCheck; }
-            //             posX++;
-            //             posY--;
-            //             // Debug.Log(i+"番目の右下のコマ: " + _FieldState[posX, posY]);
-            //             break;
-            //     }
+            while (0 <= posX && posX <= InGamePresenter.MAX_X && 0 <= posY && posY <= InGamePresenter.MAX_Z)
+            {
+                i++;
+                switch (direction)
+                {
+                    case 0://左
+                        if (posX == 0) { return turnCheck; }
+                        posX--;
+                        // Debug.Log(i+"番目の左のコマ: " + _boardState[posX, posY]);
+                        break;
+                        //         case 1://右
+                        //             if (posX == FIELD_SIZE_X - 1) { return turnCheck; }
+                        //             posX++;
+                        //             // Debug.Log(i+"番目の右のコマ: " + _boardState[posX, posY]);
+                        //             break;
+                        //         case 2://下
+                        //             if (posY == 0) { return turnCheck; }
+                        //             posY--;
+                        //             // Debug.Log(i+"番目の下のコマ: " + _boardState[posX, posY]);
+                        //             break;
+                        //         case 3://上
+                        //             if (posY == FIELD_SIZE_Y - 1) { return turnCheck; }
+                        //             posY++;
+                        //             // Debug.Log(i+"番目の上のコマ: " + _boardState[posX, posY]);
+                        //             break;
+                        //         case 4://右上
+                        //             if (posX == FIELD_SIZE_X - 1 || posY == FIELD_SIZE_Y - 1) { return turnCheck; }
+                        //             posX++;
+                        //             posY++;
+                        //             // Debug.Log(i+"番目の右上のコマ: " + _boardState[posX, posY]);
+                        //             break;
+                        //         case 5://左下
+                        //             if (posX == 0 || posY == 0) { return turnCheck; }
+                        //             posX--;
+                        //             posY--;
+                        //             // Debug.Log(i+"番目の左下のコマ: " + _boardState[posX, posY]);
+                        //             break;
+                        //         case 6://左上
+                        //             if (posX == 0 || posY == FIELD_SIZE_Y - 1) { return turnCheck; }
+                        //             posX--;
+                        //             posY++;
+                        //             // Debug.Log(i+"番目の左上のコマ: " + _boardState[posX, posY]);
+                        //             break;
+                        //         case 7://右下
+                        //             if (posX == FIELD_SIZE_X - 1 || posY == 0) { return turnCheck; }
+                        //             posX++;
+                        //             posY--;
+                        //             // Debug.Log(i+"番目の右下のコマ: " + _boardState[posX, posY]);
+                        //             break;
+                }
 
-            //     //指定した方向に相手のコマがあるときその情報をリストに追加
-            //     if (_FieldState[posX, posY] == opponentPlayerTurn)
-            //     {
-            //         opponentInfoList.Add((posX, posY));
-            //     }
+                //指定した方向に相手のコマがあるときその情報をリストに追加
+                if (_boardState[posX, posY] == opponentPlayerTurn)
+                {
+                    opponentInfoList.Add((posX, posY));
+                }
 
-            //     //1回目のループで左のコマが自分のコマまたは空の場合は終了
-            //     if (opponentInfoList.Count == 0 && (_FieldState[posX, posY] == _PlayerTurn || _FieldState[posX, posY] == SpriteState.NONE))
-            //     {
-            //         localTurnCheck = false;
-            //         break;
-            //     }
+                //1回目のループで左のコマが自分のコマまたは空の場合は終了
+                if (opponentInfoList.Count == 0 && (_boardState[posX, posY] == _turnState || _boardState[posX, posY] == BoardManager.CellState.NONE))
+                {
+                    turnCheck = false;
+                    break;
+                }
 
-            //     //2つ以上隣のコマが空白の場合メソッドを終了
-            //     if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == SpriteState.NONE))
-            //     {
-            //         localTurnCheck = false;
-            //         break;
-            //     }
+                //2つ以上隣のコマが空白の場合メソッドを終了
+                if (opponentInfoList.Count > 0 && (_boardState[posX, posY] == BoardManager.CellState.NONE))
+                {
+                    turnCheck = false;
+                    break;
+                }
 
-            //     //2つ以上隣のコマが自分のコマの場合は置ける
-            //     if (opponentInfoList.Count > 0 && (_FieldState[posX, posY] == _PlayerTurn))
-            //     {
-            //         localTurnCheck = true;
-            //         foreach (var info in opponentInfoList)
-            //         {
-            //             _InfoList.Add(info);
-            //         }
-            //         break;
-            //     }
-            // }
-            // // Debug.Log("242:turnCheck: " + localTurnCheck);
-            // return turnCheck;
-            return true;
+                //2つ以上隣のコマが自分のコマの場合は置ける
+                if (opponentInfoList.Count > 0 && (_boardState[posX, posY] == _turnState))
+                {
+                    turnCheck = true;
+                    foreach (var info in opponentInfoList)
+                    {
+                        _settableCellList.SetSettableCell(_specifidPosX, _specifidPosY);
+                    }
+                    break;
+                }
+            }
+            return turnCheck;
+            // return true;
         }
 
         /// <summary>
@@ -149,5 +165,16 @@ namespace refactor
             _boardState = boardState;
             _turnState = playerTurn;
         }
+
+        public void SetCellState(BoardManager.CellState[,] boardState)
+        {
+            _boardState = boardState;
+        }
+
+        public void SetTurnState(BoardManager.CellState turnState)
+        {
+            _turnState = turnState;
+        }
+        
     }
 }

@@ -31,6 +31,12 @@ namespace refactor
                     supportHandler.Initialize(x, z);
                 }
             }
+            
+            // 関東の初期配置
+            _boardManager.SetUpPiece(2, 2);
+            _boardManager.SetUpPiece(2, 3);
+            _boardManager.SetUpPiece(3, 3);
+            _boardManager.SetUpPiece(3, 2);
         }
 
         private void Bind()

@@ -50,7 +50,12 @@ namespace refactor
         /// <param name="z"></param>
         public void SetUpPiece(int x, int z)
         {
-            if (_boardChecker.JudgeGame() == CellState.NONE)
+            if (_boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Start || 
+                _boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Result)
+            {
+                Debugger.Log("ゲームが終了しました。");
+                return;
+            }
             {
                 if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
                 {
@@ -60,7 +65,10 @@ namespace refactor
                 _currentPosX = x;
                 _currentPosZ = z;
                 _boardState[x, z] = _turnState;
-                Show(x, z);
+                if(TurnCheck())
+                    Show(x, z);
+                else
+                    Debugger.Log($"ここには置けない: ({x}, {z})");
                 TurnChange();
             }
         }
@@ -89,7 +97,7 @@ namespace refactor
         /// <summary>
         /// ターンを交代するメソッド
         /// </summary>
-        private void TurnChange()
+        public void TurnChange()
         {
             _turnState = _turnState == CellState.KANTO ? CellState.KANSAI : CellState.KANTO;
         }
@@ -104,7 +112,7 @@ namespace refactor
         private bool TurnCheck()
         {
             _boardChecker.SetPlayerInfo(_currentPosX, _currentPosZ, _boardState, _turnState);
-            return _boardChecker.TurnCheck();
+            return _boardChecker.TurnCheck(_currentPosX, _currentPosZ);
         }
     }
 }

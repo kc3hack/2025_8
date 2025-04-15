@@ -1,9 +1,12 @@
 using UnityEngine;
 
-public class Debugger : MonoBehaviour
+namespace refactor
 {
-    public static void Log(string message)
+    public class Debugger : MonoBehaviour
     {
-        Debug.Log(message);
+        public static void Log(string message)
+        {
+            Debug.Log(message);
+        }
     }
 }
