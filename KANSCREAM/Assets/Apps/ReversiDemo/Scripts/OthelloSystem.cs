@@ -631,35 +631,34 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         {
             var selectedPositions = new List<(int, int)>();
             
-            if (similarity < 4500f)
-            {
-                // ランダムに5つの位置を選択
-                System.Random rand = new System.Random();
-                selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(5).ToList();
-            }
-            else if (similarity < 6000f)
+            if (similarity >= 90f)
             {
                 // ランダムに4つの位置を選択
                 System.Random rand = new System.Random();
                 selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(4).ToList();
             }
-            else if (similarity < 7000f)
+            else if (similarity >= 75f)
             {
                 // ランダムに3つの位置を選択
                 System.Random rand = new System.Random();
                 selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(3).ToList();
             }
-            else if (similarity < 8500f)
+            else if (similarity >= 60f)
             {
                 // ランダムに2つの位置を選択
                 System.Random rand = new System.Random();
                 selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(2).ToList();
             }
-            else
+            else if (similarity >= 50f)
             {
                 // ランダムに1つの位置を選択
                 System.Random rand = new System.Random();
                 selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(1).ToList();
+            }
+            else
+            {
+                System.Random rand = new System.Random();
+                selectedPositions = kantoPositions.OrderBy(_ => rand.Next()).Take(0).ToList();
             }
 
             // ひっくり返す位置を収集
