@@ -50,6 +50,35 @@ namespace refactor
             }
         }
 
+
+        /// <summary>
+        /// 盤面の初期配置を行うメソッド
+        /// 関東と関西の初期配置を行う
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="z"></param>
+        public void InitializeSetUpPiece(int x, int z)
+        {
+            if (_boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Start || 
+                _boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Result)
+            {
+                Debugger.Log("ゲームが終了しました。");
+                return;
+            }
+            {
+                if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
+                {
+                    Debugger.Log($"無効な座標: ({x}, {z})");
+                    return;
+                }
+                _specifidPosX = x;
+                _specifidPosZ = z;
+                _boardState[x, z] = _turnState;
+                Show(x, z);
+                TurnChange();
+            }
+        }
+
         /// <summary>
         /// 盤面の状態を更新するメソッド
         /// 指定されたマスに指定されたコマを置く
@@ -70,15 +99,63 @@ namespace refactor
                     Debugger.Log($"無効な座標: ({x}, {z})");
                     return;
                 }
+
+                if (_boardState[x, z] != CellState.NONE)
+                {
+                    Debugger.Log($"この場所には既に駒が置かれています: ({x}, {z})");
+                    return;
+                }
+
                 _specifidPosX = x;
                 _specifidPosZ = z;
-                _boardState[x, z] = _turnState;
-                if(TurnCheck())
+                if(TurnCheck()) 
+                {
+                    _boardState[x, z] = _turnState;
                     Show(x, z);
+                    FlipPieces(); // 駒をひっくり返す処理
+                    TurnChange();
+                }
                 else
                     Debugger.Log($"ここには置けない: ({x}, {z})");
-                TurnChange();
             }
+        }
+
+        /// <summary>
+        /// ひっくり返す駒の位置を取得し、駒をひっくり返すメソッド
+        /// ひっくり返す駒の位置はBoardCheckerクラスで取得する
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
+        public void FlipPieces()
+        {
+            var flipPositions = _boardChecker.GetFlipPositions();
+
+            foreach (var pos in flipPositions)
+            {
+                int x = pos.Item1;
+                int z = pos.Item2;
+                _boardState[x, z] = _turnState;
+
+                if (_turnState == CellState.KANTO)
+                {
+                    var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                    piece.SetActive(false);
+
+                    piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                    piece.SetActive(true);
+                }
+                else if (_turnState == CellState.KANSAI)
+                {
+                    var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                    piece.SetActive(false);
+
+                    piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                    piece.SetActive(true);
+                }
+            }
+            _boardChecker.ClearFlipPositions();
+            flipPositions.Clear();
         }
 
         /// <summary>
@@ -101,6 +178,7 @@ namespace refactor
                 Debugger.Log($"関西の駒を表示: ({x}, {z})");
             }
         }
+        
 
         /// <summary>
         /// ターンを交代するメソッド
@@ -123,4 +201,6 @@ namespace refactor
             return _boardChecker.TurnCheck(_specifidPosX, _specifidPosZ);
         }
     }
+    
+    
 }
