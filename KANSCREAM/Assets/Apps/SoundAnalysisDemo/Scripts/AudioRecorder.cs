@@ -26,18 +26,18 @@ public class AudioRecorder : MonoBehaviour
     public void StartRecording()
     {
         // マイクデバイスがMacBook AirのマイクかYeti Stereo Microphoneにマイクデバイスに文字列を代入
-        string micDevice =  "Yeti Stereo Microphone";
-        foreach (var device in Microphone.devices)
-        {
-            if (device == "Yeti Stereo Microphone")
-            {
-                micDevice = device;
-                break;
-            }else if (device == "MacBook Airのマイク")
-            {
-                micDevice = device;
-            }
-        }
+        string micDevice =  "MacBook Airのマイク";
+        // foreach (var device in Microphone.devices)
+        // {
+        //     if (device == "Yeti Stereo Microphone")
+        //     {
+        //         micDevice = device;
+        //         break;
+        //     }else if (device == "MacBook Airのマイク")
+        //     {
+        //         micDevice = device;
+        //     }
+        // }
         isRecording = true;
         filePath = Path.Combine(Application.dataPath, "Apps", "SoundAnalysisDemo", "Audio", "recorded.wav");
         recording = Microphone.Start(micDevice, false, (int)recordingDuration, frequency);
