@@ -57,5 +57,15 @@ namespace refactor
         {
             return _settableCellList;
         }
+
+        public bool GetCell(int x, int z)
+        {
+            if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
+            {
+                Debugger.Log($"無効な座標: ({x}, {z})");
+                return false;
+            }
+            return _settableCellList[x, z];
+        }
     }
 }

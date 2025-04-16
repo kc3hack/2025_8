@@ -61,56 +61,56 @@ namespace refactor
         /// </summary>
         /// <param name="direction"></param>
         /// <returns></returns>
-       private bool TurnCheckSpecifidDirection(int posX, int posY, int direction)
-{
-    int startX = posX;
-    int startY = posY;
-
-    var opponentPlayerTurn = _turnState == BoardManager.CellState.KANTO ? BoardManager.CellState.KANSAI : BoardManager.CellState.KANTO;
-    var turnCheck = false;
-
-    var FIELD_SIZE_X = InGamePresenter.MAX_X;
-    var FIELD_SIZE_Y = InGamePresenter.MAX_Z;
-
-    // 方向ごとの移動量を定義
-    int[] dx = { -1, 1, 0, 0, 1, -1, -1, 1 }; // 左, 右, 下, 上, 右上, 左下, 左上, 右下
-    int[] dy = { 0, 0, -1, 1, 1, -1, 1, -1 };
-
-    // 指定方向に移動
-    posX += dx[direction];
-    posY += dy[direction];
-
-    bool hasOpponent = false;
-    var tempFlipPositions = new List<(int, int)>();
-    while (posX >= 0 && posX < FIELD_SIZE_X && posY >= 0 && posY < FIELD_SIZE_Y)
-    {
-        if (_boardState[posX, posY] == opponentPlayerTurn)
+        private bool TurnCheckSpecifidDirection(int posX, int posY, int direction)
         {
-            hasOpponent = true;
-            tempFlipPositions.Add((posX, posY)); 
-        }
-        else if (_boardState[posX, posY] == _turnState)
-        {
-            if (hasOpponent)
+            int startX = posX;
+            int startY = posY;
+
+            var opponentPlayerTurn = _turnState == BoardManager.CellState.KANTO ? BoardManager.CellState.KANSAI : BoardManager.CellState.KANTO;
+            var turnCheck = false;
+
+            var FIELD_SIZE_X = InGamePresenter.MAX_X;
+            var FIELD_SIZE_Y = InGamePresenter.MAX_Z;
+
+            // 方向ごとの移動量を定義
+            int[] dx = { -1, 1, 0, 0, 1, -1, -1, 1 }; // 左, 右, 下, 上, 右上, 左下, 左上, 右下
+            int[] dy = { 0, 0, -1, 1, 1, -1, 1, -1 };
+
+            // 指定方向に移動
+            posX += dx[direction];
+            posY += dy[direction];
+
+            bool hasOpponent = false;// 相手のコマがあるかどうか
+            var tempFlipPositions = new List<(int, int)>();
+
+            while (posX >= 0 && posX < FIELD_SIZE_X && posY >= 0 && posY < FIELD_SIZE_Y)
             {
-                turnCheck = true;
-                _flipPositions.AddRange(tempFlipPositions);
-                _settableCellList.SetSettableCell(startX, startY);
+                if (_boardState[posX, posY] == opponentPlayerTurn)
+                {
+                    hasOpponent = true; // 相手のコマがある場合
+                    tempFlipPositions.Add((posX, posY));
+                }
+                else if (_boardState[posX, posY] == _turnState)
+                {
+                    if (hasOpponent)
+                    {
+                        turnCheck = true;
+                        _flipPositions.AddRange(tempFlipPositions);
+                    }
+                    break;
+                }
+                else
+                {
+                    break;
+                }
+
+                // 次のマスに移動
+                posX += dx[direction];
+                posY += dy[direction];
             }
-            break;
-        }
-        else
-        {
-            break;
-        }
 
-        // 次のマスに移動
-        posX += dx[direction];
-        posY += dy[direction];
-    }
-
-    return turnCheck;
-}
+            return turnCheck;
+        }
 
         /// <summary>
         /// 置きたいマスを取得するメソッド
@@ -140,12 +140,17 @@ namespace refactor
         public List<(int, int)> GetFlipPositions()
         {
             return _flipPositions;
-        }   
-        
+        }
+
         public void ClearFlipPositions()
         {
             //　_flipPositionsの中身を全部消去
             _flipPositions.Clear();
+        }
+
+        public SettableCellList GetSettableCellList()
+        {
+            return _settableCellList;
         }
     }
 }
