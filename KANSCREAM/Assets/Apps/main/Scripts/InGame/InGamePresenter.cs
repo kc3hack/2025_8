@@ -32,7 +32,7 @@ namespace refactor
                     supportObj.transform.localPosition = new Vector3(x, 0.015f, z);
                     var supportHandler = supportObj.GetComponentInChildren<SupportHandler>();
                     supportHandler.Initialize(x, z);
-                    supportObj.SetActive(false);
+                    // supportObj.SetActive(false);
                 }
             }
             
