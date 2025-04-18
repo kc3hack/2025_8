@@ -16,8 +16,8 @@ namespace refactor
         [SerializeField] private GameObject _kansaiPiece;// 関西の駒
         [SerializeField] private GameObject _kantoParent;// 関東の駒をまとめる親オブジェクト
         [SerializeField] private GameObject _kansaiParent;// 関西の駒をまとめる親オブジェクト
-        private int _specifidPosX;// 現在のX座標
-        private int _specifidPosZ;// 現在のZ座標
+        private int _specifiedPosX;// 現在のX座標
+        private int _specifiedPosZ;// 現在のZ座標
         private BoardChecker _boardChecker;
         public enum CellState// 盤上のマスの状態
         {
@@ -71,8 +71,8 @@ namespace refactor
                     Debugger.Log($"無効な座標: ({x}, {z})");
                     return;
                 }
-                _specifidPosX = x;
-                _specifidPosZ = z;
+                _specifiedPosX = x;
+                _specifiedPosZ = z;
                 _boardState[x, z] = _turnState;
                 Show(x, z);
                 TurnChange();
@@ -106,8 +106,8 @@ namespace refactor
                     return;
                 }
 
-                _specifidPosX = x;
-                _specifidPosZ = z;
+                _specifiedPosX = x;
+                _specifiedPosZ = z;
                 if(TurnCheck()) 
                 {
                     _boardState[x, z] = _turnState;
@@ -186,8 +186,8 @@ namespace refactor
         /// <returns></returns>
         private bool TurnCheck()
         {
-            _boardChecker.SetPlayerInfo(_specifidPosX, _specifidPosZ, _boardState, _turnState);
-            return _boardChecker.TurnCheck(_specifidPosX, _specifidPosZ);
+            _boardChecker.SetPlayerInfo(_specifiedPosX, _specifiedPosZ, _boardState, _turnState);
+            return _boardChecker.TurnCheck(_specifiedPosX, _specifiedPosZ);
         }
     }
     
