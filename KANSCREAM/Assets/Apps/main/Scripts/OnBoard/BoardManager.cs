@@ -61,12 +61,6 @@ namespace refactor
         /// <param name="z"></param>
         public void InitializeSetUpPiece(int x, int z)
         {
-            if (_boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Start ||
-                _boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Result)
-            {
-                Debugger.Log("ゲームが終了しました。");
-                return;
-            }
             {
                 if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
                 {
@@ -91,12 +85,6 @@ namespace refactor
         /// <param name="z"></param>
         public void SetUpPiece(int x, int z)
         {
-            if (_boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Start ||
-                _boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Result)
-            {
-                Debugger.Log("ゲームが終了しました。");
-                return;
-            }
             {
                 if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
                 {
