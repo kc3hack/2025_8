@@ -11,6 +11,7 @@ namespace refactor
         [SerializeField] private GameObject _supportParentObj;
         private BoardManager _boardManager;
         private GameObject[,] _supportHandlerList;
+        private Judge _judge;
 
         void Start()
         {
@@ -22,7 +23,10 @@ namespace refactor
         {
             _boardManager = GetComponent<BoardManager>();
             _boardManager.Initialize();
+            _judge = GetComponent<Judge>();
+            _judge.Initialize();
             _supportHandlerList = new GameObject[MAX_X, MAX_Z];
+            _judge = GetComponent<Judge>();
             var i = 0;
 
             for (int x = 0; x < MAX_X; x++)
@@ -65,6 +69,7 @@ namespace refactor
                     if(_boardManager.GetBoardChecker().TurnCheck(x,z)){
                         _supportHandlerList[x, z].gameObject.SetActive(true);
                         Debugger.Log($"SetSupportHundler x:{x} z:{z}");
+                        _judge.SetCanPlace(true);
                     }
                     else
                     {
