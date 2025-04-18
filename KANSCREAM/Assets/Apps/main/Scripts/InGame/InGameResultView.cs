@@ -12,12 +12,6 @@ namespace refactor
         [SerializeField] private GameObject _winView;
         [SerializeField] private GameObject _loseView;
 
-        public void Initialize()
-        {
-            _winView.SetActive(false);
-            _loseView.SetActive(false);
-        }
-
         /// <summary>
         /// ゲーム結果を非表示にするメソッド
         /// </summary>

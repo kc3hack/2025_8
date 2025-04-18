@@ -53,11 +53,6 @@ namespace refactor
             SetSupportHundler();
         }
 
-        private void Bind()
-        {
-            
-        }
-
         public void SetSupportHundler()
         {
             for(int x = 0; x < MAX_X; x++)

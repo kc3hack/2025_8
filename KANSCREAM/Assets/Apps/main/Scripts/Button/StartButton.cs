@@ -1,13 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StartButton : MonoBehaviour
+namespace refactor
 {
-    /// <summary>
-    /// リセットボタンがクリックされたときの処理
-    /// </summary>
-    public void OnClick()
+    public class StartButton : MonoBehaviour
     {
-        gameObject.transform.parent.gameObject.SetActive(false);
+        /// <summary>
+        /// リセットボタンがクリックされたときの処理
+        /// </summary>
+        public void OnClick()
+        {
+            gameObject.transform.parent.gameObject.SetActive(false);
+        }
     }
 }
