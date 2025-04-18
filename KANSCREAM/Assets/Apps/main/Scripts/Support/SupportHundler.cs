@@ -14,7 +14,7 @@ namespace refactor
 			_posZ = z;
 
 			// ゲームシーン上のBoardManagerを取得
-			_boardManager = GameObject.Find("ReversiBoard").GetComponent<BoardManager>();
+			_boardManager = GameObject.Find("GameSystem").GetComponent<BoardManager>();
 			// 取得できなかった場合はエラーログを出力
 			if (_boardManager == null)
 			{

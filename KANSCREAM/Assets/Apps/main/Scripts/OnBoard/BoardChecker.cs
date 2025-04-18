@@ -10,28 +10,17 @@ namespace refactor
     /// </summary>
     public class BoardChecker
     {
-        private int _specifidPosX;// 指定したマスのX座標
-        private int _specifidPosY;// 指定したマスのY座標
+        private int _specifiedPosX;// 指定したマスのX座標
+        private int _specifiedPosZ;// 指定したマスのY座標
         private BoardManager.CellState[,] _boardState;// 盤面の状態を保持する2次元配列
-        private BoardManager.CellState _turnState;// 現在のターン
+        private BoardManager.CellState _turnState = BoardManager.CellState.KANTO;// 現在のターン
         private SettableCellList _settableCellList;
         private List<(int, int)> _flipPositions = new List<(int, int)>(); // ひっくり返されるコマのリスト
         public BoardChecker()
         {
             _settableCellList = new SettableCellList();
         }
-
-        /// <summary>
-        /// ゲームの勝敗を判定するメソッド
-        /// 現状コマのステートで判定しているけど
-        /// ゲーム画面ステートで判定する方がいいかも
-        /// 未完成
-        /// </summary>
-        /// <returns></returns>
-        public GameSceneStateEnum.GameSceneState JudgeGame()
-        {
-            return GameSceneStateEnum.GameSceneState.BeforeScream;// デバッグ用
-        }
+        public static int _PieceNum = 0;
 
         /// <summary>
         /// ターン可能かどうかを判定するメソッド
@@ -42,6 +31,11 @@ namespace refactor
         /// <returns></returns>
         public bool TurnCheck(int posX, int posY)
         {
+            if(_boardState[posX, posY] != BoardManager.CellState.NONE)
+            {
+                _PieceNum++;
+                return false;
+            }
             bool canPlace = false;
 
             for (int direction = 0; direction < 8; direction++)
@@ -62,7 +56,7 @@ namespace refactor
         /// </summary>
         /// <param name="direction"></param>
         /// <returns></returns>
-       private bool TurnCheckSpecifidDirection(int posX, int posY, int direction)
+        private bool TurnCheckSpecifidDirection(int posX, int posY, int direction)
         {
             int startX = posX;
             int startY = posY;
@@ -174,17 +168,39 @@ namespace refactor
             return flipPositions;
         }
 
+        public bool TurnCheck(int posX, int posY, BoardManager.CellState turnState)
+        {
+            if (_boardState[posX, posY] != BoardManager.CellState.NONE)
+            {
+                _PieceNum++;
+                return false;
+            }
+
+            bool canPlace = false;
+            _turnState = turnState; // ターン状態を設定
+
+            for (int direction = 0; direction < 8; direction++)
+            {
+                if (TurnCheckSpecifidDirection(posX, posY, direction))
+                {
+                    canPlace = true;
+                }
+            }
+
+            return canPlace;
+        }
+
         /// <summary>
         /// 置きたいマスを取得するメソッド
         /// </summary>
         /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="z"></param>
         /// <param name="boardState"></param>
         /// <param name="playerTurn"></param>
-        public void SetPlayerInfo(int x, int y, BoardManager.CellState[,] boardState, BoardManager.CellState playerTurn)
+        public void SetPlayerInfo(int x, int z, BoardManager.CellState[,] boardState, BoardManager.CellState playerTurn)
         {
-            _specifidPosX = x;
-            _specifidPosY = y;
+            _specifiedPosX = x;
+            _specifiedPosZ = z;
             _boardState = boardState;
             _turnState = playerTurn;
         }
@@ -202,24 +218,17 @@ namespace refactor
         public List<(int, int)> GetFlipPositions()
         {
             return _flipPositions;
-        }   
-        
+        }
+
         public void ClearFlipPositions()
         {
             //　_flipPositionsの中身を全部消去
             _flipPositions.Clear();
         }
 
-        public bool[,] GetSettableCellList()
+        public SettableCellList GetSettableCellList()
         {
-            return _settableCellList.GetSettableCellList();
+            return _settableCellList;
         }
-
-
-        public void ResetSettableCellList()
-        {
-            _settableCellList.ResetSettableCell();
-        }
-        
     }
 }

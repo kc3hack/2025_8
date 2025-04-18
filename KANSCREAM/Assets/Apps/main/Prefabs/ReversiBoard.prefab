@@ -1023,8 +1023,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4543518305994154330}
-  - component: {fileID: 6877396858738877612}
-  - component: {fileID: 3610610341121917107}
   m_Layer: 0
   m_Name: ReversiBoard
   m_TagString: Untagged
@@ -1050,36 +1048,6 @@ Transform:
   - {fileID: 2225778664967452098}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6877396858738877612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 4184908668165083083, guid: 10a36d622e2234258a605f61333dd922, type: 3}
-  m_PrefabInstance: {fileID: 2827602765580236895}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6359363882106875951}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac9ffb28079e44d67836fbd1f57be597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _supportObj: {fileID: 9037801958668571037, guid: 0a15b697a721e4f3995c13c11ede258c, type: 3}
-  _supportParentObj: {fileID: 0}
---- !u!114 &3610610341121917107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 8607878337036460863, guid: 10a36d622e2234258a605f61333dd922, type: 3}
-  m_PrefabInstance: {fileID: 2827602765580236895}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6359363882106875951}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 431d9fc2dadbd4ec6bb4801c4c797e38, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _kantoPiece: {fileID: 7251778951121144102, guid: 665619defc7bc40279550da32792bfe3, type: 3}
-  _kansaiPiece: {fileID: 5618039504971116742, guid: 431e2b9eca6364b99aa679252588e9c5, type: 3}
-  _kantoParent: {fileID: 0}
-  _kansaiParent: {fileID: 0}
 --- !u!1 &6549541930361106282
 GameObject:
   m_ObjectHideFlags: 0
@@ -1702,7 +1670,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: ReversiBoard
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

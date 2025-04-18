@@ -1,3 +1,4 @@
+
 namespace refactor
 {
     /// <summary>
@@ -12,7 +13,7 @@ namespace refactor
         public SettableCellList()
         {
             _settableCellList = new bool[InGamePresenter.MAX_X, InGamePresenter.MAX_Z];
-            ResetSettableCell();
+            Reset();
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace refactor
         /// 全てのマスを置くことができないマスとして設定する
         /// 毎ターンこのメソッドを呼ぶことで初期化する
         /// </summary>
-        public void ResetSettableCell()
+        public void Reset()
         {
             for (int i = 0; i < InGamePresenter.MAX_X; i++)
             {
@@ -44,13 +45,6 @@ namespace refactor
                     _settableCellList[i, j] = false;
                 }
             }
-            // _settableCellList[2, 2] = true;
-            // _settableCellList[2, 3] = true;
-            // _settableCellList[3, 2] = true;
-            // _settableCellList[3, 3] = true;
-
-            // _settableCellList[0, 5] = true;
-            // _settableCellList[5, 0] = true;
         }
 
         public bool[,] GetSettableCellList()
