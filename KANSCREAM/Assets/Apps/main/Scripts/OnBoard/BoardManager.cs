@@ -27,12 +27,14 @@ namespace refactor
         }
         private CellState[,] _boardState;// 盤面の状態を保持する2次元配列
         private CellState _turnState = CellState.KANTO; // 初手関東
+        private InGamePresenter _inGamePresenter;
 
         public void Initialize()
         {
             _boardState = new CellState[InGamePresenter.MAX_X, InGamePresenter.MAX_Z];
 
             _boardChecker = new BoardChecker();
+            _inGamePresenter = GetComponent<InGamePresenter>();
 
             for (int x = 0; x < InGamePresenter.MAX_X; x++)
             {
@@ -59,7 +61,7 @@ namespace refactor
         /// <param name="z"></param>
         public void InitializeSetUpPiece(int x, int z)
         {
-            if (_boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Start || 
+            if (_boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Start ||
                 _boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Result)
             {
                 Debugger.Log("ゲームが終了しました。");
@@ -71,10 +73,10 @@ namespace refactor
                     Debugger.Log($"無効な座標: ({x}, {z})");
                     return;
                 }
-                
+
                 _specifiedPosX = x;
                 _specifiedPosZ = z;
-                
+
                 _boardState[x, z] = _turnState;
                 Show(x, z);
                 TurnChange();
@@ -89,7 +91,7 @@ namespace refactor
         /// <param name="z"></param>
         public void SetUpPiece(int x, int z)
         {
-            if (_boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Start || 
+            if (_boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Start ||
                 _boardChecker.JudgeGame() == GameSceneStateEnum.GameSceneState.Result)
             {
                 Debugger.Log("ゲームが終了しました。");
@@ -107,19 +109,21 @@ namespace refactor
                     Debugger.Log($"この場所には既に駒が置かれています: ({x}, {z})");
                     return;
                 }
-                
+
                 _specifiedPosX = x;
                 _specifiedPosZ = z;
-                
-                if(TurnCheck()) 
+
+                if (TurnCheck())
                 {
                     _boardState[x, z] = _turnState;
                     Show(x, z);
                     FlipPieces(); // 駒をひっくり返す処理
                     TurnChange();
+                    _boardChecker.SetTurnState(_turnState == CellState.KANTO ? CellState.KANTO : CellState.KANSAI);
+                    _inGamePresenter.SetSupportHundler();
                 }
-                else
-                    Debugger.Log($"ここには置けない: ({x}, {z})");
+                // else
+                //     Debugger.Log($"ここには置けない: ({x}, {z})");
             }
         }
 
@@ -153,23 +157,23 @@ namespace refactor
         public void Show(int x, int z)
         {
             if (_turnState == CellState.KANTO)
-                {
-                    var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(false);
+            {
+                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(false);
 
-                    piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(true);
-                }
-                else if (_turnState == CellState.KANSAI)
-                {
-                    var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(false);
+                piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(true);
+            }
+            else if (_turnState == CellState.KANSAI)
+            {
+                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(false);
 
-                    piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(true);
-                }
+                piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(true);
+            }
         }
-        
+
 
         /// <summary>
         /// ターンを交代するメソッド
@@ -191,7 +195,15 @@ namespace refactor
             _boardChecker.SetPlayerInfo(_specifiedPosX, _specifiedPosZ, _boardState, _turnState);
             return _boardChecker.TurnCheck(_specifiedPosX, _specifiedPosZ);
         }
+
+        public BoardChecker GetBoardChecker()
+        {
+            return _boardChecker;
+        }
+
+        public void InitializeSetCellState()
+        {
+            _boardChecker.SetCellState(_boardState);
+        }
     }
-    
-    
 }

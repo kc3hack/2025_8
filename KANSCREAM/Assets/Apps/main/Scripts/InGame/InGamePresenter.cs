@@ -10,6 +10,7 @@ namespace refactor
         [SerializeField] private GameObject _supportObj;
         [SerializeField] private GameObject _supportParentObj;
         private BoardManager _boardManager;
+        private GameObject[,] _supportHandlerList;
 
         void Start()
         {
@@ -21,6 +22,7 @@ namespace refactor
         {
             _boardManager = GetComponent<BoardManager>();
             _boardManager.Initialize();
+            _supportHandlerList = new GameObject[MAX_X, MAX_Z];
             var i = 0;
 
             for (int x = 0; x < MAX_X; x++)
@@ -32,7 +34,8 @@ namespace refactor
                     supportObj.transform.localPosition = new Vector3(x, 0.015f, z);
                     var supportHandler = supportObj.GetComponentInChildren<SupportHandler>();
                     supportHandler.Initialize(x, z);
-                    // supportObj.SetActive(false);
+                    _supportHandlerList[x, z] = supportObj;
+                    supportObj.SetActive(false);
                 }
             }
             
@@ -46,12 +49,32 @@ namespace refactor
             _boardManager.InitializeSetUpPiece(5, 0);
             _boardManager.TurnChange();// 初期のターンを関東に変更
 
-
+            _boardManager.InitializeSetCellState();
+            SetSupportHundler();
         }
 
         private void Bind()
         {
             
+        }
+
+        public void SetSupportHundler()
+        {
+            for(int x = 0; x < MAX_X; x++)
+            {
+                for (int z = 0; z < MAX_Z; z++)
+                {
+                    if(_boardManager.GetBoardChecker().TurnCheck(x,z)){
+                        _supportHandlerList[x, z].gameObject.SetActive(true);
+                        Debugger.Log($"SetSupportHundler x:{x} z:{z}");
+                    }
+                    else
+                    {
+                        _supportHandlerList[x, z].gameObject.SetActive(false);
+                    }
+                }
+            }
+            _boardManager.GetBoardChecker().ClearFlipPositions();
         }
     }
 }
