@@ -57,6 +57,9 @@ namespace refactor
             SetSupportHundler();
         }
 
+        /// <summary>
+        /// サポートオブジェクトを生成するメソッド
+        /// </summary>
         public void SetSupportHundler()
         {
             for(int x = 0; x < MAX_X; x++)
@@ -96,7 +99,7 @@ namespace refactor
             _boardManager.InitializeSetUpPiece(5, 0);
             _boardManager.TurnChange();// 初期のターンを関東に変更
             _boardManager.InitializeSetCellState();
-            
+
             SetSupportHundler();
         }
     }
