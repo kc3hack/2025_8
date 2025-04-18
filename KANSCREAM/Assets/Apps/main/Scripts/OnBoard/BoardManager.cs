@@ -28,6 +28,7 @@ namespace refactor
         private CellState[,] _boardState;// 盤面の状態を保持する2次元配列
         private CellState _turnState = CellState.KANTO; // 初手関東
         private InGamePresenter _inGamePresenter;
+        private Judge _judge;
 
         public void Initialize()
         {
@@ -35,7 +36,7 @@ namespace refactor
 
             _boardChecker = new BoardChecker();
             _inGamePresenter = GetComponent<InGamePresenter>();
-
+            _judge = GetComponent<Judge>();
             for (int x = 0; x < InGamePresenter.MAX_X; x++)
             {
                 for (int z = 0; z < InGamePresenter.MAX_Z; z++)
@@ -101,6 +102,9 @@ namespace refactor
                 _specifiedPosX = x;
                 _specifiedPosZ = z;
 
+                BoardChecker._PieceNum = 0;
+                _judge.SetCanPlace(false);
+
                 if (TurnCheck())
                 {
                     _boardState[x, z] = _turnState;
@@ -110,6 +114,7 @@ namespace refactor
                     _boardChecker.SetTurnState(_turnState == CellState.KANTO ? CellState.KANTO : CellState.KANSAI);
                     _inGamePresenter.SetSupportHundler();
                 }
+                _judge.JudgeGame();
             }
         }
 
@@ -204,6 +209,16 @@ namespace refactor
         public void InitializeSetCellState()
         {
             _boardChecker.SetCellState(_boardState);
+        }
+
+        public CellState GetTurnState()
+        {
+            return _turnState;
+        }
+
+        public CellState[,] GetBoardState()
+        {
+            return _boardState;
         }
     }
 }

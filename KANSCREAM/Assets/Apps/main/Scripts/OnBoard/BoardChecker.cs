@@ -19,6 +19,7 @@ namespace refactor
         {
             _settableCellList = new SettableCellList();
         }
+        public static int _PieceNum = 0;
 
         /// <summary>
         /// ターン可能かどうかを判定するメソッド
@@ -29,6 +30,11 @@ namespace refactor
         /// <returns></returns>
         public bool TurnCheck(int posX, int posY)
         {
+            if(_boardState[posX, posY] != BoardManager.CellState.NONE)
+            {
+                _PieceNum++;
+                return false;
+            }
             bool canPlace = false;
 
             for (int direction = 0; direction < 8; direction++)
@@ -51,10 +57,6 @@ namespace refactor
         /// <returns></returns>
         private bool TurnCheckSpecifidDirection(int posX, int posY, int direction)
         {
-            if(_boardState[posX, posY] != BoardManager.CellState.NONE)
-            {
-                return false;
-            }
             int startX = posX;
             int startY = posY;
 
