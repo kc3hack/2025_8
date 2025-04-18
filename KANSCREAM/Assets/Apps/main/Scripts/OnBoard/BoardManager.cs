@@ -39,6 +39,11 @@ namespace refactor
         private InGamePresenter _inGamePresenter;
         private Judge _judge;
 
+        /// <summary>
+        /// 盤面の初期化を行うメソッド
+        /// 盤面の状態を初期化し、駒を配置する
+        /// ターンの初期化も行う
+        /// </summary>
         public void Initialize()
         {
             _boardState = new CellState[InGamePresenter.MAX_X, InGamePresenter.MAX_Z];
@@ -81,15 +86,6 @@ namespace refactor
             }
         }
 
-        public void Update()
-        {
-            if(_turnState == CellState.KANSAI)
-            {
-                Debug.Log($"_turnState: {_turnState}");
-            //Debug.Log($"isKantoPlayer: {isKantoPlayer}");
-            }
-        }
-
         /// <summary>
         /// 盤面の初期配置を行うメソッド
         /// 関東と関西の初期配置を行う
@@ -116,7 +112,13 @@ namespace refactor
             }
         }
 
-        
+        /// <summary>
+        /// 指定した位置に駒を配置するメソッド
+        /// ターン状態に応じて駒を配置し、ひっくり返す処理を行う
+        /// ターン状態を変更し、他のクライアントに同期する
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="z">Z座標</param>
         public void SetUpPiece(int x, int z)
         {
             {
@@ -129,16 +131,18 @@ namespace refactor
                     return; // 入力を無視
                 }
 
+                // 座標が無効な場合は処理を終了
                 if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
                 {
                     Debugger.Log($"無効な座標: ({x}, {z})");
                     return;
                 }
 
-            if (_boardState[x, z] != CellState.NONE)
-            {
-                return;
-            }
+                // すでに駒が置かれている場合は処理を終了
+                if (_boardState[x, z] != CellState.NONE)
+                {
+                    return;
+                }
 
                 _specifiedPosX = x;
                 _specifiedPosZ = z;
@@ -146,6 +150,7 @@ namespace refactor
                 BoardChecker._PieceNum = 0;
                 _judge.SetCanPlace(false);
 
+                // 駒を置く処理
                 if (TurnCheck())
                 {
                     _boardState[x, z] = _turnState;
@@ -167,6 +172,13 @@ namespace refactor
             }
         }
 
+        /// <summary>
+        /// 指定した位置に駒を配置するメソッド(同期用)
+        /// ターン状態に応じて駒を配置し、ひっくり返す処理を行う
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="z">Z座標</param>
+        /// <param name="turnState">ターン状態</param>
         [PunRPC]
         private void SyncSetUpPiece(int x, int z, CellState turnState)
         {
@@ -205,6 +217,11 @@ namespace refactor
             return _boardChecker.GetFlipPositionsForOpponentMove(x, z, turnState);
         }
 
+        /// <summary>
+        /// 指定されたマスに指定されたコマを表示する
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="z">Z座標</param>
         private void Show(int x, int z)
         {
             if (_turnState == CellState.KANTO)
@@ -219,6 +236,13 @@ namespace refactor
             }
         }
 
+        /// <summary>
+        /// 指定されたマスに指定されたコマを表示する
+        /// 同期用のメソッド(相手と同じ動きをする)
+        /// <summary>
+        /// <param name="x">X座標</param>
+        /// <param name="z">Z座標</param>
+        /// <param name="turnState">ターン状態</param>
         private void Show(int x, int z, CellState turnState)
         {
             if (turnState == CellState.KANTO)
@@ -233,10 +257,16 @@ namespace refactor
             }
         }
 
+        /// <summary>
+        /// ひっくり返す処理を行う
+        /// ひっくり返す位置のリストを取得し、各位置の状態を変更する
+        /// </summary>
         private void FlipPieces()
         {
+            // ひっくり返すリストを取得
             var flipPositions = _boardChecker.GetFlipPositions();
 
+            // flipPositionsの中身を全てひっくり返す
             foreach (var pos in flipPositions)
             {
                 int x = pos.Item1;
@@ -296,6 +326,10 @@ namespace refactor
             }
         }
 
+        /// <summary>
+        /// ターン状態を同期するメソッド
+        /// 全クライアントにターン状態を同期する
+        /// </summary>
         [PunRPC]
         public void SyncTurnChange(CellState newTurnState)
         {
@@ -304,30 +338,9 @@ namespace refactor
         }
 
         /// <summary>
-        /// 指定されたマスに指定されたコマを表示する
+        /// ターンを変更するメソッド
+        /// ターン状態を変更し、全クライアントに同期する
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="z"></param>
-        // public void Show(int x, int z)
-        // {
-        //     if (_turnState == CellState.KANTO)
-        //     {
-        //         var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-        //         piece.SetActive(false);
-
-        //         piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-        //         piece.SetActive(true);
-        //     }
-        //     else if (_turnState == CellState.KANSAI)
-        //     {
-        //         var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-        //         piece.SetActive(false);
-
-        //         piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-        //         piece.SetActive(true);
-        //     }
-        // }
-
         public void TurnChange()
         {
             // ターンを変更
@@ -350,12 +363,20 @@ namespace refactor
         }
 
 
+        /// <summary>
+        /// ターンのチェックを行うメソッド
+        /// 指定した位置に駒を置けるかどうかを判定する
+        /// </summary>
         private bool TurnCheck()
         {
             _boardChecker.SetPlayerInfo(_specifiedPosX, _specifiedPosZ, _boardState, _turnState);
             return _boardChecker.TurnCheck(_specifiedPosX, _specifiedPosZ);
         }
 
+        /// <summary>
+        /// 盤面の状態をリセットするメソッド
+        /// 盤面の状態を初期化し、駒を非アクティブにする
+        /// </summary>
         public void Reset()
         {
             _turnState = CellState.KANTO;
@@ -394,8 +415,9 @@ namespace refactor
             return _boardState;
         }
     
-
-        // IPunTurnManagerCallbacks の実装
+        /// <summary>
+        /// ターンの開始時に呼ばれるメソッド
+        /// </summary>
         public void OnTurnBegins(int turn)
         {
             //_turnState = _turnState == CellState.KANTO ? CellState.KANSAI : CellState.KANTO;

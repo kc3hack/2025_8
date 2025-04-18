@@ -18,6 +18,9 @@ namespace refactor
             photonView.RPC("ReStart", RpcTarget.All);
         }
 
+        /// <summary>
+        /// リスタート処理
+        /// </summary>
         [PunRPC]
         public void ReStart()
         {

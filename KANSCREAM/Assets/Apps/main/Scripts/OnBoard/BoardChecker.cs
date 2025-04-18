@@ -168,6 +168,11 @@ namespace refactor
             return flipPositions;
         }
 
+        /// <summary>
+        /// ターン可能かどうかを判定するメソッド
+        /// ターン可能な場合はtrueを返す
+        /// ターン不可能な場合はfalseを返す
+        /// </summary>
         public bool TurnCheck(int posX, int posY, BoardManager.CellState turnState)
         {
             if (_boardState[posX, posY] != BoardManager.CellState.NONE)
