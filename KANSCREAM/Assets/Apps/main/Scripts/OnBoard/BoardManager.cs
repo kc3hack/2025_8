@@ -71,8 +71,10 @@ namespace refactor
                     Debugger.Log($"無効な座標: ({x}, {z})");
                     return;
                 }
+                
                 _specifiedPosX = x;
                 _specifiedPosZ = z;
+                
                 _boardState[x, z] = _turnState;
                 Show(x, z);
                 TurnChange();
@@ -105,9 +107,10 @@ namespace refactor
                     Debugger.Log($"この場所には既に駒が置かれています: ({x}, {z})");
                     return;
                 }
-
+                
                 _specifiedPosX = x;
                 _specifiedPosZ = z;
+                
                 if(TurnCheck()) 
                 {
                     _boardState[x, z] = _turnState;
@@ -136,7 +139,6 @@ namespace refactor
                 int x = pos.Item1;
                 int z = pos.Item2;
                 _boardState[x, z] = _turnState;
-
                 Show(x, z);
             }
             _boardChecker.ClearFlipPositions();
