@@ -110,8 +110,6 @@ namespace refactor
                     _boardChecker.SetTurnState(_turnState == CellState.KANTO ? CellState.KANTO : CellState.KANSAI);
                     _inGamePresenter.SetSupportHundler();
                 }
-                // else
-                //     Debugger.Log($"ここには置けない: ({x}, {z})");
             }
         }
 
@@ -162,7 +160,6 @@ namespace refactor
             }
         }
 
-
         /// <summary>
         /// ターンを交代するメソッド
         /// </summary>
@@ -182,6 +179,21 @@ namespace refactor
         {
             _boardChecker.SetPlayerInfo(_specifiedPosX, _specifiedPosZ, _boardState, _turnState);
             return _boardChecker.TurnCheck(_specifiedPosX, _specifiedPosZ);
+        }
+
+        public void Reset()
+        {
+            for (int x = 0; x < InGamePresenter.MAX_X; x++)
+            {
+                for (int z = 0; z < InGamePresenter.MAX_Z; z++)
+                {
+                    _boardState[x, z] = CellState.NONE;
+                    var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                    piece.SetActive(false);
+                    piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                    piece.SetActive(false);
+                }
+            }
         }
 
         public BoardChecker GetBoardChecker()

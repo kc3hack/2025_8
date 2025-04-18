@@ -71,5 +71,23 @@ namespace refactor
             }
             _boardManager.GetBoardChecker().ClearFlipPositions();
         }
+
+        public void Restart()
+        {
+            _boardManager.Reset();
+            _boardManager.GetBoardChecker().GetSettableCellList().Reset();
+
+            // 関東の初期配置
+            _boardManager.InitializeSetUpPiece(2, 3);
+            _boardManager.InitializeSetUpPiece(2, 2);
+            _boardManager.InitializeSetUpPiece(3, 2);
+            _boardManager.InitializeSetUpPiece(3, 3);
+            _boardManager.InitializeSetUpPiece(0, 5);
+            _boardManager.TurnChange();// 次のターンを関東に変更
+            _boardManager.InitializeSetUpPiece(5, 0);
+            _boardManager.TurnChange();// 初期のターンを関東に変更
+            _boardManager.InitializeSetCellState();
+            SetSupportHundler();
+        }
     }
 }

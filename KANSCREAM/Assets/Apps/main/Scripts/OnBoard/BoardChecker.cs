@@ -139,5 +139,10 @@ namespace refactor
             //　_flipPositionsの中身を全部消去
             _flipPositions.Clear();
         }
+
+        public SettableCellList GetSettableCellList()
+        {
+            return _settableCellList;
+        }
     }
 }
