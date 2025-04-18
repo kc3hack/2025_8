@@ -358,6 +358,7 @@ namespace refactor
 
         public void Reset()
         {
+            _turnState = CellState.KANTO;
             for (int x = 0; x < InGamePresenter.MAX_X; x++)
             {
                 for (int z = 0; z < InGamePresenter.MAX_Z; z++)
