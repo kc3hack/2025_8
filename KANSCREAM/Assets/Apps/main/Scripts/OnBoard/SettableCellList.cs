@@ -44,13 +44,13 @@ namespace refactor
                     _settableCellList[i, j] = false;
                 }
             }
-            _settableCellList[2, 2] = true;
-            _settableCellList[2, 3] = true;
-            _settableCellList[3, 2] = true;
-            _settableCellList[3, 3] = true;
+            // _settableCellList[2, 2] = true;
+            // _settableCellList[2, 3] = true;
+            // _settableCellList[3, 2] = true;
+            // _settableCellList[3, 3] = true;
 
-            _settableCellList[0, 5] = true;
-            _settableCellList[5, 0] = true;
+            // _settableCellList[0, 5] = true;
+            // _settableCellList[5, 0] = true;
         }
 
         public bool[,] GetSettableCellList()

@@ -46,6 +46,12 @@ MonoBehaviour:
   - UpdateCurrentPlayerStone
   - ClacPassNum
   - ReStartReversi
+  - SetUpPiece
+  - RPCPlacePiece
+  - RPCTurnChange
+  - SyncSetUpPiece
+  - SyncTurnChange
+  - SyncFlipPieces
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

@@ -7,7 +7,7 @@ namespace refactor
 	{
 		private int _posX;
 		private int _posZ;
-		[SerializeField] private BoardManager _boardManager;
+		private BoardManager _boardManager;
 		public void Initialize(int x, int z)
 		{
 			_posX = x;

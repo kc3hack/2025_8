@@ -14,6 +14,7 @@ namespace refactor
         void Start()
         {
             Initialize();
+            //HighlightSettableCells();
         }
     
 
@@ -48,5 +49,10 @@ namespace refactor
         {
             
         }
+
+        // private void HighlightSettableCells()
+        // {
+        //     _boardManager.HighlightSettableCells();
+        // }
     }
 }
