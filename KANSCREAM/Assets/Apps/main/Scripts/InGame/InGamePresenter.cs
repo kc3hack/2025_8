@@ -72,10 +72,14 @@ namespace refactor
             _boardManager.GetBoardChecker().ClearFlipPositions();
         }
 
+        /// <summary>
+        /// 盤面をリセットするメソッド
+        /// 盤面の状態を初期化し、関東と関西の初期配置を行う
+        /// </summary>
         public void Restart()
         {
-            _boardManager.Reset();
-            _boardManager.GetBoardChecker().GetSettableCellList().Reset();
+            _boardManager.Reset();// ボードマネージャーのリセット
+            _boardManager.GetBoardChecker().GetSettableCellList().Reset();// ボードチェッカーのリセット
 
             // 関東の初期配置
             _boardManager.InitializeSetUpPiece(2, 3);
@@ -87,6 +91,7 @@ namespace refactor
             _boardManager.InitializeSetUpPiece(5, 0);
             _boardManager.TurnChange();// 初期のターンを関東に変更
             _boardManager.InitializeSetCellState();
+            
             SetSupportHundler();
         }
     }
