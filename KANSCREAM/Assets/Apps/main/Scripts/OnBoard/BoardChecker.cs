@@ -21,18 +21,6 @@ namespace refactor
         }
 
         /// <summary>
-        /// ゲームの勝敗を判定するメソッド
-        /// 現状コマのステートで判定しているけど
-        /// ゲーム画面ステートで判定する方がいいかも
-        /// 未完成
-        /// </summary>
-        /// <returns></returns>
-        public GameSceneStateEnum.GameSceneState JudgeGame()
-        {
-            return GameSceneStateEnum.GameSceneState.BeforeScream;// デバッグ用
-        }
-
-        /// <summary>
         /// ターン可能かどうかを判定するメソッド
         /// ターン可能な場合はtrueを返す
         /// ターン不可能な場合はfalseを返す
@@ -150,6 +138,11 @@ namespace refactor
         {
             //　_flipPositionsの中身を全部消去
             _flipPositions.Clear();
+        }
+
+        public SettableCellList GetSettableCellList()
+        {
+            return _settableCellList;
         }
     }
 }

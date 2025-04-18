@@ -53,9 +53,46 @@ namespace refactor
             SetSupportHundler();
         }
 
-        private void Bind()
+        public void SetSupportHundler()
         {
+            for(int x = 0; x < MAX_X; x++)
+            {
+                for (int z = 0; z < MAX_Z; z++)
+                {
+                    if(_boardManager.GetBoardChecker().TurnCheck(x,z)){
+                        _supportHandlerList[x, z].gameObject.SetActive(true);
+                        Debugger.Log($"SetSupportHundler x:{x} z:{z}");
+                    }
+                    else
+                    {
+                        _supportHandlerList[x, z].gameObject.SetActive(false);
+                    }
+                }
+            }
+            _boardManager.GetBoardChecker().ClearFlipPositions();
+        }
+
+        /// <summary>
+        /// 盤面をリセットするメソッド
+        /// 盤面の状態を初期化し、関東と関西の初期配置を行う
+        /// </summary>
+        public void Restart()
+        {
+            _boardManager.Reset();// ボードマネージャーのリセット
+            _boardManager.GetBoardChecker().GetSettableCellList().Reset();// ボードチェッカーのリセット
+
+            // 関東の初期配置
+            _boardManager.InitializeSetUpPiece(2, 3);
+            _boardManager.InitializeSetUpPiece(2, 2);
+            _boardManager.InitializeSetUpPiece(3, 2);
+            _boardManager.InitializeSetUpPiece(3, 3);
+            _boardManager.InitializeSetUpPiece(0, 5);
+            _boardManager.TurnChange();// 次のターンを関東に変更
+            _boardManager.InitializeSetUpPiece(5, 0);
+            _boardManager.TurnChange();// 初期のターンを関東に変更
+            _boardManager.InitializeSetCellState();
             
+            SetSupportHundler();
         }
 
         public void SetSupportHundler()
