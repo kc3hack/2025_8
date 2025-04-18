@@ -16,8 +16,8 @@ namespace refactor
         [SerializeField] private GameObject _kansaiPiece;// 関西の駒
         [SerializeField] private GameObject _kantoParent;// 関東の駒をまとめる親オブジェクト
         [SerializeField] private GameObject _kansaiParent;// 関西の駒をまとめる親オブジェクト
-        private int _specifidPosX;// 現在のX座標
-        private int _specifidPosZ;// 現在のZ座標
+        private int _specifiedPosX;// 現在のX座標
+        private int _specifiedPosZ;// 現在のZ座標
         private BoardChecker _boardChecker;
         public enum CellState// 盤上のマスの状態
         {
@@ -71,8 +71,10 @@ namespace refactor
                     Debugger.Log($"無効な座標: ({x}, {z})");
                     return;
                 }
-                _specifidPosX = x;
-                _specifidPosZ = z;
+                
+                _specifiedPosX = x;
+                _specifiedPosZ = z;
+                
                 _boardState[x, z] = _turnState;
                 Show(x, z);
                 TurnChange();
@@ -105,9 +107,10 @@ namespace refactor
                     Debugger.Log($"この場所には既に駒が置かれています: ({x}, {z})");
                     return;
                 }
-
-                _specifidPosX = x;
-                _specifidPosZ = z;
+                
+                _specifiedPosX = x;
+                _specifiedPosZ = z;
+                
                 if(TurnCheck()) 
                 {
                     _boardState[x, z] = _turnState;
@@ -136,8 +139,20 @@ namespace refactor
                 int x = pos.Item1;
                 int z = pos.Item2;
                 _boardState[x, z] = _turnState;
+                Show(x, z);
+            }
+            _boardChecker.ClearFlipPositions();
+            flipPositions.Clear();
+        }
 
-                if (_turnState == CellState.KANTO)
+        /// <summary>
+        /// 指定されたマスに指定されたコマを表示する
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="z"></param>
+        public void Show(int x, int z)
+        {
+            if (_turnState == CellState.KANTO)
                 {
                     var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
                     piece.SetActive(false);
@@ -153,30 +168,6 @@ namespace refactor
                     piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
                     piece.SetActive(true);
                 }
-            }
-            _boardChecker.ClearFlipPositions();
-            flipPositions.Clear();
-        }
-
-        /// <summary>
-        /// 指定されたマスに指定されたコマを表示する
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="z"></param>
-        public void Show(int x, int z)
-        {
-            if (_turnState == CellState.KANTO)
-            {
-                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                piece.SetActive(true);
-                Debugger.Log($"関東の駒を表示: ({x}, {z})");
-            }
-            else if (_turnState == CellState.KANSAI)
-            {
-                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                piece.SetActive(true);
-                Debugger.Log($"関西の駒を表示: ({x}, {z})");
-            }
         }
         
 
@@ -197,8 +188,8 @@ namespace refactor
         /// <returns></returns>
         private bool TurnCheck()
         {
-            _boardChecker.SetPlayerInfo(_specifidPosX, _specifidPosZ, _boardState, _turnState);
-            return _boardChecker.TurnCheck(_specifidPosX, _specifidPosZ);
+            _boardChecker.SetPlayerInfo(_specifiedPosX, _specifiedPosZ, _boardState, _turnState);
+            return _boardChecker.TurnCheck(_specifiedPosX, _specifiedPosZ);
         }
     }
     

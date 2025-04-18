@@ -9,8 +9,8 @@ namespace refactor
     /// </summary>
     public class BoardChecker
     {
-        private int _specifidPosX;// 指定したマスのX座標
-        private int _specifidPosY;// 指定したマスのY座標
+        private int _specifiedPosX;// 指定したマスのX座標
+        private int _specifiedPosZ;// 指定したマスのY座標
         private BoardManager.CellState[,] _boardState;// 盤面の状態を保持する2次元配列
         private BoardManager.CellState _turnState;// 現在のターン
         private SettableCellList _settableCellList;
@@ -116,13 +116,13 @@ namespace refactor
         /// 置きたいマスを取得するメソッド
         /// </summary>
         /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="z"></param>
         /// <param name="boardState"></param>
         /// <param name="playerTurn"></param>
-        public void SetPlayerInfo(int x, int y, BoardManager.CellState[,] boardState, BoardManager.CellState playerTurn)
+        public void SetPlayerInfo(int x, int z, BoardManager.CellState[,] boardState, BoardManager.CellState playerTurn)
         {
-            _specifidPosX = x;
-            _specifidPosY = y;
+            _specifiedPosX = x;
+            _specifiedPosZ = z;
             _boardState = boardState;
             _turnState = playerTurn;
         }
