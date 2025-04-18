@@ -53,6 +53,9 @@ namespace refactor
             SetSupportHundler();
         }
 
+        /// <summary>
+        /// サポートオブジェクトを生成するメソッド
+        /// </summary>
         public void SetSupportHundler()
         {
             for(int x = 0; x < MAX_X; x++)
@@ -91,27 +94,8 @@ namespace refactor
             _boardManager.InitializeSetUpPiece(5, 0);
             _boardManager.TurnChange();// 初期のターンを関東に変更
             _boardManager.InitializeSetCellState();
-            
-            SetSupportHundler();
-        }
 
-        public void SetSupportHundler()
-        {
-            for(int x = 0; x < MAX_X; x++)
-            {
-                for (int z = 0; z < MAX_Z; z++)
-                {
-                    if(_boardManager.GetBoardChecker().TurnCheck(x,z)){
-                        _supportHandlerList[x, z].gameObject.SetActive(true);
-                        Debugger.Log($"SetSupportHundler x:{x} z:{z}");
-                    }
-                    else
-                    {
-                        _supportHandlerList[x, z].gameObject.SetActive(false);
-                    }
-                }
-            }
-            _boardManager.GetBoardChecker().ClearFlipPositions();
+            SetSupportHundler();
         }
     }
 }
