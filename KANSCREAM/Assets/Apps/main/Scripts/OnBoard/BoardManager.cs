@@ -1,4 +1,6 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 
 namespace refactor
 {
@@ -140,24 +142,39 @@ namespace refactor
         /// </summary>
         /// <param name="x"></param>
         /// <param name="z"></param>
-        public void Show(int x, int z)
+        public async UniTask Show(int x, int z)
         {
             if (_turnState == CellState.KANTO)
             {
                 var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                await piece.transform.DORotate(new Vector3(0, 180, -90), 0.2f);
                 piece.SetActive(false);
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 0);
 
                 piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
                 piece.SetActive(true);
+
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 90);//z軸に沿って90度回転させる
+                await piece.transform.DORotate(new Vector3(0, 180, 0), 0.2f);// ひっくり返すアニメーション
             }
             else if (_turnState == CellState.KANSAI)
             {
                 var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                await piece.transform.DORotate(new Vector3(0, 180, -90), 0.2f);
                 piece.SetActive(false);
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 0);
 
                 piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
                 piece.SetActive(true);
+                
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 90);//z軸に沿って90度回転させる
+                await piece.transform.DORotate(new Vector3(0, 180, 0), 0.2f);// ひっくり返すアニメーション
             }
+        }
+
+        public void Betray(int score)
+        {
+            // カンスクリームによる裏切りアニメーション
         }
 
         /// <summary>
