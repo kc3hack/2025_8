@@ -23,6 +23,7 @@ namespace refactor
         private int _specifiedPosX;// 現在のX座標
         private int _specifiedPosZ;// 現在のZ座標
         private BoardChecker _boardChecker;
+        private KanScream _kanScream;
 
         public enum CellState
         {
@@ -38,6 +39,7 @@ namespace refactor
         public bool isKantoPlayer;
         private InGamePresenter _inGamePresenter;
         private Judge _judge;
+        private float _similarity;
 
         /// <summary>
         /// 盤面の初期化を行うメソッド
@@ -50,6 +52,8 @@ namespace refactor
             _boardChecker = new BoardChecker();
             _inGamePresenter = GetComponent<InGamePresenter>();
             _judge = GetComponent<Judge>();
+            _kanScream = new KanScream();
+            _kanScream.Awake();
             for (int x = 0; x < InGamePresenter.MAX_X; x++)
             {
                 for (int z = 0; z < InGamePresenter.MAX_Z; z++)
@@ -84,6 +88,48 @@ namespace refactor
                 isKantoPlayer = false; // 2人目のプレイヤーはKansaiプレイヤー
                 // CreateKansaiButton(); // 関西プレイヤー用のボタンを生成
             }
+        }
+
+        void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Space) && !isKantoPlayer)
+            {
+                float duration = 3.0f;
+                StartCoroutine(SyncKanScreamCoroutine(duration));
+            }
+        }
+
+    
+        public void KanScream(int x, int z)
+        {
+            photonView.RPC("SyncKanScream", RpcTarget.All, x, z);
+        }
+
+        private IEnumerator<object> SyncKanScreamCoroutine(float duration)
+        {
+            GetComponent<AudioRecorder>().StartRecording();
+            yield return new WaitForSeconds(duration);
+            _similarity = GetComponent<AudioRecorder>().GetSimilarity();
+            _kanScream.kanScream(_similarity);
+        }
+
+        /// <summary>
+        /// 関東の駒をひっくり返す処理
+        /// </summary>
+         [PunRPC]
+        public void SyncKanScream(int x, int z)
+        {
+            // 関東の駒をひっくり返す処理
+            _boardState[x, z] = CellState.NONE;
+            _boardState[x, z] = CellState.KANSAI;
+            var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+            piece.SetActive(false);
+            piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+            piece.SetActive(true);
+            _boardChecker.SetCellState(_boardState);
+            var flipPositions = GetFlipPositions(x, z, CellState.KANSAI);
+            FlipPieces(flipPositions, CellState.KANSAI);
+
         }
 
         /// <summary>
@@ -379,6 +425,7 @@ namespace refactor
         /// </summary>
         public void Reset()
         {
+
             _turnState = CellState.KANTO;
             for (int x = 0; x < InGamePresenter.MAX_X; x++)
             {
@@ -391,6 +438,7 @@ namespace refactor
                     piece.SetActive(false);
                 }
             }
+            _kanScream.Reset();
         }
 
 
