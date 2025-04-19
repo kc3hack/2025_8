@@ -1,4 +1,6 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 
 namespace refactor
 {
@@ -62,7 +64,7 @@ namespace refactor
         /// <param name="z"></param>
         public void InitializeSetUpPiece(int x, int z)
         {
-            {
+            
                 if (x < 0 || x >= InGamePresenter.MAX_X || z < 0 || z >= InGamePresenter.MAX_Z)
                 {
                     Debugger.Log($"無効な座標: ({x}, {z})");
@@ -75,7 +77,7 @@ namespace refactor
                 _boardState[x, z] = _turnState;
                 Show(x, z);
                 TurnChange();
-            }
+            
         }
 
         /// <summary>
@@ -134,7 +136,7 @@ namespace refactor
                 int x = pos.Item1;
                 int z = pos.Item2;
                 _boardState[x, z] = _turnState;
-                Show(x, z);
+                Flip(x, z);
             }
             _boardChecker.ClearFlipPositions();
             flipPositions.Clear();
@@ -145,24 +147,64 @@ namespace refactor
         /// </summary>
         /// <param name="x"></param>
         /// <param name="z"></param>
-        public void Show(int x, int z)
+        /// <returns></returns>
+        public async UniTask Show(int x, int z)
         {
             if (_turnState == CellState.KANTO)
             {
-                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                piece.SetActive(false);
-
-                piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
                 piece.SetActive(true);
+                piece.transform.position = new Vector3(x, 1, z);
+                await piece.transform.DOMove(new Vector3(x, 0.015f, z), 0.2f);
             }
             else if (_turnState == CellState.KANSAI)
             {
-                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(true);
+                piece.transform.position = new Vector3(x, 1, z);
+                await piece.transform.DOMove(new Vector3(x, 0.015f, z), 0.2f);
+            }
+        }
+
+        /// <summary>
+        /// 指定されたマスの駒をひっくり返すメソッド
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="z"></param>
+        public async UniTask Flip(int x, int z)
+        {
+            await UniTask.Delay(200);// アニメーションの待機時間
+            if (_turnState == CellState.KANSAI)
+            {
+                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                await piece.transform.DORotate(new Vector3(0, 180, -90), 0.2f);
                 piece.SetActive(false);
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 0);
+
+                piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(true);
+
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 90);//z軸に沿って90度回転させる
+                await piece.transform.DORotate(new Vector3(0, 180, 0), 0.2f);// ひっくり返すアニメーション
+            }
+            else if (_turnState == CellState.KANTO)
+            {
+                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                await piece.transform.DORotate(new Vector3(0, 180, -90), 0.2f);
+                piece.SetActive(false);
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 0);
 
                 piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
                 piece.SetActive(true);
+                
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 90);//z軸に沿って90度回転させる
+                await piece.transform.DORotate(new Vector3(0, 180, 0), 0.2f);// ひっくり返すアニメーション
             }
+        }
+
+        public void Betray(int score)
+        {
+            // カンスクリームによる裏切りアニメーション
         }
 
         /// <summary>
