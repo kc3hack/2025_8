@@ -137,6 +137,12 @@ namespace refactor
             flipPositions.Clear();
         }
 
+        /// <summary>
+        /// 指定されたマスに指定されたコマを表示する
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
         public async UniTask Show(int x, int z)
         {
             if (_turnState == CellState.KANTO)
@@ -156,14 +162,14 @@ namespace refactor
         }
 
         /// <summary>
-        /// 指定されたマスに指定されたコマを表示する
+        /// 指定されたマスの駒をひっくり返すメソッド
         /// </summary>
         /// <param name="x"></param>
         /// <param name="z"></param>
         public async UniTask Flip(int x, int z)
         {
             await UniTask.Delay(200);// アニメーションの待機時間
-            if (_turnState == CellState.KANTO)
+            if (_turnState == CellState.KANSAI)
             {
                 var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
                 await piece.transform.DORotate(new Vector3(0, 180, -90), 0.2f);
@@ -176,7 +182,7 @@ namespace refactor
                 piece.transform.localRotation = Quaternion.Euler(0, 180, 90);//z軸に沿って90度回転させる
                 await piece.transform.DORotate(new Vector3(0, 180, 0), 0.2f);// ひっくり返すアニメーション
             }
-            else if (_turnState == CellState.KANSAI)
+            else if (_turnState == CellState.KANTO)
             {
                 var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
                 await piece.transform.DORotate(new Vector3(0, 180, -90), 0.2f);
