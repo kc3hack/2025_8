@@ -9,8 +9,10 @@ namespace refactor
         public const int MAX_Z = 6;
         [SerializeField] private GameObject _supportObj;
         [SerializeField] private GameObject _supportParentObj;
+        private InGameModel _model;
         private BoardManager _boardManager;
         private GameObject[,] _supportHandlerList;
+        private SoundManager _soundManager;
 
         void Start()
         {
@@ -20,8 +22,11 @@ namespace refactor
 
         private void Initialize()
         {
+            _model = new InGameModel();
             _boardManager = GetComponent<BoardManager>();
             _boardManager.Initialize();
+            _soundManager = GetComponent<SoundManager>();
+
             _supportHandlerList = new GameObject[MAX_X, MAX_Z];
             var i = 0;
 
@@ -96,6 +101,16 @@ namespace refactor
             _boardManager.InitializeSetCellState();
 
             SetSupportHundler();
+        }
+
+        private void Bind()
+        {
+            _model.GameStateProp
+                .Subscribe(state =>
+                {
+                    _soundManager.PlayBGM(state);
+                })
+                .AddTo(this);
         }
     }
 }
