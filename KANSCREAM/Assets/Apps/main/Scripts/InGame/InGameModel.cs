@@ -12,8 +12,8 @@ namespace refactor
             Result,
         }
 
-        private readonly ReactiveProperty<GameState> _gameState;
-        public ReadOnlyReactiveProperty<GameState> GameStateProp => _gameState;
+        private ReactiveProperty<GameState> _gameState;
+        public ReactiveProperty<GameState> GameStateProp => _gameState;
         public GameState CurrentGameStateProp => _gameState.Value;
 
         public InGameModel()

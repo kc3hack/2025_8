@@ -785,6 +785,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _winView: {fileID: 1726082376}
   _loseView: {fileID: 6697117469934581065}
+--- !u!114 &1175920400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175920390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a70ad41fa89fa4b76ab1e7d83ddb4bda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameBGM: {fileID: 8752334635773258948, guid: 38e831a73a62f4d26a7489ac57110035, type: 3}
+  _winBGM: {fileID: 6801522998597054755, guid: d2d6f368f78b741b49d62c65cf5f6ece, type: 3}
+  _loseBGM: {fileID: 4724131921595464121, guid: 6e034bc2b4a844bb98b72f728cb05a8f, type: 3}
+  _betraySE: {fileID: 2634806581751070153, guid: c674f14d13efd44378862ee7dc4c068c, type: 3}
+  _shineSE: {fileID: 1187014399408821269, guid: fc97e5e4dac554d05840b4267ba0cb96, type: 3}
+  _screamBGM: {fileID: 623361872014403746, guid: 20c9f34f88a984c46900fad1f67b3101, type: 3}
 --- !u!1 &1226755379
 GameObject:
   m_ObjectHideFlags: 0
@@ -1397,6 +1415,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7777784688910696958, guid: 7dbaecbc30da94d7cb525dace4be9eb3, type: 3}
       insertIndex: 2
       addedObject: {fileID: 1175920395}
+    - targetCorrespondingSourceObject: {fileID: 7777784688910696958, guid: 7dbaecbc30da94d7cb525dace4be9eb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1175920400}
   m_SourcePrefab: {fileID: 100100000, guid: 7dbaecbc30da94d7cb525dace4be9eb3, type: 3}
 --- !u!1001 &1709870034314583644
 PrefabInstance:
@@ -1412,7 +1433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1227949726662512118, guid: 074dc03a386c544138844464e7658ac7, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6043438837497262255, guid: 074dc03a386c544138844464e7658ac7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

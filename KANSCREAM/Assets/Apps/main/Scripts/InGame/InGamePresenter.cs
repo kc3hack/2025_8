@@ -27,6 +27,9 @@ namespace refactor
             _boardManager.Initialize();
             _soundManager = GetComponent<SoundManager>();
 
+            StartGame();
+            Bind();
+
             _supportHandlerList = new GameObject[MAX_X, MAX_Z];
             var i = 0;
 
@@ -81,11 +84,20 @@ namespace refactor
         }
 
         /// <summary>
+        /// ゲーム開始時にBGMを再生するメソッド
+        /// </summary>
+        public void StartGame()
+        {
+            _model.GameStateProp.Value = InGameModel.GameState.BeforeScream;
+        }
+
+        /// <summary>
         /// 盤面をリセットするメソッド
         /// 盤面の状態を初期化し、関東と関西の初期配置を行う
         /// </summary>
         public void Restart()
         {
+            _model.GameStateProp.Value = InGameModel.GameState.Start;
             _boardManager.Reset();// ボードマネージャーのリセット
             _boardManager.GetBoardChecker().GetSettableCellList().Reset();// ボードチェッカーのリセット
 

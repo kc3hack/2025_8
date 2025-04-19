@@ -17,6 +17,7 @@ namespace refactor
         /// <param name="gameState">ゲームの状態</param>
         public void PlayBGM(InGameModel.GameState gameState)
         {
+            Debugger.Log("PlayBGM：" + gameState);
             switch (gameState)
             {
                 case InGameModel.GameState.Start:
