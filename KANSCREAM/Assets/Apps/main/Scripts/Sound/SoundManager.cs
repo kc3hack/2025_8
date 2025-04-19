@@ -11,6 +11,17 @@ namespace refactor
         [SerializeField] private AudioSource _shineSE;
         [SerializeField] private AudioSource _screamBGM;
 
+        public void Initialize()
+        {
+            // それぞれに対応したAudioSourceコンポーネントを取得する
+            _gameBGM = GetComponent<AudioSource>().GetComponents<AudioSource>()[0];
+            _winBGM = GetComponent<AudioSource>().GetComponents<AudioSource>()[1];
+            _loseBGM = GetComponent<AudioSource>().GetComponents<AudioSource>()[2];
+            _betraySE = GetComponent<AudioSource>().GetComponents<AudioSource>()[4];
+            _shineSE = GetComponent<AudioSource>().GetComponents<AudioSource>()[3];
+            _screamBGM = GetComponent<AudioSource>().GetComponents<AudioSource>()[5];
+        }
+
         /// <summary>
         /// ゲーム開始時にBGMを再生するメソッド
         /// </summary>

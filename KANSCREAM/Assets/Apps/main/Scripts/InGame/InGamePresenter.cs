@@ -58,6 +58,8 @@ namespace refactor
             _boardManager.TurnChange();// 初期のターンを関東に変更
 
             _boardManager.InitializeSetCellState();
+
+            gameObject.GetComponent<SoundManager>().Initialize();
             SetSupportHundler();
         }
 
