@@ -122,7 +122,7 @@ namespace refactor
         /// <param name="x"></param>
         /// <param name="z"></param>
         /// <returns></returns>
-        public void FlipPieces()
+        public async UniTask FlipPieces()
         {
             var flipPositions = _boardChecker.GetFlipPositions();
 
