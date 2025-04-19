@@ -3,6 +3,8 @@ using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using System.Collections.Generic;
+using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 namespace refactor
 {
@@ -40,6 +42,7 @@ namespace refactor
         private InGamePresenter _inGamePresenter;
         private Judge _judge;
         private float _similarity;
+        private bool isSyncFlip = false;
 
         /// <summary>
         /// 盤面の初期化を行うメソッド
@@ -126,9 +129,11 @@ namespace refactor
             piece.SetActive(false);
             piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
             piece.SetActive(true);
-            _boardChecker.SetCellState(_boardState);
-            var flipPositions = GetFlipPositions(x, z, CellState.KANSAI);
-            FlipPieces(flipPositions, CellState.KANSAI);
+            _turnState = CellState.KANSAI;
+            _boardChecker.SetTurnState(_turnState);
+            FlipPieces(x, z, CellState.KANSAI);
+            _turnState = CellState.KANTO;
+            _boardChecker.SetTurnState(_turnState);
 
         }
 
@@ -230,24 +235,10 @@ namespace refactor
         {
             // ボード状態を更新
             _boardState[x, z] = turnState;
-            Show(x, z, turnState);
-
-            // ひっくり返すリストを取得
-            var flipPositions = GetFlipPositions(x, z, turnState);
-            //flipPositionsの中身を全て表示
-            foreach (var pos in flipPositions)
-            {
-                Debug.Log($"Flip Position: {pos.Item1}, {pos.Item2}");
-            }
-
-            if(flipPositions.Count == 0)
-            {
-                Debug.Log("Flip positions are empty.");
-                return;
-            }
+            Show(x, z);
 
             // ひっくり返す処理を実行
-            FlipPieces(flipPositions, turnState);
+            FlipPieces(x, z, turnState);
         }
 
         /// <summary>
@@ -263,114 +254,101 @@ namespace refactor
             return _boardChecker.GetFlipPositionsForOpponentMove(x, z, turnState);
         }
 
-        /// <summary>
-        /// 指定されたマスに指定されたコマを表示する
-        /// </summary>
-        /// <param name="x">X座標</param>
-        /// <param name="z">Z座標</param>
-        private void Show(int x, int z)
+        public async UniTask FlipPieces()
         {
-            if (_turnState == CellState.KANTO)
-            {
-                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                piece.SetActive(true);
-            }
-            else if (_turnState == CellState.KANSAI)
-            {
-                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                piece.SetActive(true);
-            }
-        }
-
-        /// <summary>
-        /// 指定されたマスに指定されたコマを表示する
-        /// 同期用のメソッド(相手と同じ動きをする)
-        /// <summary>
-        /// <param name="x">X座標</param>
-        /// <param name="z">Z座標</param>
-        /// <param name="turnState">ターン状態</param>
-        private void Show(int x, int z, CellState turnState)
-        {
-            if (turnState == CellState.KANTO)
-            {
-                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                piece.SetActive(true);
-            }
-            else if (turnState == CellState.KANSAI)
-            {
-                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                piece.SetActive(true);
-            }
-        }
-
-        /// <summary>
-        /// ひっくり返す処理を行う
-        /// ひっくり返す位置のリストを取得し、各位置の状態を変更する
-        /// </summary>
-        private void FlipPieces()
-        {
-            // ひっくり返すリストを取得
             var flipPositions = _boardChecker.GetFlipPositions();
-
-            // flipPositionsの中身を全てひっくり返す
+            
+            if(flipPositions.Count == 0) {
+                Debug.Log("flipPositions is empty");
+            }
             foreach (var pos in flipPositions)
             {
                 int x = pos.Item1;
                 int z = pos.Item2;
                 _boardState[x, z] = _turnState;
-
-                if (_turnState == CellState.KANTO)
-                {
-                    var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(false);
-
-                    piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(true);
-                }
-                else if (_turnState == CellState.KANSAI)
-                {
-                    var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(false);
-
-                    piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(true);
-                }
+                Flip(x, z);
             }
-
             _boardChecker.ClearFlipPositions();
+            flipPositions.Clear();
         }
 
-        /// <summary>
-        /// 指定されたリストの位置をひっくり返す
-        /// </summary>
-        /// <param name="flipPositions">ひっくり返す位置のリスト</param>
-        /// <param name="turnState">現在のターン状態</param>
-        private void FlipPieces(List<(int, int)> flipPositions, CellState turnState)
+        public async UniTask FlipPieces(int posX, int posZ, CellState _turnState)
         {
+            var flipPositions = this.GetFlipPositions(posX, posZ, _turnState);
+            
+            if(flipPositions.Count == 0) {
+                Debug.Log("flipPositions is empty");
+            }
             foreach (var pos in flipPositions)
             {
                 int x = pos.Item1;
                 int z = pos.Item2;
-                _boardState[x, z] = turnState;
+                _boardState[x, z] = _turnState;
+                Flip(x, z);
+            }
+            _boardChecker.ClearFlipPositions();
+            flipPositions.Clear();
+        }
 
-                if (turnState == CellState.KANTO)
-                {
-                    var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(false);
-
-                    piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(true);
-                }
-                else if (turnState == CellState.KANSAI)
-                {
-                    var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(false);
-
-                    piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
-                    piece.SetActive(true);
-                }
+        /// <summary>
+        /// 指定されたマスに指定されたコマを表示する
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="z">Z座標</param>
+        public async UniTask Show(int x, int z)
+        {
+            if (_turnState == CellState.KANTO)
+            {
+                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(true);
+                piece.transform.position = new Vector3(x, 1, z);
+                await piece.transform.DOMove(new Vector3(x, 0.015f, z), 0.2f);
+            }
+            else if (_turnState == CellState.KANSAI)
+            {
+                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(true);
+                piece.transform.position = new Vector3(x, 1, z);
+                await piece.transform.DOMove(new Vector3(x, 0.015f, z), 0.2f);
             }
         }
+
+        /// <summary>
+        /// 指定されたマスの駒をひっくり返すメソッド
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="z"></param>
+        public async UniTask Flip(int x, int z)
+        {
+            await UniTask.Delay(200);// アニメーションの待機時間
+            if (_turnState == CellState.KANSAI)
+            {
+                var piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                await piece.transform.DORotate(new Vector3(0, 180, -90), 0.2f);
+                piece.SetActive(false);
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 0);
+
+                piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(true);
+
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 90);//z軸に沿って90度回転させる
+                await piece.transform.DORotate(new Vector3(0, 180, 0), 0.2f);// ひっくり返すアニメーション
+            }
+            else if (_turnState == CellState.KANTO)
+            {
+                var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                await piece.transform.DORotate(new Vector3(0, 180, -90), 0.2f);
+                piece.SetActive(false);
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 0);
+
+                piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
+                piece.SetActive(true);
+                
+                piece.transform.localRotation = Quaternion.Euler(0, 180, 90);//z軸に沿って90度回転させる
+                await piece.transform.DORotate(new Vector3(0, 180, 0), 0.2f);// ひっくり返すアニメーション
+            }
+        }
+
 
         /// <summary>
         /// ターン状態を同期するメソッド
