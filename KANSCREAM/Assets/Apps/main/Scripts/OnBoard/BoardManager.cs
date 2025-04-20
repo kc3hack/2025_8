@@ -22,6 +22,7 @@ namespace refactor
         [SerializeField] private GameObject _kansaiPiece;// 関西の駒
         [SerializeField] private GameObject _kantoParent;// 関東の駒をまとめる親オブジェクト
         [SerializeField] private GameObject _kansaiParent;// 関西の駒をまとめる親オブジェクト
+        private InGameResultView _resultView;
         private int _specifiedPosX;// 現在のX座標
         private int _specifiedPosZ;// 現在のZ座標
         private BoardChecker _boardChecker;
@@ -57,6 +58,7 @@ namespace refactor
             _judge = GetComponent<Judge>();
             _kanScream = new KanScream();
             _kanScream.Awake();
+            _resultView = GetComponent<InGameResultView>();
             for (int x = 0; x < InGamePresenter.MAX_X; x++)
             {
                 for (int z = 0; z < InGamePresenter.MAX_Z; z++)
@@ -99,6 +101,11 @@ namespace refactor
             {
                 float duration = 3.0f;
                 StartCoroutine(SyncKanScreamCoroutine(duration));
+            }
+
+            if(BoardStateCheck())
+            {
+                CheckGameResult();
             }
         }
 
@@ -161,6 +168,7 @@ namespace refactor
                 TurnChange(); // ターンを変更
                 //Debug.Log($"After TurnChange: _turnState = {_turnState}");
             }
+            photonView.RPC("TurnReset", RpcTarget.Others);
         }
 
         /// <summary>
@@ -207,6 +215,7 @@ namespace refactor
                     _boardState[x, z] = _turnState;
                     Show(x, z);
                     FlipPieces(); // 駒をひっくり返す処理
+                    _judge.SetCanPlace(true);
 
                     // 他のクライアントに同期
                     if (photonView != null)
@@ -219,7 +228,14 @@ namespace refactor
                     turnManager.BeginTurn();
                     _boardChecker.SetTurnState(_turnState == CellState.KANTO ? CellState.KANTO : CellState.KANSAI);
                 }
-                _judge.JudgeGame();
+                if(_judge.GetCanPlace())
+                {
+                    var turnState = _turnState == CellState.KANTO ? CellState.KANSAI : CellState.KANTO;
+                    _judge.JudgeGame(turnState);
+                }else
+                {
+                    _judge.JudgeGame(_turnState);
+                }
             }
         }
 
@@ -359,6 +375,7 @@ namespace refactor
         {
             Debug.Log($"SyncTurnChange called. New turn state: {newTurnState}");
             _turnState = newTurnState;
+            _inGamePresenter.SetTurn(_inGamePresenter.GetTurn() + 1);
         }
 
         /// <summary>
@@ -378,12 +395,19 @@ namespace refactor
             // 全クライアントに同期
             if (photonView != null)
             {
-                photonView.RPC("SyncTurnChange", RpcTarget.All, _turnState);
+                photonView.RPC("SyncTurnChange", RpcTarget.Others, _turnState);
             }
             else
             {
                 Debug.LogError("photonView is null. Ensure PhotonView is attached to the GameObject.");
             }
+            _inGamePresenter.SetTurn(_inGamePresenter.GetTurn() + 1);
+        }
+
+        [PunRPC]
+        public void TurnReset()
+        {
+            _inGamePresenter.SetTurn(0);
         }
 
 
@@ -470,5 +494,64 @@ namespace refactor
         {
             //Debug.Log($"Turn {turn} time ended.");
         }
+
+        public void CheckGameResult()
+        {
+            int kantoCount = 0;
+            int kansaiCount = 0;
+
+            // 盤面の状態を確認してコマの数をカウント
+            for (int x = 0; x < InGamePresenter.MAX_X; x++)
+            {
+                for (int z = 0; z < InGamePresenter.MAX_Z; z++)
+                {
+                    if (_boardState[x, z] == CellState.KANTO)
+                    {
+                        kantoCount++;
+                    }
+                    else if (_boardState[x, z] == CellState.KANSAI)
+                    {
+                        kansaiCount++;
+                    }
+                }
+            }
+
+            // 勝敗判定
+            if (kantoCount > kansaiCount)
+            {
+                Debug.Log("関東の勝利");
+                _resultView.Show(true); // 勝利画面を表示
+            }
+            else if (kantoCount < kansaiCount)
+            {
+                Debug.Log("関西の勝利");
+                _resultView.Show(false); // 敗北画面を表示
+            }
+            else
+            {
+                Debug.Log("引き分け");
+                // 引き分けの場合の処理を追加する場合はここに記述
+            }
+        }
+
+        // _boardStateが全てNonoじゃないか確認するメソッドを追加して、boolを返す
+        public bool BoardStateCheck()
+        {
+            bool isFinish = false;
+            //_boardStateが全てNonoじゃないか確認する
+            for (int x = 0; x < InGamePresenter.MAX_X; x++)
+            {
+                for (int z = 0; z < InGamePresenter.MAX_Z; z++)
+                {
+                    if (_boardState[x, z] == CellState.NONE)
+                    {
+                        isFinish = true;
+                        return isFinish;
+                    }
+                }
+            }
+            return isFinish;
+        }
+
     }
 }
