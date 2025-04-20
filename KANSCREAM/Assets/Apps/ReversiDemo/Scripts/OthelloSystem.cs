@@ -244,7 +244,7 @@ public class OthelloSystem : MonoBehaviourPunCallbacks, IPunTurnManagerCallbacks
         if (similarity < 10000f)
         {
             PlayScreamBGM().Forget();
-            KanScream(similarity);
+            //KanScream(similarity);
         }
         else
         {
