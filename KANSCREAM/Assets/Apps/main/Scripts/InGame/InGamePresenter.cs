@@ -14,6 +14,7 @@ namespace refactor
         private GameObject[,] _supportHandlerList;
         private SoundManager _soundManager;
         private Judge _judge;
+        private int _trun;
 
         void Start()
         {
@@ -66,6 +67,7 @@ namespace refactor
 
             gameObject.GetComponent<SoundManager>().Initialize();
             SetSupportHundler();
+            this.SetTurn(1);
         }
 
         /// <summary>
@@ -131,6 +133,7 @@ namespace refactor
             _boardManager.InitializeSetCellState();
 
             SetSupportHundler();
+            this.SetTurn(1);
         }
 
         private void Bind()
@@ -141,6 +144,16 @@ namespace refactor
                     _soundManager.PlayBGM(state);
                 })
                 .AddTo(this);
+        }
+
+        public void SetTurn(int turn)
+        {
+            _trun = turn;
+        }
+
+        public int GetTurn()
+        {
+            return _trun;
         }
     }
 }

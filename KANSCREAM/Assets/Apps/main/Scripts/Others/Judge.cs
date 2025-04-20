@@ -17,10 +17,10 @@ namespace refactor
             _boardManager = GetComponent<BoardManager>();
             _boardChecker = _boardManager.GetBoardChecker();
         }
-        public void JudgeGame()
+        public void JudgeGame(BoardManager.CellState _turnState)
         {
             if(_canPlace) return;// 置けるマスがある場合は何もしない
-            _turnState = _boardManager.GetTurnState();//ここで切り替えた後のターンを取得
+            //_turnState = _boardManager.GetTurnState();//ここで切り替えた後のターンを取得
 
             if(BoardChecker._PieceNum == 36)
             {
@@ -34,7 +34,7 @@ namespace refactor
                 if(cellState == _turnState)
                 {
                     Debugger.Log("ターン交代");
-                    //_boardManager.TurnChange();
+                    _boardManager.TurnChange();
                     _boardChecker.SetTurnState(_turnState == BoardManager.CellState.KANTO ? BoardManager.CellState.KANSAI : BoardManager.CellState.KANTO);
                     _inGamePresenter.SetSupportHundler();
                     return;
@@ -48,6 +48,11 @@ namespace refactor
         public void SetCanPlace(bool canPlace)
         {
             _canPlace = canPlace;
+        }
+
+        public bool GetCanPlace()
+        {
+            return _canPlace;
         }
     }
 }
