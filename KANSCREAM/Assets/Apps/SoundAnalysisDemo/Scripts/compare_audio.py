@@ -7,7 +7,7 @@ from librosa.sequence import dtw
 import soundfile as sf
 import os
 
-def extract_mfcc_resampled(file_path, target_duration=2.0, n_mfcc=13):
+def extract_mfcc_resampled(file_path, target_duration=2.0, n_mfcc=20):
     y, sr = librosa.load(file_path, sr=None)
     y = librosa.effects.preemphasis(y)  # プリエンファシスフィルタを適用
     
@@ -22,22 +22,43 @@ def extract_mfcc_resampled(file_path, target_duration=2.0, n_mfcc=13):
     mfcc = librosa.feature.mfcc(y=y_resampled, sr=sr, n_mfcc=n_mfcc)
     return mfcc
 
-def dtw_distance(mfcc1, mfcc2):
-    #MFCCのリシェイプ
-    mfcc1 = extract_mfcc_resampled(mfcc1)
-    mfcc2 = extract_mfcc_resampled(mfcc2)
+def calculate_similarity(file_path1, file_path2, max_distance=100, max_volume_bonus=20):
+    # MFCCを抽出
+    mfcc1 = extract_mfcc_resampled(file_path1)
+    mfcc2 = extract_mfcc_resampled(file_path2)
 
-    print(f"mfcc_max: {np.max(mfcc1)}")
-    print(f"mfcc_min: {np.min(mfcc1)}")
-    # MFCCの系列間距離を計算
-    if mfcc1.shape[1] != mfcc2.shape[1]:
-        raise ValueError("MFCCの形状が一致しません")
-    D, wp = dtw(mfcc1.T, mfcc2.T, metric='euclidean')
-    print(f"D: {D[-1, -1]}")
+    # DTW距離を計算
+    D, wp = dtw(mfcc1.T, mfcc2.T, metric='cosine')
+    dtw_score = D[-1, -1]
+    print(f"DTW: {dtw_score}")
     
-    return D[-1, -1]
+    # DTWスコアをスケーリング
+    if dtw_score <= 7:
+        similarity_score = 100
+    elif dtw_score >= 16:
+        similarity_score = 0
+    else:
+        similarity_score = 100 - ((dtw_score - 7) * (100 / (16 - 7)))
 
-def extract_voice_segments(input_wav, output_wav="output.wav", top_db=20):
+    # 音量を計算
+    y2, sr2 = librosa.load(file_path2, sr=None)
+    volume2 = np.sum(y2**2)
+    print(f"Volume2: {volume2}")
+
+    # 音量の加点
+    volume_bonus = min(max_volume_bonus, (volume2 / 10))
+
+    # 総合スコアを計算
+    total_score = similarity_score + volume_bonus
+    total_score = min(total_score, max_distance)  # 最大スコアを制限
+
+    print(f"DTW Score: {similarity_score}")
+    print(f"Volume Bonus: {volume_bonus}")
+    print(f"Total Score: {total_score}")
+
+    return total_score
+
+def extract_voice_segments(input_wav, output_wav="output.wav", top_db=30):
     # 音声データを読み込む
     y, sr = librosa.load(input_wav, sr=None)
 
@@ -68,15 +89,13 @@ if __name__ == "__main__":
         print(f"Error: {recorded_file} does not exist.")
         sys.exit(1)
     
-    distance = dtw_distance(correct_file, recorded_file)
-    distance2 = dtw_distance(correct_file2, recorded_file)
-    print(f"Distance: {distance}")
-    print(f"Distance2: {distance2}")
+    distance = calculate_similarity(correct_file, recorded_file)
+    distance2 = calculate_similarity(correct_file2, recorded_file)
 
     # 距離が小さい方をC#の標準出力に出力
     if distance < distance2:
-        distance_min = distance
+        distance_max = distance2
     else:
-        distance_min = distance2
+        distance_max = distance
 
-    print(f"distance: {distance_min}")
+    print(f"distance: {distance_max}")
