@@ -18,6 +18,7 @@ namespace refactor
         void Start()
         {
             Initialize();
+            //HighlightSettableCells();
         }
     
 
@@ -72,13 +73,21 @@ namespace refactor
         /// </summary>
         public void SetSupportHundler()
         {
-            for(int x = 0; x < MAX_X; x++)
+            // 現在のプレイヤーのターン状態を取得
+            var currentTurnState = _boardManager.GetTurnState();
+
+            for (int x = 0; x < MAX_X; x++)
             {
                 for (int z = 0; z < MAX_Z; z++)
                 {
-                    if(_boardManager.GetBoardChecker().TurnCheck(x,z)){
+                    // _boardManager.isKantoPlayer に応じて関東または関西のターン状態を設定
+                    var targetTurnState = _boardManager.isKantoPlayer ? BoardManager.CellState.KANTO : BoardManager.CellState.KANSAI;
+
+                    // 指定したターン状態で置けるかどうかを判定
+                    if (_boardManager.GetBoardChecker().TurnCheck(x, z, targetTurnState))
+                    {
                         _supportHandlerList[x, z].gameObject.SetActive(true);
-                        Debugger.Log($"SetSupportHundler x:{x} z:{z}");
+                        //Debugger.Log($"SetSupportHundler x:{x} z:{z} for {(_boardManager.isKantoPlayer ? "Kanto" : "Kansai")}");
                         _judge.SetCanPlace(true);
                     }
                     else
@@ -87,6 +96,8 @@ namespace refactor
                     }
                 }
             }
+
+            // ひっくり返すリストをクリア
             _boardManager.GetBoardChecker().ClearFlipPositions();
         }
 

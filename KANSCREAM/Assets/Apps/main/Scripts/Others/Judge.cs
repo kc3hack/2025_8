@@ -34,7 +34,7 @@ namespace refactor
                 if(cellState == _turnState)
                 {
                     Debugger.Log("ターン交代");
-                    _boardManager.TurnChange();
+                    //_boardManager.TurnChange();
                     _boardChecker.SetTurnState(_turnState == BoardManager.CellState.KANTO ? BoardManager.CellState.KANSAI : BoardManager.CellState.KANTO);
                     _inGamePresenter.SetSupportHundler();
                     return;
