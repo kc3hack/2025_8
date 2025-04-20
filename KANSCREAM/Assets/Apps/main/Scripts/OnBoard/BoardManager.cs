@@ -103,10 +103,8 @@ namespace refactor
                 StartCoroutine(SyncKanScreamCoroutine(duration));
             }
 
-            if(BoardStateCheck())
-            {
-                CheckGameResult();
-            }
+            //EndGameIfNeeded();
+            
         }
 
     
@@ -496,62 +494,88 @@ namespace refactor
         }
 
         public void CheckGameResult()
+{
+    int kantoCount = 0;
+    int kansaiCount = 0;
+
+    // 盤面の状態を確認してコマの数をカウント
+    for (int x = 0; x < InGamePresenter.MAX_X; x++)
+    {
+        for (int z = 0; z < InGamePresenter.MAX_Z; z++)
         {
-            int kantoCount = 0;
-            int kansaiCount = 0;
-
-            // 盤面の状態を確認してコマの数をカウント
-            for (int x = 0; x < InGamePresenter.MAX_X; x++)
+            if (_boardState[x, z] == CellState.KANTO)
             {
-                for (int z = 0; z < InGamePresenter.MAX_Z; z++)
-                {
-                    if (_boardState[x, z] == CellState.KANTO)
-                    {
-                        kantoCount++;
-                    }
-                    else if (_boardState[x, z] == CellState.KANSAI)
-                    {
-                        kansaiCount++;
-                    }
-                }
+                kantoCount++;
             }
-
-            // 勝敗判定
-            if (kantoCount > kansaiCount)
+            else if (_boardState[x, z] == CellState.KANSAI)
             {
-                Debug.Log("関東の勝利");
-                _resultView.Show(true); // 勝利画面を表示
-            }
-            else if (kantoCount < kansaiCount)
-            {
-                Debug.Log("関西の勝利");
-                _resultView.Show(false); // 敗北画面を表示
-            }
-            else
-            {
-                Debug.Log("引き分け");
-                // 引き分けの場合の処理を追加する場合はここに記述
+                kansaiCount++;
             }
         }
+    }
+
+    // 勝敗判定
+    if (kantoCount > kansaiCount)
+    {
+        Debug.Log($"関東の勝利: 関東 {kantoCount} - 関西 {kansaiCount}");
+        _resultView.Show(true); // 勝利画面を表示
+    }
+    else if (kantoCount < kansaiCount)
+    {
+        Debug.Log($"関西の勝利: 関東 {kantoCount} - 関西 {kansaiCount}");
+        _resultView.Show(false); // 敗北画面を表示
+    }
+    else
+    {
+        Debug.Log($"引き分け: 関東 {kantoCount} - 関西 {kansaiCount}");
+        // 引き分けの場合の処理を追加する場合はここに記述
+        _resultView.Show(false); // 引き分け画面を表示する場合は適宜変更
+    }
+}
 
         // _boardStateが全てNonoじゃないか確認するメソッドを追加して、boolを返す
-        public bool BoardStateCheck()
-        {
-            bool isFinish = false;
-            //_boardStateが全てNonoじゃないか確認する
-            for (int x = 0; x < InGamePresenter.MAX_X; x++)
-            {
-                for (int z = 0; z < InGamePresenter.MAX_Z; z++)
-                {
-                    if (_boardState[x, z] == CellState.NONE)
-                    {
-                        isFinish = true;
-                        return isFinish;
-                    }
-                }
-            }
-            return isFinish;
-        }
 
+        public void EndGameIfNeeded()
+{
+    bool hasEmptyCell = false;
+
+    // 盤面に空きがあるか確認
+    for (int x = 0; x < InGamePresenter.MAX_X; x++)
+    {
+        for (int z = 0; z < InGamePresenter.MAX_Z; z++)
+        {
+            if (_boardState[x, z] == CellState.NONE)
+            {
+                hasEmptyCell = true;
+                break;
+            }
+        }
+        if (hasEmptyCell) break;
+    }
+
+    // 空きがない場合、またはどちらのプレイヤーも置ける場所がない場合にゲーム終了
+    if (!hasEmptyCell || (!CanPlayerMove(CellState.KANTO) && !CanPlayerMove(CellState.KANSAI)))
+    {
+        Debug.Log("ゲーム終了条件を満たしました。勝敗判定を行います。");
+        CheckGameResult();
+    }
+}
+
+
+        private bool CanPlayerMove(CellState player)
+{
+    // プレイヤーが置ける場所があるかを確認するロジック
+    for (int x = 0; x < InGamePresenter.MAX_X; x++)
+    {
+        for (int z = 0; z < InGamePresenter.MAX_Z; z++)
+        {
+            if (_boardState[x, z] == CellState.NONE && _boardChecker.TurnCheck(x, z, player))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
     }
 }

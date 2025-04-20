@@ -2209,6 +2209,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinnerPopUp
       objectReference: {fileID: 0}
+    - target: {fileID: 8630838296136073532, guid: efc64c8eb883a457ebec9cd77974dc4e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2388,7 +2392,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1227949726662512118, guid: 074dc03a386c544138844464e7658ac7, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2554144458096497987, guid: 074dc03a386c544138844464e7658ac7, type: 3}
       propertyPath: m_SizeDelta.y
