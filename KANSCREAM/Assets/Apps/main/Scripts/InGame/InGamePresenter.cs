@@ -9,8 +9,10 @@ namespace refactor
         public const int MAX_Z = 6;
         [SerializeField] private GameObject _supportObj;
         [SerializeField] private GameObject _supportParentObj;
+        private InGameModel _model;
         private BoardManager _boardManager;
         private GameObject[,] _supportHandlerList;
+        private SoundManager _soundManager;
         private Judge _judge;
 
         void Start()
@@ -22,8 +24,14 @@ namespace refactor
 
         private void Initialize()
         {
+            _model = new InGameModel();
             _boardManager = GetComponent<BoardManager>();
             _boardManager.Initialize();
+            _soundManager = GetComponent<SoundManager>();
+
+            StartGame();
+            Bind();
+
             _judge = GetComponent<Judge>();
             _judge.Initialize();
             _supportHandlerList = new GameObject[MAX_X, MAX_Z];
@@ -55,6 +63,8 @@ namespace refactor
             _boardManager.TurnChange();// 初期のターンを関東に変更
 
             _boardManager.InitializeSetCellState();
+
+            gameObject.GetComponent<SoundManager>().Initialize();
             SetSupportHundler();
         }
 
@@ -92,11 +102,20 @@ namespace refactor
         }
 
         /// <summary>
+        /// ゲーム開始時にBGMを再生するメソッド
+        /// </summary>
+        public void StartGame()
+        {
+            _model.GameStateProp.Value = InGameModel.GameState.BeforeScream;
+        }
+
+        /// <summary>
         /// 盤面をリセットするメソッド
         /// 盤面の状態を初期化し、関東と関西の初期配置を行う
         /// </summary>
         public void Restart()
         {
+            _model.GameStateProp.Value = InGameModel.GameState.Start;
             _boardManager.Reset();// ボードマネージャーのリセット
             _boardManager.GetBoardChecker().GetSettableCellList().Reset();// ボードチェッカーのリセット
 
@@ -114,9 +133,14 @@ namespace refactor
             SetSupportHundler();
         }
 
-        // private void HighlightSettableCells()
-        // {
-        //     _boardManager.HighlightSettableCells();
-        // }
+        private void Bind()
+        {
+            _model.GameStateProp
+                .Subscribe(state =>
+                {
+                    _soundManager.PlayBGM(state);
+                })
+                .AddTo(this);
+        }
     }
 }

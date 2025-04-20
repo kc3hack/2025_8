@@ -125,15 +125,15 @@ namespace refactor
             // 関東の駒をひっくり返す処理
             _boardState[x, z] = CellState.NONE;
             _boardState[x, z] = CellState.KANSAI;
+            // アニメーション入れる場所
             var piece = _kantoParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
             piece.SetActive(false);
             piece = _kansaiParent.transform.GetChild(x * InGamePresenter.MAX_Z + z).gameObject;
             piece.SetActive(true);
+
             _turnState = CellState.KANSAI;
             _boardChecker.SetTurnState(_turnState);
             FlipPieces(x, z, CellState.KANSAI);
-            _turnState = CellState.KANTO;
-            _boardChecker.SetTurnState(_turnState);
 
         }
 
